@@ -1,0 +1,37 @@
+{
+  "id": "trs-foundryvtt-dice-set",
+  "title": "Foundry VTT Anniversary Dice Set by The Rollsmith",
+  "description": "A special iron and lava infused dice set for Dice So Nice commissioned to celebrate Foundry Virtual Tabletop's 2-Year Anniversary.",
+  "version": "1.0.1",
+  "compatibility": {
+    "minimum": "0.8.4",
+    "verified": "13"
+  },
+  "authors": [
+    {
+      "name": "The Rollsmith",
+      "url": "https://therollsmith.com",
+      "email": "contact@therollsmith.com",
+      "flags": {}
+    },
+    {
+      "name": "JDW",
+      "discord": "JDW#6422",
+      "flags": {}
+    },
+    {
+      "name": "Navy",
+      "url": "https://www.artstation.com/navy_art",
+      "flags": {}
+    }
+  ],
+  "scripts": [
+    "diceset.js"
+  ],
+  "url": "https://therollsmith.com/",
+  "manifest": "https://r2.foundryvtt.com/packages-public/trs-foundryvtt-dice-set/module.json",
+  "download": "https://r2.foundryvtt.com/packages-public/trs-foundryvtt-dice-set/trs-foundryvtt-dice-set-1.0.1.zip",
+  "license": "https://therollsmith.com/eula/",
+  "readme": "https://therollsmith.com/installation-guide/",
+  "bugs": "https://therollsmith.com/contact/"
+}

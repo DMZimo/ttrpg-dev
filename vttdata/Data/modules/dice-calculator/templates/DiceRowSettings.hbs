@@ -1,0 +1,32 @@
+<div>
+    <fieldset>
+        <div class="form-group">
+            <label for="compactMode">Compact Mode</label>
+            <div class="form-fields">
+                <input id="compactMode" type="checkbox" name="compactMode" {{checked settings.compactMode}}>
+            </div>
+            <p class="hint">Disables any additional dice rows and merges the original two rows together.</p>
+        </div>
+        <div class="form-group">
+            <label for="hideNumberInput">Hide Number Input</label>
+            <div class="form-fields">
+                <input id="hideNumberInput" type="checkbox" name="hideNumberInput" {{checked settings.hideNumberInput}} {{disabled (not settings.compactMode)}}>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="hideRollButton">Hide Roll Button</label>
+            <div class="form-fields">
+                <input id="hideRollButton" type="checkbox" name="hideRollButton" {{checked settings.hideRollButton}}>
+            </div>
+        </div>
+    </fieldset>
+    <fieldset>
+        <legend>{{localize "Preview"}}</legend>
+        <div>
+            <p class="hint">{{localize "DICE_TRAY.DiceRows.Instruction1"}}</p>
+        </div>
+        <section class="sidebar-preview flexcol">
+            {{>"modules/dice-calculator/templates/tray.html" dicerows=diceRows settings=settings }}
+        </section>
+    </fieldset>
+</div>

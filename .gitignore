@@ -28,7 +28,6 @@ __pycache__/
 target/
 backups/
 vttdata/Logs/
-vttdata/Data/modules/
 vttdata/Config/admin.txt
 vttdata/Config/license.json
 

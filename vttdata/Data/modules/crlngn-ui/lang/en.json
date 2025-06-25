@@ -1,0 +1,379 @@
+{
+  "CRLNGN_UI": { 
+    "ui": { 
+      "generalSettingsLabel": "General Settings",
+      "clientSettingsLabel": "Player Settings (Client)",
+      "worldSettingsLabel": "World Settings (GM)",
+      "toggleHints": "Toggle Help",
+      "navDisabled": "Scene Navigation is disabled in the 'Elements' tab. The settings below will only have effect if Custom Layout is enabled for Scene Navigation.",
+      "reloadRequiredTitle": "Reload Foundry",
+      "reloadRequiredLabel": "A reload is required. Reload now?",
+      "macroBarTooltipKeepOpen": "Keep open",
+      "macroBarTooltipAutoHide": "Hide",
+      "reset": "Reset",
+      "save": "Save",
+      "reloadButton": "Reload",
+      "cancelButton": "Cancel",
+      "notifications": {
+        "incompatibleVersion": "Carolingian UI requires Foundry v13.339 or higher. Please update Foundry or install version 1.x of Carolingian UI.",
+        "settingsUpdated": "Settings updated",
+        "minimalUiNotSupported": "Carolingian UI is not compatible with Minimal UI, and offers most of its features. Please disable that module to avoid performance issues.",
+        "monksScenesNotSupported": "Carolingian UI's Scene Navigation will conflict with Monk's Scene Navigation. This functionality of Carolingian UI has been disabled.",
+        "ripperScenesCompat": "Carolingian UI now has Scene Folder Navigation and Scene Search, which cannot be used together with Compact Scene Navigation. Either disable the other module or disable 'Scene Folder Navigation' on Carolingian UI settings.",
+        "monksPlayerSettingsConflict": "Carolingian UI's setting 'Enforce Dark Mode' has been disabled to prevent conflict with the module Monk's Player Settings.",
+        "forceClientSettingsConflict": "Carolingian UI's setting 'Enforce Dark Mode' has been disabled to prevent conflict with Force Client Settings.",
+        "initialViewSet": "This scene's initial view was set to the current view."
+      },
+      "sceneNav": {
+        "searchPlaceholder": "Search scenes...",
+        "backTo": "Back to ",
+        "favoritesFolder": "Selected Scenes",
+        "addToFavorites": "Add to Navigation",
+        "removeFromFavorites": "Remove from Navigation",
+        "initialViewBtn": "Set Initial View",
+        "backButtonTooltip": "Previous scene",
+        "sceneLookupTooltip": "Search scenes",
+        "hideSceneFoldersTooltip": "Hide scene folders",
+        "showSceneFoldersTooltip": "Show scene folders",
+        "globalLightOn": "Global illumination is on",
+        "globalLightOff": "Global illumination is off",
+        "tokenVisionOn": "Token vision is on",
+        "tokenVisionOff": "Token vision is off",
+        "playlistSoundOn": "Playlist sound is on",
+        "playlistSoundOff": "Playlist sound is off",
+        "preloadScene": "Preload scene for players",
+        "sceneConfig": "Scene Configuration"
+      },
+      "updates": {
+        "label": "Last Update ID",
+        "hint": "Tracks the last displayed update notification"
+      },
+      "toggleChatBox": "Toggle Chat Box"
+    },
+    "settings": {
+      "moduleSettingsMenu": {
+        "label": "Interface Settings",
+        "title": "Configure Options",
+        "hint": "Customize Carolingian UI, enable or disable custom styles and other options.",
+        "tabs": {
+          "interface": "UI Elements",
+          "fonts": "Fonts",
+          "themes": "Theme & Styles",
+          "chat": "Chat Log",
+          "controls": "Left Controls",
+          "scenes": "Scene Navigation",
+          "players": "Players List",
+          "camera": "Camera Dock"
+        },
+        "reset": "Reset",
+        "save": "Save"
+      },
+      "hideInterface": {
+        "label": "Toggle Hide/Show Interface",
+        "hint": "Hides or shows the UI. This will affect all elements inside the `#interface` html block"
+      },
+      "interfaceOptionsMenu": {
+        "label": "Fade-out & Layout",
+        "title": "Interface Fade-out & Layout",
+        "hint": "Disable 'fade out' behavior of interface elements individually. You may also disable Carolingian UI custom layout for them.",
+        "description": "<b>'Fade Out' column:</b> Uncheck to prevent element from fading out when not hovered. <b>'Custom Layout' column:</b> Uncheck to disable Carolingian UI styles for that particular element. Color theming and fonts will still apply.",
+        "fields": {
+          "sceneControls": "Control Buttons (Left Side)",
+          "sidebarTabs": "Sidebar Buttons (Right Side)",
+          "playerList": "Player List",
+          "cameraDock": "Camera Dock",
+          "macroHotbar": "Macros Hotbar",
+          "sceneNav": "Scene Navigation",
+          "chatLogControls": "Chat Log Controls",
+          "fadeOutColumn": "Fade Out",
+          "hideColumn": "Hide",
+          "customLayoutColumn": "Custom Layout",
+          "elementColumn": "Interface Element"
+        },
+        "reset": "Reset",
+        "save": "Save"
+      },
+      "customFontsMenu": {
+        "label": "Fonts",
+        "title": "Configure Fonts",
+        "hint": "Configure the font families used throughout the interface",
+        "description": "Select or type the name of a custom font, if already loaded on Foundry core. ",
+        "fields": {
+          "uiBody": {
+            "label": "UI Font"
+          },
+          "uiTitles": {
+            "label": "UI Titles"
+          },
+          "journalBody": {
+            "label": "Journal Body"
+          },
+          "journalTitles": {
+            "label": "Journal Titles"
+          }
+        },
+        "postDescription": "To import from <b>Google Fonts</b>, first paste the @import link in the \"Custom CSS\" field of style settings, and the font will be listed here.",
+        "reset": "Reset",
+        "save": "Save"
+      },
+      "themeAndStylesMenu": {
+        "label": "Theme",
+        "title": "Configure Styles",
+        "hint": "Select a color theme for the UI, and add custom CSS styles.",
+        "fields": {
+          "colorTheme": {
+            "label": "Color Theme",
+            "hint": "Select a theme for the color highlights and secondary color. Only affects highlights, inputs and buttons"
+          },
+          "adjustOtherModules": {
+            "label": "Enforce styles in other modules",
+            "hint": "Enable my style tweaks and custom fonts on other modules, like CRUX or Combat Carousel. If you would like support for a specific module, please request on Github issues"
+          },
+          "otherModulesList": {
+            "label": "Enforce styles in other modules",
+            "hint": "Enable my style tweaks on other modules. Click the checkbox on top of the list to select / unselect all."
+          },
+          "customStyles": {
+            "label": "Custom CSS",
+            "hint": "These styles will be loaded the next time you load Foundry. You may include Google Fonts by pasting the @import link, and the font will be listed in the Custom Fonts settings."
+          }, 
+          "enforceDarkMode": {
+            "label": "Enforce Dark Mode to Players",
+            "hint": "Do not enable this if using Force Client Settings or similar modules. This sets Foundry's UI theme on player's client to Dark if they have it set to 'Browser Default'. If they specifically set it to 'Light', their choice will be respected."
+          }
+        },
+        "reset": "Reset",
+        "save": "Save"
+      },
+      "chatMessagesMenu": {
+        "label": "Chat",
+        "title": "Configure Chat",
+        "hint": "Modify the look and behavior of the chat message cards on right side panel",
+        "fields": {
+          "enableChatStyles": {
+            "label": "Enable styles for chat messages",
+            "hint": "Adds style modifications to chat cards. When dark mode is selected on Foundry, chat cards will be dark as well. MOSTLY FOR DND5E - only partial support for other systems."
+          },
+          "borderColor": {
+            "label": "Color of chat card border",
+            "hint": "[Requires reload] <b>Player color</b>: uses the player's color on Foundry; <b>Roll Type</b>: uses color coding for attack, save, skill check, etc. <b>None:</b> no border at all (will allow borders set by other modules).",
+            "options": {
+              "playerColor": "Player Color",
+              "rollType": "Roll Type",
+              "none": "None"
+            }
+          },
+          "useLeftChatBorder": {
+            "label": "Use left border only",
+            "hint": "Your border color choice shows up on the left side of the chat card only - the other sides have no border."
+          }
+        },
+        "reset": "Reset",
+        "save": "Save"
+      },
+      "leftControlsMenu": {
+        "label": "Control Bar",
+        "title": "Configure Controls",
+        "hint": "Modify the look and behavior of scene control buttons, on the left side of screen",
+        "fields": {
+          "autoHideSecondary": {
+            "label": "Auto hide secondary controls",
+            "hint": "Enable to keep the secondary bar on the left controls hidden until you hover on the region or click on an item."
+          }
+        },
+        "reset": "Reset",
+        "save": "Save"
+      },
+      "playersListMenu": {
+        "label": "Players List",
+        "title": "Player List Options",
+        "hint": "Change behavior or add avatars to players list",
+        "fields": {
+          "autoHidePlayerList": {
+            "label": "Auto hide player list",
+            "hint": "Enable to keep the players list on bottom left minimized, except when hovered."
+          },
+          "playerListAvatars": {
+            "label": "Show avatars",
+            "hint": "Show player avatars for players in the list. It looks for character image, or user image if no character is assigned"
+          }
+        },
+        "reset": "Reset",
+        "save": "Save"
+      },
+      "cameraDockMenu": {
+        "label": "Camera Dock",
+        "title": "Configure Dock",
+        "hint": "Enable a floating camera dock that you can position anywhere",
+        "fields": {
+          "enableFloatingDock": {
+            "label": "Enable floating camera dock",
+            "hint": "<b>[Requires reload]</b> Allows video player group to be dragged and placed anywhere on screen"
+          }, 
+          "dockPosX": {
+            "label": "Dock Horizontal position",
+            "hint": "Position of camera dock when set to float. From bottom left of screen, in pixels"
+          }, 
+          "dockPosY": {
+            "label": "Dock Vertical position",
+            "hint": "Position of camera dock when set to float. From bottom left of screen, in pixels"
+          }, 
+          "dockWidth": {
+            "label": "Width of camera group",
+            "hint": "Dimensions of the non-minimized camera dock when set to float, in pixels"
+          }, 
+          "dockHeight": {
+            "label": "Height of camera group",
+            "hint": "Dimensions of the non-minimized camera dock when set to float, in pixels"
+          },
+          "dockResizeOnUserJoin": {
+            "label": "Resize Dock to Fit Videos",
+            "hint": "When enabled, the dock will be resized when a user joins. Any manual resize may be overriden when a new user joins. For manual resize, turn this option off.",
+            "options": {
+              "off": "OFF: Do not auto-resize",
+              "horizontal": "Resize to fit horizontally",
+              "vertical": "Resize to fit vertically"
+            }
+          },
+          "defaultVideoWidth": {
+            "label": "Default video width",
+            "hint": "Width of each individual camera in dock, in pixels. Minimum width is 140px, to allow space for camera control icons."
+          }
+        },
+        "reset": "Reset",
+        "save": "Save"
+      },
+      "sceneNavMenu": {
+        "label": "Scene Nav",
+        "title": "Configure Scene Nav",
+        "hint": "Change options for the scene navigation menu, on the top bar.",
+        "fields": {
+          "sceneNavEnabled": {
+            "label": "Enable custom scene navigation",
+            "hint": "[Requires reload] If you are having layout issues with a non-compatible module, you can try to disable my custom styles for Scene Navigation."
+          }, 
+          "showNavOnHover": {
+            "label": "Toggle scene navigation on hover",
+            "hint": "If the scene navigation is collapsed, you can show it by hovering the mouse over the top of the screen."
+          },
+          "useSceneFolders": {
+            "label": "Enable scene folders on navigation",
+            "hint": "If custom scene navigation is enabled, this option will add a list of folders with scene search to scene navigation bar."
+          },
+          "useSceneLookup": {
+            "label": "Enable scene lookup on navigation",
+            "hint": "If custom scene navigation is enabled, this option will add a button to search for scenes on the navigation bar."
+          },
+          "navFoldersForPlayers": {
+            "label": "Enable scene folders for players",
+            "hint": "Enable to allow players to see the folder list. If they do not have view permissions for a folder, it will not appear on the list."
+          },
+          "navStartCollapsed": {
+            "label": "Start collapsed",
+            "hint": "Enable this option to collapse the scene navigation when loading Foundry, regardless of previous saved state."
+          },
+          "sceneClickToView": {
+            "label": "Enable Click/Double Click to View/Activate",
+            "hint": "When enabled, clicking on the scene in scene once opens that scene. Double clicking activates it."
+          },
+          "useSceneIcons": {
+            "label": "Use scene icons",
+            "hint": "Shows icons next to the scene name. <i class='fas fa-lock'></i> Invisible to players until activated; <i class='fas fa-crown'></i> Currently viewed by the GM; <i class='fas fa-bullseye'></i> Currently active to players;"
+          },
+          "useSceneBackButton": {
+            "label": "Enable Back Button",
+            "hint": "Add a back button to scene navigation, which lets you quick change back to previous scene viewed"
+          },
+          "useScenePreview": {
+            "label": "Use Scene Preview",
+            "hint": "When enabled, the thumbnail preview will be shown when hovering over scene navigation"
+          },
+          "navShowRootFolders": {
+            "label": "Show root folders in scene navigation",
+            "hint": "Root folders from Scene Directory will be show in the default scene navigation. If you have many folders on root, you might want to disable this option."
+          },
+          "sceneItemWidth": {
+            "label": "Width of navigation item",
+            "hint": "Leave empty to use default width, or define a new number. Minimum is 100px"
+          }
+        },
+        "reset": "Reset",
+        "save": "Save"
+      },
+      "sheets5eMenu": {
+        "label": "DnD5e Sheets",
+        "title": "Configure styling options for DnD5e Sheets",
+        "hint": "Change options for the 5e sheets",
+        "fields": {
+          "applyThemeToSheets": {
+            "label": "Apply colors and styles to DnD5e sheets",
+            "hint": "Enable to apply global color theme and styles to DnD 5e actor sheets (PC and NPC)"
+          },
+          "useHorizontalSheetTabs": {
+            "label": "Use horizontal tabs with labels",
+            "hint": "Enable to use horizontal tabs with labels on 5e actor sheets instead of the lateral icon tabs"
+          }
+        },
+        "reset": "Reset",
+        "save": "Save"
+      },
+      "controlIconSize": {
+        "label": "Size of control icons",
+        "hint": "If you use a large resolution, you may want to change the size of the icons on left controls. This may affect some other UI elements",
+        "options": {
+          "small": "small",
+          "regular": "regular",
+          "large": "large"
+        }
+      },
+      "sceneNavCollapsed": {
+        "label": "Scene navigation collapsed",
+        "hint": "Current state of the scene navigation toggle. Is it collapsed?"
+      },
+      "sceneNavPos": {
+        "label": "Scene navigation position",
+        "hint": "Stores current position of navigation for reset when it's re-rendered"
+      },
+      "enableMacroLayout": {
+        "label": "Enable macro layout",
+        "hint": "The module enlarges and centralizes numbers on macro hotbar. Disable this setting to use default Foundry layout."
+      },
+      "autoHideLeftControls": {
+        "label": "Auto hide secondary controls",
+        "hint": "Enable to keep the secondary bar on the left controls hidden unless you hover on the region or click on an item."
+      },
+      "collapseMacroBar": {
+        "label": "Auto-Hide Macro Bar",
+        "hint": "Enable to have the macro hotbar start collapsed by default, and show up on hover."
+      },
+      "useFolderStyle": {
+        "label": "Discreet folder colors on sidebar",
+        "hint": "Enable more discreet colors on sidebar directory folders, showing the selected color only on the borders, for a nicer look."
+      },
+      "debugMode": {
+        "label": "Debug Mode",
+        "hint": "Enable or disable debug messages on browser console. This should be turned off unless the module developer asks you to turn it on for verification."
+      },
+      "disableUI":{
+        "label": "Disable UI in this client",
+        "hint": "If a player doesn't want to use Carolingian UI, they may disable it. No other feature of the module will work except for dark style in chat cards - which can be separately disabled."
+      }
+    },
+    "dnd5e": {
+      "chatCard": {
+        "buttons": {
+          "summons": "Summons",
+          "attack": "Attack",
+          "healing": "Healing",
+          "damage": "Damage",
+          "template": "Template",
+          "consume": "Consume",
+          "refund": "Refund",
+          "macro": "Macro",
+          "savedc": "Save DC",
+          "save": "Save"
+        }
+      }
+    }
+  }
+}

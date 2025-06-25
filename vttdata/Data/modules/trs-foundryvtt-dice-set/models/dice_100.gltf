@@ -1,0 +1,173 @@
+{
+    "asset" : {
+        "copyright" : "Copyright \u00a9 The Rollsmith",
+        "generator" : "Khronos glTF Blender I/O v1.8.19",
+        "version" : "2.0"
+    },
+    "scene" : 0,
+    "scenes" : [
+        {
+            "name" : "Scene",
+            "nodes" : [
+                0
+            ]
+        }
+    ],
+    "nodes" : [
+        {
+            "mesh" : 0,
+            "name" : "dice_100"
+        }
+    ],
+    "materials" : [
+        {
+            "doubleSided" : true,
+            "emissiveFactor" : [
+                0.75,
+                0.75,
+                0.75
+            ],
+            "emissiveTexture" : {
+                "index" : 0
+            },
+            "name" : "MAT_Lava_d100",
+            "normalTexture" : {
+                "index" : 1
+            },
+            "pbrMetallicRoughness" : {
+                "baseColorTexture" : {
+                    "index" : 2
+                },
+                "metallicRoughnessTexture" : {
+                    "index" : 3
+                }
+            }
+        }
+    ],
+    "meshes" : [
+        {
+            "name" : "Mesh_0.016",
+            "primitives" : [
+                {
+                    "attributes" : {
+                        "POSITION" : 0,
+                        "NORMAL" : 1,
+                        "TEXCOORD_0" : 2
+                    },
+                    "indices" : 3,
+                    "material" : 0
+                }
+            ]
+        }
+    ],
+    "textures" : [
+        {
+            "sampler" : 0,
+            "source" : 0
+        },
+        {
+            "sampler" : 0,
+            "source" : 1
+        },
+        {
+            "sampler" : 0,
+            "source" : 2
+        },
+        {
+            "sampler" : 0,
+            "source" : 3
+        }
+    ],
+    "images" : [
+        {
+            "mimeType" : "image/webp",
+            "name" : "MAT_Lava_d100_Emissive",
+            "uri" : "textures/MAT_Lava_d100_Emissive.webp"
+        },
+        {
+            "mimeType" : "image/webp",
+            "name" : "MAT_Lava_d100_Normal",
+            "uri" : "textures/MAT_Lava_d100_Normal.webp"
+        },
+        {
+            "mimeType" : "image/webp",
+            "name" : "MAT_Lava_d100_BaseColor",
+            "uri" : "textures/MAT_Lava_d100_BaseColor.webp"
+        },
+        {
+            "mimeType" : "image/webp",
+            "name" : "MAT_Lava_d100_Metallic-MAT_Lava_d100_Roughness",
+            "uri" : "textures/MAT_Lava_d100_Metallic-MAT_Lava_d100_Roughness.webp"
+        }
+    ],
+    "accessors" : [
+        {
+            "bufferView" : 0,
+            "componentType" : 5126,
+            "count" : 339,
+            "max" : [
+                88.67135620117188,
+                84.49921417236328,
+                88.58787536621094
+            ],
+            "min" : [
+                -88.67135620117188,
+                -84.49921417236328,
+                -88.58787536621094
+            ],
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 1,
+            "componentType" : 5126,
+            "count" : 339,
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 2,
+            "componentType" : 5126,
+            "count" : 339,
+            "type" : "VEC2"
+        },
+        {
+            "bufferView" : 3,
+            "componentType" : 5123,
+            "count" : 1500,
+            "type" : "SCALAR"
+        }
+    ],
+    "bufferViews" : [
+        {
+            "buffer" : 0,
+            "byteLength" : 4068,
+            "byteOffset" : 0
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 4068,
+            "byteOffset" : 4068
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 2712,
+            "byteOffset" : 8136
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 3000,
+            "byteOffset" : 10848
+        }
+    ],
+    "samplers" : [
+        {
+            "magFilter" : 9729,
+            "minFilter" : 9987
+        }
+    ],
+    "buffers" : [
+        {
+            "byteLength" : 13848,
+            "uri" : "dice_100.bin"
+        }
+    ]
+}
