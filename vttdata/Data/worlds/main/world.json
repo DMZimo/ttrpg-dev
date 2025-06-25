@@ -1,0 +1,30 @@
+{
+  "title": "Princes of the Apocalypse",
+  "id": "main",
+  "system": "dnd5e",
+  "joinTheme": "default",
+  "coreVersion": "13.345",
+  "compatibility": {
+    "minimum": "13",
+    "verified": "13"
+  },
+  "systemVersion": "5.0.3",
+  "lastPlayed": "Wed Jun 25 2025 06:30:20 GMT+0300 (Israel Daylight Time)",
+  "packs": [
+    {
+      "type": "Item",
+      "label": "Advancement-Backing Items",
+      "name": "srd5e-advancement-backing-item",
+      "path": "packs/srd5e-advancement-backing-item",
+      "system": "dnd5e",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      },
+      "flags": {}
+    }
+  ],
+  "playtime": 239962,
+  "background": "systems/dnd5e/ui/official/dnd5e-background.webp",
+  "nextSession": "2025-06-23T16:00:00.000Z"
+}

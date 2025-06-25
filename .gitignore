@@ -27,7 +27,6 @@ pnpm-debug.log*
 __pycache__/
 target/
 backups/
-vttdata/
 vttdata/Logs/
 vttdata/Data/modules/
 vttdata/Data/systems/

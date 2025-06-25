@@ -137,3 +137,5 @@ dndm players status   # Show player character summary
 2. **Consistent note-taking** with templates
 3. **Single command** to get everything ready for D&D night
 4. **Personal productivity tool** - just for me, not others
+
+`node main.js --dataPath=/home/zimo/zimolabs/ttrpg/vttdata`
