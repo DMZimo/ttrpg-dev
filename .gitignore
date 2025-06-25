@@ -29,7 +29,6 @@ target/
 backups/
 vttdata/Logs/
 vttdata/Data/modules/
-vttdata/Data/systems/
 vttdata/Config/admin.txt
 vttdata/Config/license.json
 
