@@ -27,15 +27,12 @@ pnpm-debug.log*
 __pycache__/
 target/
 backups/
-# !qvtt/dist/
-# !qvtt/dist/
-# qvtt-data/Config/
-# qvtt/
 vttdata/
 vttdata/Logs/
 vttdata/Data/modules/
 vttdata/Data/systems/
-vttdata/Data/assets/srd5e
-
 vttdata/Config/admin.txt
 vttdata/Config/license.json
+
+!vtt/dist/
+# !vtt/node_modules/
