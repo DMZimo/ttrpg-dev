@@ -1,18 +1,43 @@
-import { glob } from 'astro/loaders';
-import { defineCollection, z } from 'astro:content';
+import { glob } from "astro/loaders";
+import { defineCollection, z } from "astro:content";
 
-const blog = defineCollection({
-	// Load Markdown and MDX files in the `src/content/blog/` directory.
-	loader: glob({ base: './src/content/blog', pattern: '**/*.{md,mdx}' }),
-	// Type-check frontmatter using a schema
-	schema: ({ image }) => z.object({
-		title: z.string(),
-		description: z.string(),
-		// Transform string to Date object
-		pubDate: z.coerce.date(),
-		updatedDate: z.coerce.date().optional(),
-		heroImage: image().optional(),
-	}),
+const journal = defineCollection({
+  // Load Markdown and MDX files in the `src/content/journal/` directory.
+  loader: glob({ base: "./src/content/journal", pattern: "**/*.{md,mdx}" }),
+  // Type-check frontmatter using a schema
+  schema: ({ image }) =>
+    z.object({
+      // Basic metadata
+      title: z.string().optional(),
+      description: z.string().optional(),
+
+      // Aliases and CSS classes
+      aliases: z.array(z.string()).optional(),
+      cssclasses: z.array(z.string()).optional(),
+
+      // Tags
+      tags: z.array(z.string()).optional(),
+
+      // Session-specific fields
+      session_number: z.number().optional(),
+      session_title: z.string().optional(),
+      session_date: z.coerce.date().optional(),
+      duration: z.coerce.date().optional(),
+
+      // Character and NPC references (as string arrays)
+      // Note: These will be converted from [[Link]] format to proper references when content is added
+      characters_involved: z.array(z.string()).optional(),
+      npcs_encountered: z.array(z.string()).optional(),
+
+      // Session navigation
+      previous_session: z.string().optional(),
+      next_session: z.string().optional(),
+
+      // Standard content collection fields
+      pubDate: z.coerce.date().optional(),
+      updatedDate: z.coerce.date().optional(),
+      heroImage: image().optional(),
+    }),
 });
 
-export const collections = { blog };
+export const collections = { journal };

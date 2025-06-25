@@ -1,0 +1,261 @@
+---
+import type { CollectionEntry } from "astro:content";
+import BaseHead from "@/components/layout/BaseHead.astro";
+import Header from "@/components/layout//Header.astro";
+import Footer from "@/components/layout//Footer.astro";
+import FormattedDate from "@/components/layout//FormattedDate.astro";
+import { Image } from "astro:assets";
+
+type Props = CollectionEntry<"journal">["data"];
+
+const {
+  title,
+  description,
+  session_title,
+  session_number,
+  session_date,
+  duration,
+  characters_involved,
+  npcs_encountered,
+  previous_session,
+  next_session,
+  tags,
+  pubDate,
+  updatedDate,
+  heroImage,
+} = Astro.props;
+
+// Use session_title if available, otherwise fall back to title
+const displayTitle =
+  session_title || title || `Session ${session_number || ""}`;
+const displayDate = session_date || pubDate;
+---
+
+<html lang="en">
+  <head>
+    <BaseHead title={title} description={description} />
+    <style>
+      main {
+        width: calc(100% - 2em);
+        max-width: 100%;
+        margin: 0;
+      }
+      .hero-image {
+        width: 100%;
+      }
+      .hero-image img {
+        display: block;
+        margin: 0 auto;
+        border-radius: 12px;
+        box-shadow: var(--box-shadow);
+      }
+      .prose {
+        width: 720px;
+        max-width: calc(100% - 2em);
+        margin: auto;
+        padding: 1em;
+        color: rgb(var(--gray-dark));
+      }
+      .title {
+        margin-bottom: 1em;
+        padding: 1em 0;
+        text-align: center;
+        line-height: 1;
+      }
+      .title h1 {
+        margin: 0 0 0.5em 0;
+      }
+      .date {
+        margin-bottom: 0.5em;
+        color: rgb(var(--gray));
+      }
+      .last-updated-on {
+        font-style: italic;
+      }
+      .session-number {
+        font-size: 1.2em;
+        color: rgb(var(--accent));
+        margin-bottom: 0.5em;
+      }
+      .duration {
+        color: rgb(var(--gray));
+        font-size: 0.9em;
+      }
+      .tags {
+        margin: 1em 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5em;
+      }
+      .tag {
+        background: rgb(var(--accent-light));
+        color: rgb(var(--accent-dark));
+        padding: 0.2em 0.6em;
+        border-radius: 1em;
+        font-size: 0.8em;
+        font-weight: 500;
+      }
+      .session-metadata {
+        background: rgb(var(--gray-light));
+        padding: 1.5em;
+        border-radius: 8px;
+        margin: 2em 0;
+      }
+      .session-metadata h3 {
+        margin-top: 0;
+        color: rgb(var(--accent));
+      }
+      .session-metadata ul {
+        margin: 0.5em 0;
+        padding-left: 1.5em;
+      }
+      .session-metadata li {
+        margin: 0.25em 0;
+      }
+      .characters,
+      .npcs {
+        margin-bottom: 1.5em;
+      }
+      .characters:last-child,
+      .npcs:last-child {
+        margin-bottom: 0;
+      }
+      .session-navigation {
+        margin: 2em 0 0 0;
+      }
+      .nav-links {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 1em;
+      }
+      .prev-session,
+      .next-session {
+        flex: 1;
+        padding: 1em;
+        background: rgb(var(--gray-light));
+        border-radius: 8px;
+        margin: 0 0.5em;
+      }
+      .prev-session:first-child {
+        margin-left: 0;
+      }
+      .next-session:last-child {
+        margin-right: 0;
+      }
+      @media (max-width: 768px) {
+        .nav-links {
+          flex-direction: column;
+        }
+        .prev-session,
+        .next-session {
+          margin: 0.5em 0;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <Header />
+    <main>
+      <article>
+        <div class="hero-image">
+          {
+            heroImage && (
+              <Image width={1020} height={510} src={heroImage} alt="" />
+            )
+          }
+        </div>
+        <div class="prose">
+          <div class="title">
+            <div class="date">
+              {displayDate && <FormattedDate date={displayDate} />}
+              {
+                duration && displayDate && (
+                  <div class="duration">
+                    Duration: <FormattedDate date={duration} />
+                  </div>
+                )
+              }
+              {
+                updatedDate && (
+                  <div class="last-updated-on">
+                    Last updated on <FormattedDate date={updatedDate} />
+                  </div>
+                )
+              }
+            </div>
+            <h1>{displayTitle}</h1>
+            {
+              session_number && (
+                <div class="session-number">Session {session_number}</div>
+              )
+            }
+            {
+              tags && tags.length > 0 && (
+                <div class="tags">
+                  {tags.map((tag: string) => (
+                    <span class="tag">{tag}</span>
+                  ))}
+                </div>
+              )
+            }
+            <hr />
+          </div>
+
+          {/* Session metadata */}
+          {
+            (characters_involved || npcs_encountered) && (
+              <div class="session-metadata">
+                {characters_involved && characters_involved.length > 0 && (
+                  <div class="characters">
+                    <h3>Characters Involved</h3>
+                    <ul>
+                      {characters_involved.map((character: string) => (
+                        <li>{character}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {npcs_encountered && npcs_encountered.length > 0 && (
+                  <div class="npcs">
+                    <h3>NPCs Encountered</h3>
+                    <ul>
+                      {npcs_encountered.map((npc: string) => (
+                        <li>{npc}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            )
+          }
+
+          <slot />
+
+          {/* Session navigation */}
+          {
+            (previous_session || next_session) && (
+              <div class="session-navigation">
+                <hr />
+                <div class="nav-links">
+                  {previous_session && (
+                    <div class="prev-session">
+                      <strong>Previous:</strong> {previous_session}
+                    </div>
+                  )}
+                  {next_session && (
+                    <div class="next-session">
+                      <strong>Next:</strong> {next_session}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )
+          }
+        </div>
+      </article>
+    </main>
+    <Footer />
+  </body>
+</html>
