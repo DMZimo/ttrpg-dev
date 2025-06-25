@@ -1,0 +1,42 @@
+# build output
+dist/
+# generated types
+.astro/
+
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+
+# environment variables
+.env
+.env.production
+
+# macOS-specific files
+.DS_Store
+
+# jetbrains setting folder
+.idea/
+
+# FoundryVTT configuration files
+__pycache__/
+target/
+backups/
+# !qvtt/dist/
+# !qvtt/dist/
+# qvtt-data/Config/
+qvtt/
+qvtt-data/
+qvtt-data/Logs/
+qvtt-data/Data/modules/
+qvtt-data/Data/systems/
+qvtt-data/Data/assets/srd5e
+!dndm/fvtt/
+
+qvtt-data/Config/admin.txt
+qvtt-data/Config/license.json
