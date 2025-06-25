@@ -7812,7 +7812,9 @@ dialog.dnd5e2.application {
 .dnd5e2.sheet.actor.minimized > header .window-title {
   visibility: visible;
 }
-.dnd5e2.sheet.actor.minimized nav.tabs {
+.dnd5e2.sheet.actor.minimized nav.tabs,
+.dnd5e2.sheet.actor.minimizing nav.tabs,
+.dnd5e2.sheet.actor.maximizing nav.tabs {
   display: none;
 }
 .dnd5e2.sheet.actor.locked .meter.sectioned > .hit-points {
@@ -12443,7 +12445,9 @@ dialog.dnd5e2.application {
   margin-top: 0.125rem;
 }
 .dnd5e2 :is(.card-tray, .effects-tray).damage-tray,
-.dnd5e2.card-tray.damage-tray {
+.dnd5e2.card-tray.damage-tray,
+.dnd5e2 :is(.card-tray, .effects-tray).effects-tray,
+.dnd5e2.card-tray.effects-tray {
   margin-block-start: 8px;
 }
 .dnd5e2 :is(.card-tray, .effects-tray).targets-tray,

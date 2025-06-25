@@ -610,6 +610,7 @@ function isValidDieModifier(mod) {
  * @returns {number|void}
  */
 function parseInputDelta(input, target) {
+  target = target?._source ?? target;
   let value = input.value;
   if ( ["+", "-"].includes(value[0]) ) {
     const delta = parseFloat(value);
@@ -1745,7 +1746,7 @@ class FormulaField extends foundry.data.fields.StringField {
   _applyChangeUpgrade(value, delta, model, change) {
     if ( !value ) return delta;
     const terms = new Roll(value).terms;
-    if ( (terms.length === 1) && (terms[0].fn === "max") ) return current.replace(/\)$/, `, ${delta})`);
+    if ( (terms.length === 1) && (terms[0].fn === "max") ) return value.replace(/\)$/, `, ${delta})`);
     return `max(${value}, ${delta})`;
   }
 
@@ -1755,7 +1756,7 @@ class FormulaField extends foundry.data.fields.StringField {
   _applyChangeDowngrade(value, delta, model, change) {
     if ( !value ) return delta;
     const terms = new Roll(value).terms;
-    if ( (terms.length === 1) && (terms[0].fn === "min") ) return current.replace(/\)$/, `, ${delta})`);
+    if ( (terms.length === 1) && (terms[0].fn === "min") ) return value.replace(/\)$/, `, ${delta})`);
     return `min(${value}, ${delta})`;
   }
 }
@@ -3584,7 +3585,7 @@ class PseudoDocumentSheet extends Application5e {
       `The ${this.constructor.name} PseudoDocumentSheet does not support a single top-level form element.`
     );
     const event = new Event("submit", { cancelable: true });
-    const formData = new FormDataExtended(this.element);
+    const formData = new foundry.applications.ux.FormDataExtended(this.element);
     const submitData = await this._prepareSubmitData(event, formData);
     foundry.utils.mergeObject(submitData, updateData, { inplace: true });
     await this._processSubmitData(event, submitData);
@@ -4218,18 +4219,6 @@ class Dialog5e extends Application5e {
   };
 
   /* -------------------------------------------- */
-  /*  Properties                                  */
-  /* -------------------------------------------- */
-
-  /**
-   * Form element within the dialog.
-   * @type {HTMLFormElement|void}
-   */
-  get form() {
-    return this.options.tag === "form" ? this.element : this.element.querySelector("form");
-  }
-
-  /* -------------------------------------------- */
   /*  Rendering                                   */
   /* -------------------------------------------- */
 
@@ -4269,21 +4258,6 @@ class Dialog5e extends Application5e {
       ...button, cssClass: button.class
     }));
     return context;
-  }
-
-  /* -------------------------------------------- */
-  /*  Event Listeners and Handlers                */
-  /* -------------------------------------------- */
-
-  /** @inheritDoc */
-  _attachFrameListeners() {
-    super._attachFrameListeners();
-
-    // Add event listeners to the form manually (see https://github.com/foundryvtt/foundryvtt/issues/11621)
-    if ( this.options.tag !== "form" ) {
-      this.form?.addEventListener("submit", this._onSubmitForm.bind(this, this.options.form));
-      this.form?.addEventListener("change", this._onChangeForm.bind(this, this.options.form));
-    }
   }
 }
 
@@ -4764,7 +4738,7 @@ class ActivityUsageDialog extends Dialog5e {
    * @param {HTMLElement} target  Button that was clicked.
    */
   static async #onUse(event, target) {
-    const formData = new FormDataExtended(this.element.querySelector("form"));
+    const formData = new foundry.applications.ux.FormDataExtended(this.element.querySelector("form"));
     const submitData = await this._prepareSubmitData(event, formData);
     foundry.utils.mergeObject(this.#config, submitData);
     this.#used = true;
@@ -5414,7 +5388,7 @@ function PseudoDocumentMixin(Base) {
           if ( !form.checkValidity() ) {
             throw new Error(game.i18n.format("DOCUMENT.DND5E.Warning.SelectType", { name: label }));
           }
-          const fd = new FormDataExtended(form);
+          const fd = new foundry.applications.ux.FormDataExtended(form);
           const createData = foundry.utils.mergeObject(data, fd.object, { inplace: false });
           if ( !createData.name?.trim() ) delete createData.name;
           parent[`create${this.documentName}`](createData.type, createData);
@@ -7202,7 +7176,7 @@ class RollConfigurationDialog extends Dialog5e {
   _onChangeForm(formConfig, event) {
     super._onChangeForm(formConfig, event);
 
-    const formData = new FormDataExtended(this.form);
+    const formData = new foundry.applications.ux.FormDataExtended(this.form);
     if ( formData.has("rollMode") ) this.message.rollMode = formData.get("rollMode");
     this.#buildRolls(foundry.utils.deepClone(this.#config), formData);
     this.render({ parts: ["formulas"] });
@@ -7564,6 +7538,9 @@ class ActivationField extends SchemaField$U {
       labels.activation = [
         this.activation.value, CONFIG.DND5E.activityActivationTypes[this.activation.type]?.label
       ].filterJoin(" ");
+      const formatter = game.i18n.getListFormatter({ type: "disjunction" });
+      labels.ritualActivation = this.properties?.has?.("ritual")
+        ? formatter.format([labels.activation, game.i18n.localize("DND5E.Ritual")]) : labels.activation;
     }
   }
 }
@@ -8470,12 +8447,12 @@ class BaseActivityData extends foundry.abstract.DataModel {
       rollData = _rollData;
     }
 
-    const config = this.getDamageConfig();
-    this.labels.damage = this.labels.damages = (config.rolls ?? []).map((part, index) => {
+    const config = this.getDamageConfig({}, { rollData });
+    this.labels.damage = this.labels.damages = (config.rolls ?? []).map(part => {
       let formula;
       try {
         formula = part.parts.join(" + ");
-        const roll = new CONFIG.Dice.DamageRoll(formula, rollData);
+        const roll = new CONFIG.Dice.DamageRoll(formula, part.data);
         roll.simplify();
         formula = simplifyRollFormula(roll.formula, { preserveFlavor: true });
       } catch(err) {
@@ -8531,14 +8508,16 @@ class BaseActivityData extends foundry.abstract.DataModel {
 
   /**
    * Get the roll parts used to create the damage rolls.
-   * @param {Partial<DamageRollProcessConfiguration>} [config={}]
+   * @param {Partial<DamageRollProcessConfiguration>} [config={}]  Existing damage configuration to merge into this one.
+   * @param {object} [options]                                     Damage configuration options.
+   * @param {object} [options.rollData]                            Use pre-existing roll data.
    * @returns {DamageRollProcessConfiguration}
    */
-  getDamageConfig(config={}) {
+  getDamageConfig(config={}, { rollData }={}) {
     if ( !this.damage?.parts ) return foundry.utils.mergeObject({ rolls: [] }, config);
 
     const rollConfig = foundry.utils.deepClone(config);
-    const rollData = this.getRollData();
+    rollData ??= this.getRollData();
     rollConfig.rolls = this.damage.parts
       .map((d, index) => this._processDamagePart(d, rollConfig, rollData, index))
       .filter(d => d.parts.length)
@@ -9306,6 +9285,7 @@ class BasicRoll extends Roll {
       if ( !roll._evaluated ) await roll.evaluate({ allowInteractive: rollMode !== CONST.DICE_ROLL_MODES.BLIND });
       rollMode ??= roll.options.rollMode;
     }
+    rollMode ??= game.settings.get("core", "rollMode");
 
     // Prepare chat data
     messageData = foundry.utils.mergeObject({ sound: CONFIG.sounds.dice }, messageData);
@@ -12812,7 +12792,7 @@ class Award extends Application5e {
    * @protected
    */
   _validateForm() {
-    const formData = new FormDataExtended(this.element);
+    const formData = new foundry.applications.ux.FormDataExtended(this.element);
     const data = foundry.utils.expandObject(formData.object);
     let valid = true;
     if ( !filteredKeys(data.amount ?? {}).length && !data.xp ) valid = false;
@@ -13254,7 +13234,7 @@ class CurrencyManager extends Application5e {
    * @protected
    */
   _validateForm() {
-    const formData = new FormDataExtended(this.element);
+    const formData = new foundry.applications.ux.FormDataExtended(this.element);
     const data = foundry.utils.expandObject(formData.object);
     let valid = true;
     if ( !filteredKeys(data.amount ?? {}).length ) valid = false;
@@ -13297,21 +13277,21 @@ class CurrencyManager extends Application5e {
   static convertCurrency(doc) {
     const currency = foundry.utils.deepClone(doc.system.currency);
 
-    const currencies = Object.entries(CONFIG.DND5E.currencies);
-    currencies.sort((a, b) => a[1].conversion - b[1].conversion);
+    const currencies = Object.entries(CONFIG.DND5E.currencies)
+      .filter(([, c]) => c.conversion)
+      .sort((a, b) => a[1].conversion - b[1].conversion);
 
-    // Count total converted units of the base currency
-    let basis = currencies.reduce((change, [denomination, config]) => {
-      if ( !config.conversion ) return change;
-      return change + (currency[denomination] / config.conversion);
-    }, 0);
+    // Convert all currently to smallest denomination
+    const smallestConversion = currencies.at(-1)[1].conversion;
+    let amount = currencies.reduce((amount, [denomination, config]) =>
+      amount + (currency[denomination] * (smallestConversion / config.conversion))
+    , 0);
 
     // Convert base units into the highest denomination possible
     for ( const [denomination, config] of currencies) {
-      if ( !config.conversion ) continue;
-      const amount = Math.floor(basis * config.conversion);
-      currency[denomination] = amount;
-      basis -= (amount / config.conversion);
+      const ratio = smallestConversion / config.conversion;
+      currency[denomination] = Math.floor(amount / ratio);
+      amount -= currency[denomination] * ratio;
     }
 
     // Save the updated currency object
@@ -16999,8 +16979,10 @@ class SummonActivity extends ActivityMixin(SummonActivityData) {
   _prepareUsageConfig(config) {
     config = super._prepareUsageConfig(config);
     const summons = this.availableProfiles;
-    config.create ??= {};
-    config.create.summons ??= this.canSummon && canvas.scene && summons.length && this.summon.prompt;
+    if ( config.create !== false ) {
+      config.create ??= {};
+      config.create.summons ??= this.canSummon && canvas.scene && summons.length && this.summon.prompt;
+    }
     config.summons ??= {};
     config.summons.profile ??= summons[0]?._id ?? null;
     config.summons.creatureSize ??= this.creatureSizes.first() ?? null;
@@ -21506,7 +21488,7 @@ class ShortRestDialog extends BaseRestDialog {
   static async #rollHitDie(event, target) {
     this.#denom = this.form.denom.value;
     await this.actor.rollHitDie({ denomination: this.#denom });
-    foundry.utils.mergeObject(this.config, new FormDataExtended(this.form).object);
+    foundry.utils.mergeObject(this.config, new foundry.applications.ux.FormDataExtended(this.form).object);
     this.render();
   }
 }
@@ -24370,7 +24352,7 @@ class ActiveEffect5e extends ActiveEffect {
     Dialog.prompt({
       content: content,
       callback: ([html]) => {
-        const source = new FormDataExtended(html.querySelector("FORM")).object.source;
+        const source = new foundry.applications.ux.FormDataExtended(html.querySelector("FORM")).object.source;
         if ( source ) actor.endConcentration(source);
       },
       rejectClose: false,
@@ -25835,7 +25817,7 @@ class CreateScrollDialog extends Dialog5e {
   /** @inheritDoc */
   _onChangeForm(formConfig, event) {
     super._onChangeForm(formConfig, event);
-    const formData = new FormDataExtended(this.form);
+    const formData = new foundry.applications.ux.FormDataExtended(this.form);
     foundry.utils.mergeObject(this.#config, formData.object);
     this.#config.level = Number(this.#config.level);
     this.render({ parts: ["content"] });
@@ -27992,6 +27974,7 @@ class EquippableItemTemplate extends SystemDataModel {
    * Ensure items that cannot be attuned are not marked as attuned.
    */
   prepareFinalEquippableData() {
+    if ( this.validProperties.has("mgc") && !this.properties.has("mgc") ) this.attunement = "";
     if ( !this.attunement ) this.attuned = false;
   }
 
@@ -30957,9 +30940,11 @@ class Item5e extends SystemDocumentMixin(Item) {
     for ( const activity of this.system.activities ) {
       if ( !("activation" in activity) ) continue;
       const activationLabels = activity.activationLabels;
-      if ( activationLabels ) activations.push(
-        { ...activationLabels, concentrationDuration: activity.labels.concentrationDuration }
-      );
+      if ( activationLabels ) activations.push({
+        ...activationLabels,
+        concentrationDuration: activity.labels.concentrationDuration,
+        ritualActivation: activity.labels.ritualActivation
+      });
       if ( activity.type === "attack" ) {
         const { toHit, modifier } = activity.labels;
         attacks.push({ toHit, modifier });
@@ -30969,6 +30954,7 @@ class Item5e extends SystemDocumentMixin(Item) {
     if ( activations.length ) {
       Object.assign(this.labels, activations[0]);
       delete activations[0].concentrationDuration;
+      delete activations[0].ritualActivation;
     }
     if ( attacks.length ) Object.assign(this.labels, attacks[0]);
   }
@@ -31920,7 +31906,7 @@ class Item5e extends SystemDocumentMixin(Item) {
       },
       callback: html => {
         const form = html.querySelector("form");
-        const fd = new FormDataExtended(form);
+        const fd = new foundry.applications.ux.FormDataExtended(form);
         const createData = foundry.utils.mergeObject(data, fd.object, { inplace: false });
         if ( !createData.folder ) delete createData.folder;
         if ( !createData.name?.trim() ) createData.name = this.defaultName();
@@ -32211,8 +32197,10 @@ class Actor5e extends SystemDocumentMixin(Actor) {
   /** @inheritDoc */
   prepareDerivedData() {
     const origin = this.getFlag("dnd5e", "summon.origin");
-    // TODO: Replace with parseUuid once V11 support is dropped
-    if ( origin && this.token?.id ) dnd5e.registry.summons.track(origin.split(".Item.")[0], this.uuid);
+    if ( origin && this.token?.id ) {
+      const { collection, primaryId } = foundry.utils.parseUuid(origin);
+      dnd5e.registry.summons.track(collection?.get?.(primaryId)?.uuid, this.uuid);
+    }
 
     if ( (this.system.modelProvider !== dnd5e) || (this.type === "group") ) return;
     this.labels = {};
@@ -35122,11 +35110,19 @@ class Actor5e extends SystemDocumentMixin(Actor) {
 
   /** @inheritDoc */
   _onDelete(options, userId) {
+    // Remove any group sheet apps so they aren't also closed.
+    for ( const id in this.apps ) {
+      const app = this.apps[id];
+      if ( app instanceof dnd5e.applications.actor.GroupActorSheet ) delete this.apps[id];
+    }
+
     super._onDelete(options, userId);
 
     const origin = this.getFlag("dnd5e", "summon.origin");
-    // TODO: Replace with parseUuid once V11 support is dropped
-    if ( origin ) dnd5e.registry.summons.untrack(origin.split(".Item.")[0], this.uuid);
+    if ( origin ) {
+      const { collection, primaryId } = foundry.utils.parseUuid(origin);
+      dnd5e.registry.summons.untrack(collection?.get?.(primaryId)?.uuid, this.uuid);
+    }
   }
 
   /* -------------------------------------------- */
@@ -35732,6 +35728,18 @@ class SpellConfigurationData extends foundry.abstract.DataModel {
   }
 
   /* -------------------------------------------- */
+  /*  Properties                                  */
+  /* -------------------------------------------- */
+
+  /**
+   * The item this advancement data belongs to.
+   * @returns {Item5e}
+   */
+  get item() {
+    return this.parent?.parent?.item;
+  }
+
+  /* -------------------------------------------- */
   /*  Data Migrations                             */
   /* -------------------------------------------- */
 
@@ -35755,7 +35763,18 @@ class SpellConfigurationData extends foundry.abstract.DataModel {
   applySpellChanges(itemData, { ability }={}) {
     ability = this.ability.size ? this.ability.has(ability) ? ability : this.ability.first() : null;
     if ( ability ) foundry.utils.setProperty(itemData, "system.ability", ability);
-    if ( this.preparation ) foundry.utils.setProperty(itemData, "system.preparation.mode", this.preparation);
+
+    if ( this.preparation ) {
+      foundry.utils.setProperty(itemData, "system.preparation.mode", this.preparation);
+      const notAtWill = (this.preparation !== "atwill") && (this.preparation !== "innate");
+      const hasClass = (this.item?.type === "class") || (this.item?.type === "subclass");
+
+      // Set source class.
+      if ( notAtWill && hasClass ) {
+        const identifier = this.item.type === "class" ? this.item.identifier : this.item.system.classIdentifier;
+        if ( identifier ) foundry.utils.setProperty(itemData, "system.sourceClass", identifier);
+      }
+    }
 
     if ( this.uses.max && this.uses.per ) {
       foundry.utils.setProperty(itemData, "system.uses.max", this.uses.max);
@@ -44281,7 +44300,7 @@ class AdvancementMigrationDialog extends Dialog5e {
    * @param {HTMLElement} target  Button that was clicked.
    */
   static async #onComplete(event, target) {
-    const formData = new FormDataExtended(this.element.querySelector("form"));
+    const formData = new foundry.applications.ux.FormDataExtended(this.element.querySelector("form"));
     this.result = this.options.advancements.filter(a => formData.object[a.id]);
     this.close();
   }
@@ -44347,6 +44366,7 @@ class DocumentSheet5e extends ApplicationV2Mixin(DocumentSheetV2) {
  */
 class EffectsElement extends HTMLElement {
   connectedCallback() {
+    if ( this.#app ) return;
     this.#app = foundry.applications.instances.get(this.closest(".application")?.id)
       ?? ui.windows[this.closest(".app")?.dataset.appid];
 
@@ -46730,6 +46750,15 @@ function PrimarySheetMixin(Base) {
 
       // Add event listeners
       this.element.querySelectorAll(".item-tooltip").forEach(this._applyItemTooltips.bind(this));
+
+      // Prevent inputs from firing drag listeners.
+      this.element.querySelectorAll(".draggable input").forEach(el => {
+        el.draggable = true;
+        el.ondragstart = event => {
+          event.preventDefault();
+          event.stopPropagation();
+        };
+      });
 
       if ( this.isEditable ) {
         // Automatically select input contents when focused
@@ -49746,6 +49775,7 @@ class BaseActorSheet extends PrimarySheetMixin(
     uses.hasRecharge = uses.max && (uses.recovery?.[0]?.period === "recharge");
     uses.isOnCooldown = uses.hasRecharge && (uses.value < 1);
     uses.hasUses = uses.max;
+    uses.prop = "uses.value";
 
     return {
       _id, labels, name, range, uses,
@@ -49807,6 +49837,7 @@ class BaseActorSheet extends PrimarySheetMixin(
     ctx.uses.hasRecharge = item.hasRecharge;
     ctx.uses.hasUses = item.hasLimitedUses;
     ctx.uses.isOnCooldown = item.isOnCooldown;
+    ctx.uses.prop = "system.uses.value";
   }
 
   /* -------------------------------------------- */
@@ -50732,7 +50763,7 @@ class BaseActorSheet extends PrimarySheetMixin(
     }
 
     // Let specific item types apply any changes from a drop event
-    CONFIG.Item.dataModels[itemData.type]?.onDrop?.(event, itemData);
+    CONFIG.Item.dataModels[itemData.type]?.onDropCreate?.(event, this.actor, itemData);
 
     return itemData;
   }
@@ -50746,7 +50777,7 @@ class BaseActorSheet extends PrimarySheetMixin(
    */
   _onDropResetData(event, itemData) {
     if ( !itemData.system ) return;
-    ["attuned", "equipped", "prepared"].forEach(k => delete itemData.system[k]);
+    ["attuned", "equipped", "preparation.prepared"].forEach(k => foundry.utils.deleteProperty(itemData.system, k));
   }
 
   /* -------------------------------------------- */
@@ -52075,7 +52106,7 @@ class CharacterActorSheet extends BaseActorSheet {
     if ( action === "favorite" ) return this._onDropFavorite(event, { type, id });
     if ( data.type === "Activity" ) {
       const activity = await fromUuid(data.uuid);
-      if ( activity ) return this._onDropActivity(event, data);
+      if ( activity ) return this._onDropActivity(event, activity);
     }
     return super._onDrop(event);
   }
@@ -56923,7 +56954,7 @@ class CombatTracker5e extends foundry.applications.sidebar.tabs.CombatTracker {
         });
       }
 
-      const name = combatants[0].token?.baseActor.prototypeToken.name ?? combatants[0].name;
+      const name = this.constructor.getGroupName(combatants);
       const img = children[0].querySelector("img");
       groupContainer.innerHTML = `
         <div class="group-header flexrow">
@@ -56953,6 +56984,24 @@ class CombatTracker5e extends foundry.applications.sidebar.tabs.CombatTracker {
         groupContainer.classList.toggle("collapsed");
       });
     }
+  }
+
+  /* -------------------------------------------- */
+  /*  Helpers                                     */
+  /* -------------------------------------------- */
+
+  /**
+   * Retrieve an appropriate group name for a list of combatants.
+   * @param {Combatant[]} combatants  The combatants.
+   * @returns {string}
+   */
+  static getGroupName(combatants) {
+    if ( !combatants.length ) return "";
+    const tokenNames = combatants.map(c => c.token?.name ?? c.name);
+    const actorName = combatants[0].token?.baseActor.prototypeToken.name ?? combatants[0].name;
+    if ( tokenNames.every(name => name === tokenNames[0]) ) return tokenNames[0];
+    if ( tokenNames.every(name => name.includes(actorName)) ) return actorName;
+    return tokenNames[0];
   }
 }
 
@@ -57942,6 +57991,7 @@ class EffectApplicationElement extends TargetedApplicationMixin(ChatTrayElement)
    */
   buildEffectsList() {
     for ( const effect of this.effects ) {
+      effect.updateDuration();
       const li = document.createElement("li");
       li.classList.add("effect");
       li.dataset.id = effect.id;
@@ -58029,7 +58079,7 @@ class EffectApplicationElement extends TargetedApplicationMixin(ChatTrayElement)
       }, effectFlags));
     }
 
-    if ( !game.user.isGM && concentration && !concentration.actor?.isOwner ) {
+    if ( !game.user.isGM && concentration && !concentration.isOwner ) {
       throw new Error(game.i18n.localize("DND5E.EffectApplyWarningConcentration"));
     }
 
@@ -58237,7 +58287,7 @@ class EnchantmentApplicationElement extends HTMLElement {
       ui.notifications.error("DND5E.ENCHANT.Warning.ConcentrationEnded", { console: false, localize: true });
       return;
     }
-    if ( !game.user.isGM && concentration && !concentration.actor?.isOwner ) {
+    if ( !game.user.isGM && concentration && !concentration.isOwner ) {
       ui.notifications.error("DND5E.EffectApplyWarningConcentration", { console: false, localize: true });
       return;
     }
@@ -60042,7 +60092,7 @@ class ContainerSheet extends ItemSheet5e {
   /** @inheritDoc */
   async _onDragStart(event) {
     const li = event.currentTarget;
-    if ( event.target.classList.contains("content-link") ) return;
+    if ( "link" in event.target.dataset ) return;
     if ( !li.dataset.itemId ) return super._onDragStart(event);
 
     const item = await this.item.system.getContainedItem(li.dataset.itemId);
@@ -62228,14 +62278,8 @@ function aggregateDamageRolls(rolls, { respectProperties }={}) {
 
   // Create new damage rolls based on the aggregated terms
   const newRolls = [];
-  for ( const type of types.values() ) {
-    const roll = new CONFIG.Dice.DamageRoll();
-    roll.terms = type.terms;
-    roll._total = roll._evaluateTotal();
-    roll._evaluated = true;
-    roll.options = { type: type.type, properties: Array.from(type.properties) };
-    roll.resetFormula();
-    newRolls.push(roll);
+  for ( const { terms, type, properties } of types.values() ) {
+    newRolls.push(CONFIG.Dice.DamageRoll.fromTerms(terms, { type, properties: Array.from(properties) }));
   }
 
   return newRolls;
@@ -62479,6 +62523,9 @@ class DamageRoll extends BasicRoll {
   configureDamage({ critical={} }={}) {
     critical = foundry.utils.mergeObject(critical, this.options.critical ?? {}, { inplace: false });
 
+    // Remove previous critical bonus damage
+    this.terms = this.terms.filter(t => !t.options.criticalBonusDamage && !t.options.criticalFlatBonus);
+
     const flatBonus = new Map();
     for ( let [i, term] of this.terms.entries() ) {
       // Multiply dice terms
@@ -62511,11 +62558,8 @@ class DamageRoll extends BasicRoll {
       }
 
       else if ( term instanceof NumericTerm ) {
-        // Remove previous flat critical bonuses
-        if ( term.options.criticalFlatBonus ) this.terms.splice(i - 1, 2);
-
         // Multiply numeric terms
-        else if ( critical.multiplyNumeric ) {
+        if ( critical.multiplyNumeric ) {
           term.options.baseNumber = term.options.baseNumber ?? term.number; // Reset back
           term.number = term.options.baseNumber;
           if ( this.isCritical ) {
@@ -62529,16 +62573,17 @@ class DamageRoll extends BasicRoll {
     // Add powerful critical bonus
     if ( critical.powerfulCritical && flatBonus.size ) {
       for ( const [type, number] of flatBonus.entries() ) {
-        this.terms.push(new OperatorTerm({ operator: "+" }));
-        this.terms.push(new NumericTerm({number, options: { flavor: type, criticalFlatBonus: true }}));
+        this.terms.push(new OperatorTerm({ operator: "+", options: { criticalFlatBonus: true } }));
+        this.terms.push(new NumericTerm({ number, options: { flavor: type, criticalFlatBonus: true } }));
       }
     }
 
     // Add extra critical damage term
     if ( this.isCritical && critical.bonusDamage ) {
-      const extra = new Roll(critical.bonusDamage, this.data);
-      if ( !(extra.terms[0] instanceof OperatorTerm) ) this.terms.push(new OperatorTerm({operator: "+"}));
-      this.terms.push(...extra.terms);
+      let extraTerms = new Roll(critical.bonusDamage, this.data).terms;
+      if ( !(extraTerms[0] instanceof OperatorTerm) ) extraTerms.unshift(new OperatorTerm({ operator: "+" }));
+      extraTerms.forEach(t => t.options.criticalBonusDamage = true);
+      this.terms.push(...extraTerms);
     }
 
     // Re-compile the underlying formula
@@ -63043,7 +63088,7 @@ class ChatMessage5e extends ChatMessage {
     const aggregatedRolls = CONFIG.DND5E.aggregateDamageDisplay ? aggregateDamageRolls(rolls) : rolls;
     let { formula, total, breakdown } = aggregatedRolls.reduce((obj, r) => {
       obj.formula.push(CONFIG.DND5E.aggregateDamageDisplay ? r.formula : ` + ${r.formula}`);
-      obj.total += r.total;
+      obj.total += Math.max(0, r.total);
       obj.breakdown.push(this._simplifyDamageRoll(r));
       return obj;
     }, { formula: [], total: 0, breakdown: [] });
@@ -63102,7 +63147,7 @@ class ChatMessage5e extends ChatMessage {
       const damageApplication = document.createElement("damage-application");
       damageApplication.classList.add("dnd5e2");
       damageApplication.damages = aggregateDamageRolls(rolls, { respectProperties: true }).map(roll => ({
-        value: roll.total,
+        value: Math.max(0, roll.total),
         type: roll.options.type,
         properties: new Set(roll.options.properties ?? [])
       }));
@@ -63119,7 +63164,7 @@ class ChatMessage5e extends ChatMessage {
    * @protected
    */
   _simplifyDamageRoll(roll) {
-    const aggregate = { type: roll.options.type, total: roll.total, constant: 0, dice: [] };
+    const aggregate = { type: roll.options.type, total: Math.max(0, roll.total), constant: 0, dice: [] };
     let hasMultiplication = false;
     for ( let i = roll.terms.length - 1; i >= 0; ) {
       const term = roll.terms[i--];
@@ -63372,7 +63417,7 @@ class ChatMessage5e extends ChatMessage {
    */
   applyChatCardDamage(li, multiplier) {
     const damages = aggregateDamageRolls(this.rolls, { respectProperties: true }).map(roll => ({
-      value: roll.total * (roll.options.type in CONFIG.DND5E.healingTypes ? -1 : 1),
+      value: Math.max(0, roll.total) * (roll.options.type in CONFIG.DND5E.healingTypes ? -1 : 1),
       type: roll.options.type,
       properties: new Set(roll.options.properties ?? [])
     }));
@@ -63804,7 +63849,7 @@ class DetectionModeBlindsight extends foundry.canvas.perception.DetectionMode {
   /** @override */
   _canDetect(visionSource, target) {
     if ( visionSource.object.document.hasStatusEffect(CONFIG.specialStatusEffects.BURROW) ) return false;
-    if ( target instanceof Token ) {
+    if ( target instanceof foundry.canvas.placeables.Token ) {
       if ( target.document.hasStatusEffect(CONFIG.specialStatusEffects.BURROW) ) return false;
     }
     return true;
@@ -64997,7 +65042,7 @@ class AttributesFields {
     hp.max = (hp.max ?? 0) + base + bonus;
     if ( this.parent.hasConditionEffect("halfHealth") ) hp.max = Math.floor(hp.max * 0.5);
 
-    hp.effectiveMax = hp.max + (hp.tempmax ?? 0);
+    hp.effectiveMax = Math.max(hp.max + (hp.tempmax ?? 0), 0);
     hp.value = Math.min(hp.value, hp.effectiveMax);
     hp.damage = hp.effectiveMax - hp.value;
     hp.pct = Math.clamp(hp.effectiveMax ? (hp.value / hp.effectiveMax) * 100 : 0, 0, 100);
@@ -66046,7 +66091,8 @@ class CharacterData extends CreatureTemplate {
     this.attributes.attunement.value = 0;
 
     for ( const item of this.parent.items ) {
-      if ( item.system.attuned ) this.attributes.attunement.value += 1;
+      const canAttune = !item.system.validProperties?.has?.("mgc") || item.system.properties?.has?.("mgc");
+      if ( item.system.attuned && canAttune ) this.attributes.attunement.value += 1;
       if ( item.type === "class" ) this.details.level += item.system.levels;
     }
 
@@ -66933,6 +66979,8 @@ class NPCData extends CreatureTemplate {
     this.details.xp.value = this.parent.getCRExp(this.details.cr === null ? null : this.details.cr + lairAdjustment);
 
     // Legendary Resistances/Actions
+    this.resources.legact.lr = true;
+    this.resources.legres.lr = true;
     if ( this.resources.legact.max ) this.resources.legact.max += lairAdjustment;
     if ( this.resources.legres.max ) this.resources.legres.max += lairAdjustment;
 
@@ -72430,7 +72478,7 @@ async function migrateWorld({ bypassVersionCheck=false }={}) {
 
   // Set the migration as complete
   game.settings.set("dnd5e", "systemMigrationVersion", game.system.version);
-  progress.update({ message: "MIGRATION.5eComplete", format: { version } });
+  progress.update({ message: "MIGRATION.5eComplete", format: { version }, pct: 1 });
 }
 
 /* -------------------------------------------- */
