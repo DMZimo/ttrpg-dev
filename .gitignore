@@ -35,4 +35,4 @@ vttdata/Config/admin.txt
 vttdata/Config/license.json
 
 !vtt/dist/
-# !vtt/node_modules/
+!vtt/node_modules/
