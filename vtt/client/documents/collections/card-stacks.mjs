@@ -1,0 +1,16 @@
+import WorldCollection from "../abstract/world-collection.mjs";
+
+/**
+ * The collection of Cards documents which exist within the active World.
+ * This Collection is accessible within the Game object as game.cards.
+ * @extends {WorldCollection}
+ * @category Collections
+ *
+ * @see {@link foundry.documents.Cards}: The Cards document
+ * @see {@link foundry.applications.sidebar.tabs.CardsDirectory}: The CardsDirectory sidebar directory
+ */
+export default class CardStacks extends WorldCollection {
+
+  /** @override */
+  static documentName = "Cards";
+}

@@ -1,0 +1,37 @@
+<article class="scrollable">
+    {{{notes}}}
+</article>
+
+<footer class="hints">
+    {{#if manual.required}}
+    <p>{{{localize manual.msg version=version}}}</p>
+    <p>{{localize "SETUP.UPDATE_NOTES.NewGenerationHint"}}</p>
+    {{/if}}
+    <p>
+        {{{localize "SETUP.UPDATE_NOTES.FullList" url="https://foundryvtt.com/releases/"}}}
+    </p>
+    {{#if canCheckCompatibility}}
+    <p>{{localize "SETUP.UPDATE_NOTES.PreviewCompatibilityHint" version=version}}</p>
+    {{/if}}
+</footer>
+
+<footer class="form-footer">
+    {{#if canSnapshot}}
+    <button type="button" data-action="createSnapshot">
+        <i class="fa-solid fa-camera-retro"></i>
+        <span>{{localize "SETUP.BACKUPS.CreateSnapshot"}}</span>
+    </button>
+    {{/if}}
+    {{#if canCheckCompatibility}}
+    <button type="button" data-action="checkCompatibility">
+        <i class="fa-solid fa-code-branch"></i>
+        <span>{{localize "SETUP.PreviewCompatibility"}}</span>
+    </button>
+    {{/if}}
+    {{#unless manual.required}}
+    <button type="button" class="bright" data-action="update">
+        <i class="fa-solid fa-cloud-arrow-down"></i>
+        <label>{{localize "SETUP.UPDATE_NOTES.BeginDownload"}}</label>
+    </button>
+    {{/unless}}
+</footer>

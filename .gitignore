@@ -30,13 +30,12 @@ backups/
 # !qvtt/dist/
 # !qvtt/dist/
 # qvtt-data/Config/
-qvtt/
-qvtt-data/
-qvtt-data/Logs/
-qvtt-data/Data/modules/
-qvtt-data/Data/systems/
-qvtt-data/Data/assets/srd5e
-!dndm/fvtt/
+# qvtt/
+vttdata/
+vttdata/Logs/
+vttdata/Data/modules/
+vttdata/Data/systems/
+vttdata/Data/assets/srd5e
 
-qvtt-data/Config/admin.txt
-qvtt-data/Config/license.json
+vttdata/Config/admin.txt
+vttdata/Config/license.json
