@@ -1,0 +1,138 @@
+---
+import { getCollection } from "astro:content";
+
+// Get campaign stats
+const allSessions = (await getCollection("journal")).sort((a, b) => {
+  const dateA = a.data.session_date || a.data.pubDate;
+  const dateB = b.data.session_date || b.data.pubDate;
+
+  if (!dateA && !dateB) return 0;
+  if (!dateA) return 1;
+  if (!dateB) return -1;
+
+  return dateB.valueOf() - dateA.valueOf();
+});
+
+const totalSessions = allSessions.length;
+
+// Get unique tags
+const allTags = new Set<string>();
+allSessions.forEach((session) => {
+  if (session.data.tags) {
+    session.data.tags.forEach((tag: string) => allTags.add(tag));
+  }
+});
+---
+
+<section
+  class="relative bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 text-white py-24 w-full overflow-hidden"
+>
+  <!-- Background decoration -->
+  <div
+    class="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20"
+  >
+  </div>
+  <div class="absolute inset-0">
+    <div
+      class="absolute top-1/4 left-1/4 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl"
+    >
+    </div>
+    <div
+      class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"
+    >
+    </div>
+  </div>
+
+  <div class="relative w-full px-4 sm:px-6 lg:px-8 text-center">
+    <div class="mb-12">
+      <h1
+        class="text-5xl md:text-6xl lg:text-7xl font-bold mb-6"
+        style="background: linear-gradient(135deg, rgb(var(--gold-300)), rgb(var(--gold-400)), rgb(var(--accent-300))); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;"
+      >
+        Welcome, Adventurers!
+      </h1>
+      <p
+        class="text-xl md:text-2xl text-blue-100 mb-8 max-w-4xl mx-auto leading-relaxed"
+      >
+        Journey through the <strong class="text-gold-300"
+          >Dessarin Valley</strong
+        > in our ongoing D&D campaign. Explore our chronicles, meet the characters,
+        and relive the adventures that shape our world.
+      </p>
+    </div>
+
+    <!-- Campaign Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-12">
+      <div
+        class="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300"
+      >
+        <div
+          class="text-4xl font-bold mb-2"
+          style="color: rgb(var(--gold-300));"
+        >
+          {totalSessions}
+        </div>
+        <div class="text-blue-100 font-medium">Sessions Played</div>
+      </div>
+      <div
+        class="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300"
+      >
+        <div
+          class="text-4xl font-bold mb-2"
+          style="color: rgb(var(--accent-300));"
+        >
+          {allTags.size}
+        </div>
+        <div class="text-blue-100 font-medium">Adventure Tags</div>
+      </div>
+      <div
+        class="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300"
+      >
+        <div class="text-4xl font-bold mb-2 text-green-300">Active</div>
+        <div class="text-blue-100 font-medium">Campaign Status</div>
+      </div>
+    </div>
+
+    <!-- Call to Action -->
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <a
+        href="/journal"
+        class="group bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 flex items-center justify-center gap-2"
+      >
+        <span>📖</span>
+        <span>Read Session Journal</span>
+        <svg
+          class="w-5 h-5 group-hover:translate-x-1 transition-transform"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 5l7 7-7 7"></path>
+        </svg>
+      </a>
+      <a
+        href="/characters"
+        class="group bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 flex items-center justify-center gap-2"
+      >
+        <span>👥</span>
+        <span>Meet the Party</span>
+        <svg
+          class="w-5 h-5 group-hover:translate-x-1 transition-transform"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 5l7 7-7 7"></path>
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>

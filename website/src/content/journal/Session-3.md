@@ -9,20 +9,21 @@ tags:
   - session-3
 session_number: 3
 session_title: Session 3 - Bears and Bows
-session_date: 2025-06-23T21:00:00
-duration: 2025-06-24T01:30:00
+session_start: 2025-06-23T21:00:00
+session_end: 2025-06-24T01:30:00
 characters_involved:
-  - "[[Jain Farstrider]]"
+  - "[[Oliver ]]"
   - "[[Aldor Irion]]"
   - "[[Daijo]]"
   - "[[Finn Quickfoot]]"
 npcs_encountered:
   - "[[Endrith Vallivoe]]"
+  - "[[Imdarr Relvaunder]]"
   - "[[Haeleeya Hanadroum]]"
   - "[[Ilmeth Waelvur]]"
   - "[[Harburk Tuthmarillar]]"
-previous_session: "[[Session 2 - 09-06-2025]]"
-next_session: "[[Session 4 - 23-06-2025]]"
+previous_session: "[[Session 2 - 16-06-2025]]"
+next_session: "[[Session 4 - 30-06-2025]]"
 ---
 
 ## Summary
@@ -42,3 +43,7 @@ The group finds the source of the smoke, finding four human and a caged black be
 - 99cp, 74sp 13gp
 - Assortment of weapons and gear (~100gp bulk)
 - A strage gem (elemental key for [[Lance Rock]])
+
+**Experience**:
+
+- Level Up!

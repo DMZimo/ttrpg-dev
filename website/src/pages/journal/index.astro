@@ -1,11 +1,10 @@
 ---
-import BaseHead from "@/components/layout/BaseHead.astro";
-import Header from "@/components/layout/Header.astro";
-import Footer from "@/components/layout/Footer.astro";
-import { SITE_TITLE, SITE_DESCRIPTION } from "@/consts";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import JournalHeader from "@/components/journal/JournalHeader.astro";
+import JournalNavigation from "@/components/journal/JournalNavigation.astro";
+import JournalFilters from "@/components/journal/JournalFilters.astro";
+import SessionCard from "@/components/journal/SessionCard.astro";
 import { getCollection } from "astro:content";
-import FormattedDate from "@/components/layout/FormattedDate.astro";
-import { Image } from "astro:assets";
 
 const entries = (await getCollection("journal")).sort((a, b) => {
   // Use session_date if available, otherwise fall back to pubDate
@@ -19,175 +18,111 @@ const entries = (await getCollection("journal")).sort((a, b) => {
 
   return dateB.valueOf() - dateA.valueOf();
 });
+
+// Calculate statistics for the header
+const totalSessions = entries.length;
+const allTags = new Set<string>();
+entries.forEach((entry) => {
+  if (entry.data.tags) {
+    entry.data.tags.forEach((tag: string) => allTags.add(tag));
+  }
+});
+
+const latestSessionDate =
+  entries.length > 0
+    ? entries[0].data.session_date || entries[0].data.pubDate
+    : undefined;
+const oldestSessionDate =
+  entries.length > 0
+    ? entries[entries.length - 1].data.session_date ||
+      entries[entries.length - 1].data.pubDate
+    : undefined;
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <BaseHead
-      title="Game Sessions - TTRPG Journal"
-      description="Browse all tabletop RPG game sessions and campaign notes"
+<BaseLayout
+  title="Game Sessions - TTRPG Journal"
+  description="Browse all tabletop RPG game sessions and campaign notes"
+>
+  <JournalNavigation />
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <JournalHeader
+      totalSessions={totalSessions}
+      totalTags={allTags.size}
+      latestSessionDate={latestSessionDate}
+      oldestSessionDate={oldestSessionDate}
     />
-    <style>
-      main {
-        width: 960px;
-      }
-      section h1 {
-        font-size: 2.5rem;
-        margin: 2rem 0 0.5rem 0;
-        color: rgb(var(--black));
-        text-align: center;
-      }
-      section > p {
-        text-align: center;
-        color: rgb(var(--gray));
-        margin-bottom: 2rem;
-        font-size: 1.1rem;
-      }
-      ul {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 2rem;
-        list-style-type: none;
-        margin: 0;
-        padding: 0;
-      }
-      ul li {
-        width: calc(50% - 1rem);
-      }
-      ul li * {
-        text-decoration: none;
-        transition: 0.2s ease;
-      }
-      ul li:first-child {
-        width: 100%;
-        margin-bottom: 1rem;
-        text-align: center;
-      }
-      ul li:first-child img {
-        width: 100%;
-      }
-      ul li:first-child .title {
-        font-size: 2.369rem;
-      }
-      ul li img {
-        margin-bottom: 0.5rem;
-        border-radius: 12px;
-      }
-      ul li a {
-        display: block;
-      }
-      .title {
-        margin: 0;
-        color: rgb(var(--black));
-        line-height: 1;
-      }
-      .date {
-        margin: 0;
-        color: rgb(var(--gray));
-      }
-      .session-number {
-        margin: 0.25rem 0;
-        color: rgb(var(--accent));
-        font-weight: 600;
-        font-size: 0.9rem;
-      }
-      .tags {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        margin-top: 0.5rem;
-      }
-      .tag {
-        background: rgb(var(--accent-light));
-        color: rgb(var(--accent-dark));
-        padding: 0.15rem 0.5rem;
-        border-radius: 1rem;
-        font-size: 0.7rem;
-        font-weight: 500;
-      }
-      ul li a:hover h4,
-      ul li a:hover .date,
-      ul li a:hover .session-number {
-        color: rgb(var(--accent));
-      }
-      ul a:hover img {
-        box-shadow: var(--box-shadow);
-      }
-      @media (max-width: 720px) {
-        ul {
-          gap: 0.5em;
-        }
-        ul li {
-          width: 100%;
-          text-align: center;
-        }
-        ul li:first-child {
-          margin-bottom: 0;
-        }
-        ul li:first-child .title {
-          font-size: 1.563em;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <Header />
-    <main>
-      <section>
-        <h1>Game Sessions</h1>
-        <p>Browse all tabletop RPG sessions and campaign notes</p>
-        <ul>
-          {
-            entries.map((entry) => {
-              // Use session_title if available, otherwise fall back to title or generate from session_number
-              const displayTitle =
-                entry.data.session_title ||
-                entry.data.title ||
-                (entry.data.session_number
-                  ? `Session ${entry.data.session_number}`
-                  : "Untitled Session");
 
-              // Use session_date if available, otherwise fall back to pubDate
-              const displayDate = entry.data.session_date || entry.data.pubDate;
+    <JournalFilters />
 
-              return (
-                <li>
-                  <a href={`/sessions/${entry.id}/`}>
-                    {entry.data.heroImage && (
-                      <Image
-                        width={720}
-                        height={360}
-                        src={entry.data.heroImage}
-                        alt=""
-                      />
-                    )}
-                    <h4 class="title">{displayTitle}</h4>
-                    {entry.data.session_number && (
-                      <p class="session-number">
-                        Session {entry.data.session_number}
-                      </p>
-                    )}
-                    {displayDate && (
-                      <p class="date">
-                        <FormattedDate date={displayDate} />
-                      </p>
-                    )}
-                    {entry.data.tags && entry.data.tags.length > 0 && (
-                      <div class="tags">
-                        {entry.data.tags.slice(0, 3).map((tag: string) => (
-                          <span class="tag">{tag}</span>
-                        ))}
-                      </div>
-                    )}
-                  </a>
-                </li>
-              );
-            })
-          }
-        </ul>
-      </section>
-    </main>
-    <Footer />
-  </body>
-</html>
+    {
+      entries.length === 0 ? (
+        <div class="text-center py-16">
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-12">
+            <svg
+              class="mx-auto h-24 w-24 text-gray-400 mb-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1"
+                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+              />
+            </svg>
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
+              No Sessions Yet
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 mb-6">
+              Start documenting your tabletop RPG adventures!
+            </p>
+            <a
+              href="/sessions/new"
+              class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
+            >
+              <svg
+                class="w-5 h-5 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 4v16m8-8H4"
+                />
+              </svg>
+              Create Your First Session
+            </a>
+          </div>
+        </div>
+      ) : (
+        <div
+          id="session-grid"
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+        >
+          {entries.map((entry, index) => {
+            // Add data attributes for filtering
+            const displayDate = entry.data.session_date || entry.data.pubDate;
+            const dateString = displayDate ? displayDate.toISOString() : "";
+
+            return (
+              <div
+                data-date={dateString}
+                data-tags={entry.data.tags?.join(",") || ""}
+              >
+                <SessionCard
+                  entry={entry}
+                  featured={index === 0 && entries.length > 1}
+                />
+              </div>
+            );
+          })}
+        </div>
+      )
+    }
+  </div>
+</BaseLayout>

@@ -1,9 +1,7 @@
 ---
 import type { CollectionEntry } from "astro:content";
-import BaseHead from "@/components/layout/BaseHead.astro";
-import Header from "@/components/layout//Header.astro";
-import Footer from "@/components/layout//Footer.astro";
-import FormattedDate from "@/components/layout//FormattedDate.astro";
+import BaseLayout from "./BaseLayout.astro";
+import FormattedDate from "@/components/layout/FormattedDate.astro";
 import { Image } from "astro:assets";
 
 type Props = CollectionEntry<"journal">["data"];
@@ -31,231 +29,193 @@ const displayTitle =
 const displayDate = session_date || pubDate;
 ---
 
-<html lang="en">
-  <head>
-    <BaseHead title={title} description={description} />
-    <style>
-      main {
-        width: calc(100% - 2em);
-        max-width: 100%;
-        margin: 0;
-      }
-      .hero-image {
-        width: 100%;
-      }
-      .hero-image img {
-        display: block;
-        margin: 0 auto;
-        border-radius: 12px;
-        box-shadow: var(--box-shadow);
-      }
-      .prose {
-        width: 720px;
-        max-width: calc(100% - 2em);
-        margin: auto;
-        padding: 1em;
-        color: rgb(var(--gray-dark));
-      }
-      .title {
-        margin-bottom: 1em;
-        padding: 1em 0;
-        text-align: center;
-        line-height: 1;
-      }
-      .title h1 {
-        margin: 0 0 0.5em 0;
-      }
-      .date {
-        margin-bottom: 0.5em;
-        color: rgb(var(--gray));
-      }
-      .last-updated-on {
-        font-style: italic;
-      }
-      .session-number {
-        font-size: 1.2em;
-        color: rgb(var(--accent));
-        margin-bottom: 0.5em;
-      }
-      .duration {
-        color: rgb(var(--gray));
-        font-size: 0.9em;
-      }
-      .tags {
-        margin: 1em 0;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5em;
-      }
-      .tag {
-        background: rgb(var(--accent-light));
-        color: rgb(var(--accent-dark));
-        padding: 0.2em 0.6em;
-        border-radius: 1em;
-        font-size: 0.8em;
-        font-weight: 500;
-      }
-      .session-metadata {
-        background: rgb(var(--gray-light));
-        padding: 1.5em;
-        border-radius: 8px;
-        margin: 2em 0;
-      }
-      .session-metadata h3 {
-        margin-top: 0;
-        color: rgb(var(--accent));
-      }
-      .session-metadata ul {
-        margin: 0.5em 0;
-        padding-left: 1.5em;
-      }
-      .session-metadata li {
-        margin: 0.25em 0;
-      }
-      .characters,
-      .npcs {
-        margin-bottom: 1.5em;
-      }
-      .characters:last-child,
-      .npcs:last-child {
-        margin-bottom: 0;
-      }
-      .session-navigation {
-        margin: 2em 0 0 0;
-      }
-      .nav-links {
-        display: flex;
-        justify-content: space-between;
-        margin-top: 1em;
-      }
-      .prev-session,
-      .next-session {
-        flex: 1;
-        padding: 1em;
-        background: rgb(var(--gray-light));
-        border-radius: 8px;
-        margin: 0 0.5em;
-      }
-      .prev-session:first-child {
-        margin-left: 0;
-      }
-      .next-session:last-child {
-        margin-right: 0;
-      }
-      @media (max-width: 768px) {
-        .nav-links {
-          flex-direction: column;
-        }
-        .prev-session,
-        .next-session {
-          margin: 0.5em 0;
-        }
-      }
-    </style>
-  </head>
-
-  <body>
-    <Header />
-    <main>
-      <article>
-        <div class="hero-image">
-          {
-            heroImage && (
-              <Image width={1020} height={510} src={heroImage} alt="" />
-            )
-          }
+<BaseLayout
+  title={displayTitle}
+  description={description || ""}
+  image={heroImage}
+  class="max-w-none"
+>
+  <article class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    {
+      heroImage && (
+        <div class="hero-image mb-12">
+          <Image
+            src={heroImage}
+            alt={displayTitle}
+            class="w-full h-80 md:h-96 object-cover rounded-2xl shadow-card border border-primary"
+          />
         </div>
-        <div class="prose">
-          <div class="title">
-            <div class="date">
-              {displayDate && <FormattedDate date={displayDate} />}
-              {
-                duration && displayDate && (
-                  <div class="duration">
-                    Duration: <FormattedDate date={duration} />
-                  </div>
-                )
-              }
-              {
-                updatedDate && (
-                  <div class="last-updated-on">
-                    Last updated on <FormattedDate date={updatedDate} />
-                  </div>
-                )
-              }
+      )
+    }
+
+    <div class="prose prose-lg max-w-none mx-auto">
+      <header class="mb-12 text-center border-b border-primary pb-12">
+        {
+          session_number && (
+            <div class="session-number text-sm font-bold text-accent-600 mb-3 px-4 py-2 bg-accent-50 rounded-full inline-block border border-accent-200">
+              Session {session_number}
             </div>
-            <h1>{displayTitle}</h1>
-            {
-              session_number && (
-                <div class="session-number">Session {session_number}</div>
-              )
-            }
-            {
-              tags && tags.length > 0 && (
+          )
+        }
+        <h1 class="title text-5xl font-bold text-primary mb-6 leading-tight">
+          {displayTitle}
+        </h1>
+        {
+          displayDate && (
+            <div class="date text-secondary mb-3 text-lg">
+              <FormattedDate date={displayDate} />
+            </div>
+          )
+        }
+        {
+          duration && (
+            <div class="duration text-tertiary">
+              Duration: <FormattedDate date={duration} />
+            </div>
+          )
+        }
+        {
+          updatedDate && (
+            <div class="last-updated-on text-tertiary mt-4 text-sm">
+              Last updated on <FormattedDate date={updatedDate} />
+            </div>
+          )
+        }
+      </header>
+
+      <!-- Session Metadata -->
+      {
+        (characters_involved || npcs_encountered || tags) && (
+          <div class="session-metadata bg-surface-elevated rounded-2xl p-8 mb-12 not-prose shadow-card border border-primary">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {characters_involved && characters_involved.length > 0 && (
+                <div class="characters">
+                  <h3 class="text-xl font-bold text-primary mb-4 flex items-center gap-2">
+                    <span class="text-2xl">👥</span>
+                    <span>Characters Involved</span>
+                  </h3>
+                  <ul class="space-y-2">
+                    {characters_involved.map((character) => (
+                      <li class="text-secondary flex items-center gap-2">
+                        <span class="w-2 h-2 bg-accent-400 rounded-full" />
+                        {character.replace(/\[\[|\]\]/g, "")}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {npcs_encountered && npcs_encountered.length > 0 && (
+                <div class="npcs">
+                  <h3 class="text-xl font-bold text-primary mb-4 flex items-center gap-2">
+                    <span class="text-2xl">🏘️</span>
+                    <span>NPCs Encountered</span>
+                  </h3>
+                  <ul class="space-y-2">
+                    {npcs_encountered.map((npc) => (
+                      <li class="text-secondary flex items-center gap-2">
+                        <span class="w-2 h-2 bg-gold-400 rounded-full" />
+                        {npc.replace(/\[\[|\]\]/g, "")}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {tags && tags.length > 0 && (
                 <div class="tags">
-                  {tags.map((tag: string) => (
-                    <span class="tag">{tag}</span>
-                  ))}
+                  <h3 class="text-xl font-bold text-primary mb-4 flex items-center gap-2">
+                    <span class="text-2xl">🏷️</span>
+                    <span>Tags</span>
+                  </h3>
+                  <div class="flex flex-wrap gap-2">
+                    {tags.map((tag) => (
+                      <span
+                        class="tag px-3 py-1 text-sm font-medium rounded-full border transition-colors hover:scale-105"
+                        style="background: rgba(var(--accent-100), 0.5); color: rgb(var(--accent-700)); border-color: rgba(var(--accent-300), 0.5);"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-              )
-            }
-            <hr />
+              )}
+            </div>
           </div>
+        )
+      }
 
-          {/* Session metadata */}
-          {
-            (characters_involved || npcs_encountered) && (
-              <div class="session-metadata">
-                {characters_involved && characters_involved.length > 0 && (
-                  <div class="characters">
-                    <h3>Characters Involved</h3>
-                    <ul>
-                      {characters_involved.map((character: string) => (
-                        <li>{character}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
+      <!-- Session Content -->
+      <div class="prose prose-xl max-w-none text-secondary">
+        <slot />
+      </div>
 
-                {npcs_encountered && npcs_encountered.length > 0 && (
-                  <div class="npcs">
-                    <h3>NPCs Encountered</h3>
-                    <ul>
-                      {npcs_encountered.map((npc: string) => (
-                        <li>{npc}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            )
-          }
-
-          <slot />
-
-          {/* Session navigation */}
-          {
-            (previous_session || next_session) && (
-              <div class="session-navigation">
-                <hr />
-                <div class="nav-links">
-                  {previous_session && (
-                    <div class="prev-session">
-                      <strong>Previous:</strong> {previous_session}
+      <!-- Session Navigation -->
+      {
+        (previous_session || next_session) && (
+          <div class="session-navigation mt-16 pt-12 border-t border-primary">
+            <div class="nav-links flex justify-between">
+              {previous_session ? (
+                <a
+                  href={`/journal/${previous_session
+                    .replace(/\[\[|\]\]/g, "")
+                    .toLowerCase()
+                    .replace(/\s+/g, "-")}`}
+                  class="prev-session group bg-surface-elevated hover:bg-surface-tertiary text-primary px-6 py-4 rounded-xl transition-all duration-200 flex items-center gap-3 shadow-card hover:shadow-card-hover border border-primary hover:border-accent-400 hover:scale-105"
+                >
+                  <svg
+                    class="w-6 h-6 group-hover:-translate-x-1 transition-transform"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                  <div>
+                    <div class="font-semibold">Previous Session</div>
+                    <div class="text-sm text-secondary">
+                      {previous_session.replace(/\[\[|\]\]/g, "")}
                     </div>
-                  )}
-                  {next_session && (
-                    <div class="next-session">
-                      <strong>Next:</strong> {next_session}
+                  </div>
+                </a>
+              ) : (
+                <div />
+              )}
+
+              {next_session && (
+                <a
+                  href={`/journal/${next_session
+                    .replace(/\[\[|\]\]/g, "")
+                    .toLowerCase()
+                    .replace(/\s+/g, "-")}`}
+                  class="next-session group bg-surface-elevated hover:bg-surface-tertiary text-primary px-6 py-4 rounded-xl transition-all duration-200 flex items-center gap-3 shadow-card hover:shadow-card-hover border border-primary hover:border-accent-400 hover:scale-105"
+                >
+                  <div class="text-right">
+                    <div class="font-semibold">Next Session</div>
+                    <div class="text-sm text-secondary">
+                      {next_session.replace(/\[\[|\]\]/g, "")}
                     </div>
-                  )}
-                </div>
-              </div>
-            )
-          }
-        </div>
-      </article>
-    </main>
-    <Footer />
-  </body>
-</html>
+                  </div>
+                  <svg
+                    class="w-6 h-6 group-hover:translate-x-1 transition-transform"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                </a>
+              )}
+            </div>
+          </div>
+        )
+      }
+    </div>
+  </article>
+</BaseLayout>

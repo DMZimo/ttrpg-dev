@@ -1,0 +1,231 @@
+---
+// This component will handle filtering on the client side
+---
+
+<div
+  class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8"
+>
+  <div class="flex flex-col lg:flex-row lg:items-center gap-4">
+    <!-- Search Input -->
+    <div class="flex-1">
+      <label
+        for="search"
+        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+      >
+        Search Sessions
+      </label>
+      <div class="relative">
+        <input
+          type="search"
+          id="search"
+          placeholder="Search by title, description, or session number..."
+          class="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+        />
+        <div
+          class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+        >
+          <svg
+            class="h-5 w-5 text-gray-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tag Filter -->
+    <div class="lg:w-64">
+      <label
+        for="tag-filter"
+        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+      >
+        Filter by Tag
+      </label>
+      <select
+        id="tag-filter"
+        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+      >
+        <option value="">All Tags</option>
+      </select>
+    </div>
+
+    <!-- Date Sort -->
+    <div class="lg:w-48">
+      <label
+        for="sort-order"
+        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+      >
+        Sort by Date
+      </label>
+      <select
+        id="sort-order"
+        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+      >
+        <option value="newest">Newest First</option>
+        <option value="oldest">Oldest First</option>
+      </select>
+    </div>
+
+    <!-- Clear Filters -->
+    <div class="lg:pt-6">
+      <button
+        id="clear-filters"
+        class="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+      >
+        Clear Filters
+      </button>
+    </div>
+  </div>
+
+  <!-- Results Info -->
+  <div
+    class="mt-4 flex items-center justify-between text-sm text-gray-600 dark:text-gray-400"
+  >
+    <span id="results-count">Showing all sessions</span>
+    <span id="total-sessions" class="hidden">Total: 0 sessions</span>
+  </div>
+</div>
+
+<script>
+  // Client-side filtering functionality
+  document.addEventListener("DOMContentLoaded", function () {
+    const searchInput = document.getElementById("search") as HTMLInputElement;
+    const tagFilter = document.getElementById(
+      "tag-filter"
+    ) as HTMLSelectElement;
+    const sortOrder = document.getElementById(
+      "sort-order"
+    ) as HTMLSelectElement;
+    const clearButton = document.getElementById(
+      "clear-filters"
+    ) as HTMLButtonElement;
+    const resultsCount = document.getElementById(
+      "results-count"
+    ) as HTMLElement;
+    const sessionGrid = document.getElementById("session-grid") as HTMLElement;
+
+    let allSessions: HTMLElement[] = [];
+    let allTags: Set<string> = new Set();
+
+    // Initialize
+    function init() {
+      // Get all session cards
+      allSessions = Array.from(sessionGrid.querySelectorAll("article"));
+
+      // Extract all tags
+      allSessions.forEach((session) => {
+        const tags = session.querySelectorAll(".tag-item");
+        tags.forEach((tag) => {
+          allTags.add(tag.textContent?.trim() || "");
+        });
+      });
+
+      // Populate tag filter
+      populateTagFilter();
+      updateResultsCount();
+    }
+
+    function populateTagFilter() {
+      // Clear existing options except "All Tags"
+      while (tagFilter.children.length > 1) {
+        tagFilter.removeChild(tagFilter.lastChild!);
+      }
+
+      // Add tag options
+      Array.from(allTags)
+        .sort()
+        .forEach((tag) => {
+          const option = document.createElement("option");
+          option.value = tag;
+          option.textContent = tag;
+          tagFilter.appendChild(option);
+        });
+    }
+
+    function filterAndSort() {
+      const searchTerm = searchInput.value.toLowerCase();
+      const selectedTag = tagFilter.value;
+      const sortBy = sortOrder.value;
+
+      let filteredSessions = allSessions.filter((session) => {
+        // Search filter
+        const title =
+          session.querySelector("h3")?.textContent?.toLowerCase() || "";
+        const description =
+          session
+            .querySelector(".session-description")
+            ?.textContent?.toLowerCase() || "";
+        const sessionNumber =
+          session
+            .querySelector(".session-number")
+            ?.textContent?.toLowerCase() || "";
+
+        const matchesSearch =
+          !searchTerm ||
+          title.includes(searchTerm) ||
+          description.includes(searchTerm) ||
+          sessionNumber.includes(searchTerm);
+
+        // Tag filter
+        const sessionTags = Array.from(
+          session.querySelectorAll(".tag-item")
+        ).map((tag) => tag.textContent?.trim() || "");
+        const matchesTag = !selectedTag || sessionTags.includes(selectedTag);
+
+        return matchesSearch && matchesTag;
+      });
+
+      // Sort sessions
+      filteredSessions.sort((a, b) => {
+        const dateA = a.dataset.date || "";
+        const dateB = b.dataset.date || "";
+
+        if (sortBy === "oldest") {
+          return dateA.localeCompare(dateB);
+        } else {
+          return dateB.localeCompare(dateA);
+        }
+      });
+
+      // Update display
+      allSessions.forEach((session) => (session.style.display = "none"));
+      filteredSessions.forEach((session) => (session.style.display = "block"));
+
+      updateResultsCount(filteredSessions.length);
+    }
+
+    function updateResultsCount(filtered?: number) {
+      const total = allSessions.length;
+      const showing = filtered !== undefined ? filtered : total;
+
+      if (showing === total) {
+        resultsCount.textContent = `Showing all ${total} sessions`;
+      } else {
+        resultsCount.textContent = `Showing ${showing} of ${total} sessions`;
+      }
+    }
+
+    function clearFilters() {
+      searchInput.value = "";
+      tagFilter.value = "";
+      sortOrder.value = "newest";
+      filterAndSort();
+    }
+
+    // Event listeners
+    searchInput.addEventListener("input", filterAndSort);
+    tagFilter.addEventListener("change", filterAndSort);
+    sortOrder.addEventListener("change", filterAndSort);
+    clearButton.addEventListener("click", clearFilters);
+
+    // Initialize when page loads
+    init();
+  });
+</script>

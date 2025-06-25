@@ -1,0 +1,166 @@
+---
+// Campaign Info component for the homepage
+---
+
+<section class="py-20 bg-surface-secondary w-full">
+  <div class="w-full px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start max-w-none">
+      <div class="max-w-2xl">
+        <h2 class="text-4xl font-bold text-primary mb-8">
+          🏰 About Our Campaign
+        </h2>
+        <div class="prose prose-xl text-secondary max-w-none space-y-6">
+          <p class="text-lg leading-relaxed">
+            Set in the mystical <strong class="text-primary"
+              >Dessarin Valley</strong
+            >, our adventuring party explores ancient ruins, battles dangerous
+            creatures, and uncovers the secrets that threaten the peaceful town
+            of Red Larch.
+          </p>
+          <p class="text-lg leading-relaxed">
+            From investigating mysterious disappearances to facing down bears in
+            the wilderness, every session brings new challenges and memorable
+            moments that forge the bonds of our fellowship.
+          </p>
+          <p class="text-lg leading-relaxed">
+            Join us as we chronicle our adventures, victories, and the
+            occasional comedic mishap in this ongoing tale of heroism and
+            friendship.
+          </p>
+        </div>
+      </div>
+
+      <div
+        class="bg-surface-elevated rounded-2xl p-8 shadow-card border border-primary max-w-2xl"
+      >
+        <h3
+          class="text-3xl font-bold text-primary mb-8 flex items-center gap-3"
+        >
+          <span>🎯</span>
+          <span>Quick Navigation</span>
+        </h3>
+        <div class="space-y-4">
+          <a
+            href="/journal"
+            class="group flex items-center p-6 bg-blue-50/50 rounded-xl hover:bg-blue-100/50 transition-all duration-200 border border-blue-200/50 hover:border-blue-300 hover:scale-105 hover:shadow-lg"
+            style="background: rgba(var(--accent-50), 0.3); border-color: rgba(var(--accent-200), 0.5);"
+          >
+            <div class="text-3xl mr-4">📖</div>
+            <div class="flex-1">
+              <div
+                class="font-bold text-primary text-lg group-hover:text-accent-600 transition-colors"
+              >
+                Session Journal
+              </div>
+              <div class="text-secondary">
+                Read detailed session notes and adventure logs
+              </div>
+            </div>
+            <svg
+              class="w-6 h-6 text-tertiary group-hover:text-accent-500 group-hover:translate-x-1 transition-all"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5l7 7-7 7"></path>
+            </svg>
+          </a>
+
+          <a
+            href="/characters"
+            class="group flex items-center p-6 rounded-xl hover:scale-105 hover:shadow-lg transition-all duration-200 border"
+            style="background: rgba(var(--accent-100), 0.3); border-color: rgba(var(--accent-200), 0.5);"
+          >
+            <div class="text-3xl mr-4">👥</div>
+            <div class="flex-1">
+              <div
+                class="font-bold text-primary text-lg group-hover:text-accent-600 transition-colors"
+              >
+                Characters
+              </div>
+              <div class="text-secondary">
+                Meet our adventuring party and their stories
+              </div>
+            </div>
+            <svg
+              class="w-6 h-6 text-tertiary group-hover:text-accent-500 group-hover:translate-x-1 transition-all"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5l7 7-7 7"></path>
+            </svg>
+          </a>
+
+          <a
+            href="/npcs"
+            class="group flex items-center p-6 rounded-xl hover:scale-105 hover:shadow-lg transition-all duration-200 border"
+            style="background: rgba(var(--gold-50), 0.3); border-color: rgba(var(--gold-200), 0.5);"
+          >
+            <div class="text-3xl mr-4">🏘️</div>
+            <div class="flex-1">
+              <div
+                class="font-bold text-primary text-lg group-hover:text-gold-600 transition-colors"
+              >
+                NPCs & Locations
+              </div>
+              <div class="text-secondary">
+                Discover the people and places of our world
+              </div>
+            </div>
+            <svg
+              class="w-6 h-6 text-tertiary group-hover:text-gold-500 group-hover:translate-x-1 transition-all"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5l7 7-7 7"></path>
+            </svg>
+          </a>
+
+          <a
+            href="/quests"
+            class="group flex items-center p-6 rounded-xl hover:scale-105 hover:shadow-lg transition-all duration-200 border"
+            style="background: rgba(var(--success), 0.1); border-color: rgba(var(--success), 0.3);"
+          >
+            <div class="text-3xl mr-4">⚔️</div>
+            <div class="flex-1">
+              <div
+                class="font-bold text-primary text-lg group-hover:text-green-600 transition-colors"
+              >
+                Quests & Adventures
+              </div>
+              <div class="text-secondary">
+                Track ongoing quests and completed adventures
+              </div>
+            </div>
+            <svg
+              class="w-6 h-6 text-tertiary group-hover:text-green-500 group-hover:translate-x-1 transition-all"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5l7 7-7 7"></path>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
