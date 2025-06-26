@@ -570,3 +570,66 @@ html {
 .animation-delay-300 {
   animation-delay: 0.3s;
 }
+
+/* Subtle holographic effect using mask images */
+.holo-container {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+/* Subtle shimmer overlay */
+.holo-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    120deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.03) 45%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.03) 55%,
+    transparent 70%
+  );
+  opacity: 0;
+  transform: translateX(-100%) skewX(-20deg);
+  transition: all 1.2s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.holo-container:hover::before {
+  opacity: 1;
+  transform: translateX(150%) skewX(-20deg);
+}
+
+/* Holo mask overlay effect */
+.holo-container::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: var(--holo-mask);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  mix-blend-mode: overlay;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.holo-container:hover::after {
+  opacity: 0.15;
+}
+
+/* Subtle filter effects without scaling */
+.holo-container:hover > div {
+  filter: contrast(1.02) saturate(1.05) brightness(1.02);
+}
