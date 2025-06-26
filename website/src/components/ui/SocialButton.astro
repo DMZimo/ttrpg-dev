@@ -1,0 +1,46 @@
+---
+interface Props {
+  href: string;
+  label: string;
+  title?: string;
+  target?: string;
+}
+
+const { href, label, title, target = "_blank" } = Astro.props;
+---
+
+<a
+  href={href}
+  target={target}
+  class="social-button"
+  aria-label={label}
+  title={title || label}
+>
+  <span class="sr-only">{label}</span>
+  <slot />
+</a>
+
+<style>
+  .social-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    color: rgb(var(--text-tertiary));
+    background: rgb(var(--surface-elevated));
+    border: 1px solid rgb(var(--border-primary));
+    border-radius: 0.5rem;
+    transition: var(--transition);
+    text-decoration: none;
+    box-shadow: var(--card-shadow);
+  }
+
+  .social-button:hover {
+    color: rgb(var(--accent-500));
+    background: rgb(var(--surface-tertiary));
+    border-color: rgb(var(--accent-400));
+    transform: translateY(-2px);
+    box-shadow: var(--card-shadow-hover);
+  }
+</style>
