@@ -1,0 +1,155 @@
+{{!-- Calendar Grid Widget Template --}}
+<div class="calendar-grid-content">
+  {{#if error}}
+    <div class="error-state">
+      <i class="fas fa-exclamation-triangle"></i>
+      <span>{{error}}</span>
+    </div>
+  {{else}}
+    {{!-- Calendar Header with Navigation --}}
+    <div class="calendar-grid-header">
+      <div class="navigation-controls">
+        <div class="month-navigation">
+          <button type="button" class="nav-button" data-action="previousMonth" title="Previous Month">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <div class="month-info">
+            <div class="month-name">{{monthName}}</div>
+            {{#if monthDescription}}
+              <div class="month-description" title="{{monthDescription}}">
+                <i class="fas fa-info-circle"></i>
+              </div>
+            {{/if}}
+          </div>
+          <button type="button" class="nav-button" data-action="nextMonth" title="Next Month">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+        
+        <div class="year-navigation">
+          <button type="button" class="nav-button" data-action="previousYear" title="Previous Year">
+            <i class="fas fa-angle-double-left"></i>
+          </button>
+          <button type="button" class="year-display clickable" data-action="setYear" title="Click to set year">{{yearDisplay}}</button>
+          <button type="button" class="nav-button" data-action="nextYear" title="Next Year">
+            <i class="fas fa-angle-double-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <div class="widget-switching-controls">
+          <button type="button" class="widget-switch-btn" data-action="switchToMain" title="Switch to Main Widget">
+            <i class="fas fa-expand-alt"></i>
+          </button>
+          <button type="button" class="widget-switch-btn" data-action="switchToMini" title="Switch to Mini Widget">
+            <i class="fas fa-compress-alt"></i>
+          </button>
+        </div>
+        <button type="button" class="today-button" data-action="goToToday" title="Go to current date">
+          <i class="fas fa-crosshairs"></i> Today
+        </button>
+      </div>
+    </div>
+
+    {{!-- Weekday Headers --}}
+    <div class="weekday-headers" style="--weekday-count: {{weekdays.length}};">
+      {{#each weekdays}}
+        <div class="weekday-header" title="{{description}}">
+          <span class="weekday-name">{{abbreviation}}</span>
+        </div>
+      {{/each}}
+    </div>
+
+    {{!-- Calendar Grid --}}
+    <div class="calendar-grid" style="--weekday-count: {{weekdays.length}};">
+      {{#each monthData.weeks}}
+        {{#if (eq this.length 1)}}
+          {{!-- Check if this is an intercalary day row (single cell) --}}
+          {{#with (lookup this 0)}}
+            {{#if isIntercalary}}
+              <div class="calendar-week intercalary-week">
+                <div class="calendar-day intercalary {{#if isToday}}today{{/if}} {{#if isSelected}}selected{{/if}} {{#if isClickable}}clickable{{/if}}"
+                     data-action="{{#if isClickable}}selectDate{{/if}}"
+                     data-day="{{intercalaryName}}"
+                     data-date="{{fullDate}}"
+                     title="{{#if isToday}}Current Date: {{/if}}{{intercalaryName}}{{#if intercalaryDescription}} - {{intercalaryDescription}}{{/if}}{{#if isClickable}} (Click to set date){{/if}}">
+                  <span class="intercalary-name">{{intercalaryName}}</span>
+                  {{#if intercalaryDescription}}
+                    <span class="intercalary-description">{{intercalaryDescription}}</span>
+                  {{/if}}
+                </div>
+              </div>
+            {{else}}
+              {{!-- Fallback for single regular days (shouldn't happen) --}}
+              <div class="calendar-week">
+                <div class="calendar-day {{#if isToday}}today{{/if}} {{#if isSelected}}selected{{/if}} {{#if isClickable}}clickable{{/if}} {{#if hasNotes}}has-notes {{categoryClass}}{{/if}}"
+                     data-action="{{#if isClickable}}selectDate{{/if}}"
+                     data-day="{{day}}"
+                     data-date="{{fullDate}}"
+                     data-category="{{primaryCategory}}"
+                     title="{{#if isToday}}Current Date: {{/if}}{{fullDate}}{{#if hasNotes}} - {{noteTooltip}}{{/if}}{{#if isClickable}} (Click to set date){{/if}}">
+                  <span class="day-number">{{day}}</span>
+                </div>
+              </div>
+            {{/if}}
+          {{/with}}
+        {{else}}
+          {{!-- Regular week with multiple days --}}
+          <div class="calendar-week">
+            {{#each this}}
+              {{#if isEmpty}}
+                <div class="calendar-day empty"></div>
+              {{else}}
+                <div class="calendar-day {{#if isToday}}today{{/if}} {{#if isSelected}}selected{{/if}} {{#if isClickable}}clickable{{/if}} {{#if hasNotes}}has-notes {{categoryClass}}{{/if}}"
+                     data-action="{{#if isClickable}}selectDate{{/if}}"
+                     data-day="{{day}}"
+                     data-date="{{fullDate}}"
+                     data-category="{{primaryCategory}}"
+                     title="{{#if isToday}}Current Date: {{/if}}{{fullDate}}{{#if hasNotes}} - {{noteTooltip}}{{/if}}{{#if isClickable}} (Click to set date){{/if}}">
+                  <span class="day-number">{{day}}</span>
+                  {{#if hasNotes}}
+                    <button type="button" class="note-indicator" data-action="viewNotes" data-day="{{day}}" title="{{noteTooltip}} - Click to view/edit" data-note-count="{{noteCount}}">
+                      {{#if noteMultiple}}
+                        <span class="note-count {{categoryClass}}">{{noteCount}}</span>
+                      {{else}}
+                        <i class="fas fa-sticky-note {{categoryClass}}"></i>
+                      {{/if}}
+                    </button>
+                  {{/if}}
+                  {{#if canCreateNote}}
+                    <button type="button" class="quick-note-btn" data-action="createNote" data-day="{{day}}" title="Create note for this date">
+                      <i class="fas fa-plus"></i>
+                    </button>
+                  {{/if}}
+                </div>
+              {{/if}}
+            {{/each}}
+          </div>
+        {{/if}}
+      {{/each}}
+    </div>
+
+    {{!-- Calendar Info Footer --}}
+    <div class="calendar-grid-footer">
+      {{#if isGM}}
+        <div class="gm-instructions">
+          <i class="fas fa-crown"></i>
+          <span>{{uiHint}}</span>
+        </div>
+      {{else}}
+        <div class="player-instructions">
+          <i class="fas fa-eye"></i>
+          <span>{{uiHint}}</span>
+        </div>
+      {{/if}}
+      
+      {{#if monthData.monthDescription}}
+        <div class="month-description-full">
+          <i class="fas fa-info-circle"></i>
+          <span>{{monthData.monthDescription}}</span>
+        </div>
+      {{/if}}
+    </div>
+  {{/if}}
+</div>

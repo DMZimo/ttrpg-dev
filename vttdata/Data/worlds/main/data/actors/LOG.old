@@ -1,21 +1,3 @@
-2025/06/24-23:58:47.167323 79c7c61fa6c0 Recovering log #182
-2025/06/24-23:58:47.178857 79c7c61fa6c0 Delete type=3 #180
-2025/06/24-23:58:47.178921 79c7c61fa6c0 Delete type=0 #182
-2025/06/25-06:23:46.307987 79c7923ff6c0 Level-0 table #187: started
-2025/06/25-06:23:46.318876 79c7923ff6c0 Level-0 table #187: 1523021 bytes OK
-2025/06/25-06:23:46.319713 79c7923ff6c0 Delete type=0 #185
-2025/06/25-06:23:46.322487 79c7923ff6c0 Manual compaction at level-0 from '!actors!03P3KtmIr2lXMvrg' @ 72057594037927935 : 1 .. '!actors.items.effects!zAR3B2EDpAh2PG2U.AeThGgrM1kPmEHlS.yeqtQtoAuMki9T2R' @ 0 : 0; will stop at (end)
-2025/06/25-06:23:46.323289 79c7923ff6c0 Manual compaction at level-1 from '!actors!03P3KtmIr2lXMvrg' @ 72057594037927935 : 1 .. '!actors.items.effects!zAR3B2EDpAh2PG2U.AeThGgrM1kPmEHlS.yeqtQtoAuMki9T2R' @ 0 : 0; will stop at '!actors.items.effects!uiWgCW8FAMbbhHXp.PR2YmRMdPjvqG9SW.hWtuYczSUphu6KtX' @ 12006 : 1
-2025/06/25-06:23:46.323292 79c7923ff6c0 Compacting 1@1 + 4@2 files
-2025/06/25-06:23:46.343475 79c7923ff6c0 Generated table #188@1: 377 keys, 2114313 bytes
-2025/06/25-06:23:46.359447 79c7923ff6c0 Generated table #189@1: 1200 keys, 2122245 bytes
-2025/06/25-06:23:46.373607 79c7923ff6c0 Generated table #190@1: 1896 keys, 2128380 bytes
-2025/06/25-06:23:46.383990 79c7923ff6c0 Generated table #191@1: 1545 keys, 1552398 bytes
-2025/06/25-06:23:46.383995 79c7923ff6c0 Compacted 1@1 + 4@2 files => 7917336 bytes
-2025/06/25-06:23:46.384803 79c7923ff6c0 compacted to: files[ 0 0 4 0 0 0 0 ]
-2025/06/25-06:23:46.384862 79c7923ff6c0 Delete type=2 #179
-2025/06/25-06:23:46.385056 79c7923ff6c0 Delete type=2 #177
-2025/06/25-06:23:46.385303 79c7923ff6c0 Delete type=2 #176
-2025/06/25-06:23:46.385549 79c7923ff6c0 Delete type=2 #178
-2025/06/25-06:23:46.385788 79c7923ff6c0 Delete type=2 #187
-2025/06/25-06:23:46.388241 79c7923ff6c0 Manual compaction at level-1 from '!actors.items.effects!uiWgCW8FAMbbhHXp.PR2YmRMdPjvqG9SW.hWtuYczSUphu6KtX' @ 12006 : 1 .. '!actors.items.effects!zAR3B2EDpAh2PG2U.AeThGgrM1kPmEHlS.yeqtQtoAuMki9T2R' @ 0 : 0; will stop at (end)
+2025/06/25-14:37:26.348737 7099fffff6c0 Recovering log #193
+2025/06/25-14:37:26.361417 7099fffff6c0 Delete type=0 #193
+2025/06/25-14:37:26.361446 7099fffff6c0 Delete type=3 #192
