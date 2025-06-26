@@ -1,8 +1,0 @@
----
-import { CampaignStats } from "./CampaignStats";
-import { calculateCampaignStats } from "../../../utils/campaignStats";
-
-const statsData = await calculateCampaignStats();
----
-
-<CampaignStats client:load {...statsData} />

@@ -1,5 +1,6 @@
 import React from "react";
 import { CampaignStats } from "./CampaignStats.tsx";
+import type { CampaignStatsData } from "../../../utils/campaignStats.ts";
 import { DISCORD_INVITE, FOUNDRY_VTT_URL } from "../../../consts.ts";
 
 interface MobileMenuProps {
@@ -7,18 +8,7 @@ interface MobileMenuProps {
   onClose: () => void;
   currentPath: string;
   showAnnouncement: boolean;
-  campaignStats?: {
-    totalSessions?: number;
-    totalCharacters?: number;
-    totalNPCs?: number;
-    totalQuests?: number;
-    activePlayers?: number;
-    currentLevel?: number;
-    totalPlayTime?: number;
-    combatEncounters?: number;
-    deathSaves?: number;
-    criticalHits?: number;
-  };
+  campaignStats?: CampaignStatsData;
 }
 
 interface NavItem {

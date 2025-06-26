@@ -4,6 +4,7 @@ import { Navigation } from "./Navigation.tsx";
 import { Search } from "./Search.tsx";
 import { ThemeToggle } from "./ThemeToggle.tsx";
 import { MobileMenu } from "./MobileMenu.tsx";
+import type { CampaignStatsData } from "../../../utils/campaignStats.ts";
 import {
   SITE_TITLE,
   DISCORD_INVITE,
@@ -12,19 +13,7 @@ import {
 
 interface HeaderProps {
   currentPath?: string;
-  // Add campaign stats as props
-  campaignStats?: {
-    totalSessions?: number;
-    totalCharacters?: number;
-    totalNPCs?: number;
-    totalQuests?: number;
-    activePlayers?: number;
-    currentLevel?: number;
-    totalPlayTime?: number;
-    combatEncounters?: number;
-    deathSaves?: number;
-    criticalHits?: number;
-  };
+  campaignStats?: CampaignStatsData;
 }
 
 export const Header: React.FC<HeaderProps> = ({
