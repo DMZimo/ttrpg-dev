@@ -7,7 +7,7 @@ interface MobileMenuProps {
   isOpen: boolean;
   onClose: () => void;
   currentPath: string;
-  showAnnouncement: boolean;
+  announcementHeight: number;
   campaignStats?: CampaignStatsData;
 }
 
@@ -115,10 +115,11 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
   isOpen,
   onClose,
   currentPath,
-  showAnnouncement,
+  announcementHeight,
   campaignStats,
 }) => {
-  const topOffset = showAnnouncement ? "top-[106px]" : "top-16";
+  const topOffset =
+    announcementHeight > 0 ? `top-[${64 + announcementHeight}px]` : "top-16";
 
   const handleLinkClick = () => {
     onClose();
