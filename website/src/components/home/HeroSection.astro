@@ -14,6 +14,7 @@ const allSessions = (await getCollection("journal")).sort((a, b) => {
 });
 
 const totalSessions = allSessions.length;
+const latestSession = allSessions[0];
 
 // Get unique tags
 const allTags = new Set<string>();
@@ -22,117 +23,243 @@ allSessions.forEach((session) => {
     session.data.tags.forEach((tag: string) => allTags.add(tag));
   }
 });
+
+// Find next upcoming session (look for sessions with future dates)
+const today = new Date();
+const upcomingSession = allSessions.find((session) => {
+  const sessionDate = session.data.session_date;
+  return sessionDate && sessionDate > today;
+});
+
+// Format date helper
+const formatDate = (date: Date) => {
+  return date.toLocaleDateString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+};
+
+// Placeholder for Discord webhook data
+const nextDiscordSession = {
+  title: "Session 4 - The Goblin Ambush",
+  date: new Date("2025-06-30T19:00:00"),
+  description:
+    "Join us for our next adventure as we explore the mysterious caves near Triboar!",
+  players: ["Oliver", "Aldor", "Daijo", "Finn"],
+};
+
+const isDiscordSessionUpcoming = nextDiscordSession.date > today;
 ---
 
 <section
-  class="relative bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 text-white py-24 w-full overflow-hidden"
+  class="hero-section w-full min-h-screen bg-surface sharp-corners flex flex-col"
 >
-  <!-- Background decoration -->
-  <div
-    class="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20"
-  >
-  </div>
-  <div class="absolute inset-0">
+  <!-- Hero Grid Layout -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 flex-1">
+    <!-- Latest Journal Entry - Large Featured Card -->
     <div
-      class="absolute top-1/4 left-1/4 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl"
+      class="lg:col-span-2 relative overflow-hidden min-h-[calc(100vh-4rem)]"
     >
+      <div
+        class="absolute inset-0 bg-cover bg-center"
+        style={`background-image: linear-gradient(135deg, rgba(28, 28, 39, 0.8) 0%, rgba(39, 39, 55, 0.6) 100%), url('/src/assets/blog-placeholder-1.jpg');`}
+      >
+      </div>
+
+      <div class="relative h-full flex flex-col justify-end p-8 lg:p-12">
+        <div
+          class="bg-surface/90 backdrop-blur-sm p-6 lg:p-8 border-l-4 border-ddb-red"
+        >
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 bg-ddb-red flex items-center justify-center">
+              <span class="text-white font-bold text-lg">📖</span>
+            </div>
+            <span
+              class="text-sm uppercase tracking-wider text-ddb-red font-semibold"
+              >Latest Adventure</span
+            >
+          </div>
+
+          {
+            latestSession && (
+              <>
+                <h2 class="text-3xl lg:text-4xl font-bold text-primary mb-4 leading-tight">
+                  {latestSession.data.session_title ||
+                    `Session ${latestSession.data.session_number}`}
+                </h2>
+                <p class="text-lg text-secondary mb-6 leading-relaxed">
+                  {latestSession.data.description ||
+                    "Our latest adventure in the Dessarin Valley unfolds with danger and discovery..."}
+                </p>
+                <div class="flex items-center justify-between">
+                  <div class="text-sm text-muted">
+                    {latestSession.data.session_date
+                      ? formatDate(latestSession.data.session_date)
+                      : "Recently"}
+                  </div>
+                  <a
+                    href={`/journal/${latestSession.id}`}
+                    class="ddb-button-primary px-6 py-3 inline-flex items-center gap-2 hover:gap-3 transition-all"
+                  >
+                    <span>Read Full Chronicle</span>
+                    <svg
+                      class="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M13 7l5 5m0 0l-5 5m5-5H6"
+                      />
+                    </svg>
+                  </a>
+                </div>
+              </>
+            )
+          }
+        </div>
+      </div>
     </div>
+
+    <!-- Sidebar with Next Session and Atlas -->
     <div
-      class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"
+      class="lg:col-span-1 bg-surface-secondary border-l border-primary min-h-[calc(100vh-4rem)]"
     >
-    </div>
-  </div>
-
-  <div class="relative w-full px-4 sm:px-6 lg:px-8 text-center">
-    <div class="mb-12">
-      <h1
-        class="text-5xl md:text-6xl lg:text-7xl font-bold mb-6"
-        style="background: linear-gradient(135deg, rgb(var(--gold-300)), rgb(var(--gold-400)), rgb(var(--accent-300))); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;"
-      >
-        Welcome, Adventurers!
-      </h1>
-      <p
-        class="text-xl md:text-2xl text-blue-100 mb-8 max-w-4xl mx-auto leading-relaxed"
-      >
-        Journey through the <strong class="text-gold-300"
-          >Dessarin Valley</strong
-        > in our ongoing D&D campaign. Explore our chronicles, meet the characters,
-        and relive the adventures that shape our world.
-      </p>
-    </div>
-
-    <!-- Campaign Stats -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-12">
-      <div
-        class="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300"
-      >
+      <!-- Next Session Card -->
+      <div class="h-1/2 border-b border-primary relative overflow-hidden">
         <div
-          class="text-4xl font-bold mb-2"
-          style="color: rgb(var(--gold-300));"
+          class="absolute inset-0 bg-cover bg-center opacity-20"
+          style={`background-image: url('/src/assets/blog-placeholder-2.jpg');`}
         >
-          {totalSessions}
         </div>
-        <div class="text-blue-100 font-medium">Sessions Played</div>
-      </div>
-      <div
-        class="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300"
-      >
-        <div
-          class="text-4xl font-bold mb-2"
-          style="color: rgb(var(--accent-300));"
-        >
-          {allTags.size}
-        </div>
-        <div class="text-blue-100 font-medium">Adventure Tags</div>
-      </div>
-      <div
-        class="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300"
-      >
-        <div class="text-4xl font-bold mb-2 text-green-300">Active</div>
-        <div class="text-blue-100 font-medium">Campaign Status</div>
-      </div>
-    </div>
 
-    <!-- Call to Action -->
-    <div class="flex flex-col sm:flex-row gap-4 justify-center">
-      <a
-        href="/journal"
-        class="group bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 flex items-center justify-center gap-2"
-      >
-        <span>📖</span>
-        <span>Read Session Journal</span>
-        <svg
-          class="w-5 h-5 group-hover:translate-x-1 transition-transform"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
+        <div class="relative h-full flex flex-col justify-center p-6 lg:p-8">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-8 h-8 bg-accent-600 flex items-center justify-center">
+              <span class="text-white font-bold">🗓️</span>
+            </div>
+            <span
+              class="text-sm uppercase tracking-wider text-accent-600 font-semibold"
+              >Next Session</span
+            >
+          </div>
+
+          {
+            isDiscordSessionUpcoming ? (
+              <>
+                <h3 class="text-xl font-bold text-primary mb-3 leading-tight">
+                  {nextDiscordSession.title}
+                </h3>
+                <div class="space-y-3 mb-6">
+                  <div class="flex items-center gap-2 text-secondary">
+                    <span class="w-4 h-4">📅</span>
+                    <span class="text-sm">
+                      {formatDate(nextDiscordSession.date)}
+                    </span>
+                  </div>
+                  <div class="flex items-center gap-2 text-secondary">
+                    <span class="w-4 h-4">👥</span>
+                    <span class="text-sm">
+                      {nextDiscordSession.players.length} Adventurers
+                    </span>
+                  </div>
+                  <div class="flex items-center gap-2 text-secondary">
+                    <span class="w-4 h-4">💬</span>
+                    <span class="text-sm">Discord Integration</span>
+                  </div>
+                </div>
+                <p class="text-sm text-muted mb-4">
+                  {nextDiscordSession.description}
+                </p>
+              </>
+            ) : (
+              <>
+                <h3 class="text-xl font-bold text-primary mb-3">
+                  Planning Next Adventure
+                </h3>
+                <p class="text-sm text-secondary mb-4">
+                  Our next session is being scheduled. Join our Discord server
+                  for real-time updates and coordination.
+                </p>
+                <div class="flex items-center gap-2 text-secondary mb-4">
+                  <span class="w-4 h-4">💬</span>
+                  <span class="text-sm">Check Discord for Updates</span>
+                </div>
+              </>
+            )
+          }
+
+          <button class="ddb-button-secondary w-full py-2 text-sm">
+            Join Discord Server
+          </button>
+        </div>
+      </div>
+
+      <!-- Atlas/Map Card -->
+      <div class="h-1/2 relative overflow-hidden">
+        <div
+          class="absolute inset-0 bg-cover bg-center opacity-30"
+          style={`background-image: url('/src/assets/blog-placeholder-3.jpg');`}
         >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M9 5l7 7-7 7"></path>
-        </svg>
-      </a>
-      <a
-        href="/characters"
-        class="group bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 flex items-center justify-center gap-2"
-      >
-        <span>👥</span>
-        <span>Meet the Party</span>
-        <svg
-          class="w-5 h-5 group-hover:translate-x-1 transition-transform"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M9 5l7 7-7 7"></path>
-        </svg>
-      </a>
+        </div>
+
+        <div class="relative h-full flex flex-col justify-center p-6 lg:p-8">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-8 h-8 bg-gold-600 flex items-center justify-center">
+              <span class="text-white font-bold">🗺️</span>
+            </div>
+            <span
+              class="text-sm uppercase tracking-wider text-gold-600 font-semibold"
+              >World Atlas</span
+            >
+          </div>
+
+          <h3 class="text-xl font-bold text-primary mb-3 leading-tight">
+            Explore the Dessarin Valley
+          </h3>
+
+          <p class="text-sm text-secondary mb-6">
+            Discover locations, track your journey, and uncover the secrets of
+            our campaign world through our interactive map.
+          </p>
+
+          <div class="space-y-2 mb-6">
+            <div class="flex items-center gap-2 text-secondary">
+              <span class="w-4 h-4">🏰</span>
+              <span class="text-sm">{totalSessions} Locations Visited</span>
+            </div>
+            <div class="flex items-center gap-2 text-secondary">
+              <span class="w-4 h-4">🔍</span>
+              <span class="text-sm">{allTags.size} Points of Interest</span>
+            </div>
+          </div>
+
+          <a
+            href="/atlas"
+            class="ddb-button-primary w-full py-3 text-center inline-flex items-center justify-center gap-2"
+          >
+            <span>Explore Map</span>
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m0 0L9 7"
+              ></path>
+            </svg>
+          </a>
+        </div>
+      </div>
     </div>
   </div>
 </section>

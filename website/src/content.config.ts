@@ -21,6 +21,8 @@ const journal = defineCollection({
       // Session-specific fields
       session_number: z.number().optional(),
       session_title: z.string().optional(),
+      session_start: z.coerce.date().optional(),
+      session_end: z.coerce.date().optional(),
       session_date: z.coerce.date().optional(),
       duration: z.coerce.date().optional(),
 

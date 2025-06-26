@@ -1,0 +1,68 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { SITE_TITLE } from "../consts";
+---
+
+<BaseLayout
+  title={`World Atlas - ${SITE_TITLE}`}
+  description="Explore the interactive map of our D&D campaign world, featuring locations, points of interest, and the journey of our adventurers."
+  class="w-full"
+>
+  <section class="bg-surface min-h-screen py-16">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <h1 class="text-4xl lg:text-5xl font-bold text-primary mb-6">
+          World Atlas
+        </h1>
+        <p class="text-xl text-secondary max-w-3xl mx-auto">
+          Explore the Dessarin Valley and beyond. Discover the locations we've
+          visited, the paths we've traveled, and the mysteries yet to unfold.
+        </p>
+      </div>
+
+      <!-- Interactive Map Placeholder -->
+      <div class="ddb-card p-8 mb-12">
+        <div
+          class="aspect-video bg-surface-tertiary border-2 border-dashed border-primary flex items-center justify-center"
+        >
+          <div class="text-center">
+            <div
+              class="w-16 h-16 bg-gold-600 mx-auto mb-4 flex items-center justify-center"
+            >
+              <span class="text-white text-2xl">🗺️</span>
+            </div>
+            <h3 class="text-xl font-bold text-primary mb-2">
+              Interactive Map Coming Soon
+            </h3>
+            <p class="text-secondary">
+              Our interactive campaign map is under construction. Check back
+              soon for a fully explorable world!
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Stats -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="ddb-card p-6 text-center">
+          <div class="text-3xl font-bold text-ddb-red mb-2">5</div>
+          <div class="text-sm uppercase tracking-wider text-muted">
+            Major Locations
+          </div>
+        </div>
+        <div class="ddb-card p-6 text-center">
+          <div class="text-3xl font-bold text-accent-500 mb-2">12</div>
+          <div class="text-sm uppercase tracking-wider text-muted">
+            Points of Interest
+          </div>
+        </div>
+        <div class="ddb-card p-6 text-center">
+          <div class="text-3xl font-bold text-gold-600 mb-2">∞</div>
+          <div class="text-sm uppercase tracking-wider text-muted">
+            Adventures Ahead
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

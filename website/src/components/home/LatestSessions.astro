@@ -17,30 +17,38 @@ const allSessions = (await getCollection("journal")).sort((a, b) => {
 const latestSessions = allSessions.slice(0, 3);
 ---
 
-<section class="py-20 bg-surface w-full">
-  <div class="w-full px-4 sm:px-6 lg:px-8">
-    <div class="text-center mb-16">
-      <h2 class="text-4xl font-bold text-primary mb-6">⚔️ Latest Adventures</h2>
-      <p class="text-xl text-secondary max-w-2xl mx-auto">
-        Catch up on our most recent sessions and adventures
+<section class="py-16 bg-surface-secondary w-full">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-12">
+      <div class="flex items-center justify-center gap-4 mb-6">
+        <div class="w-12 h-12 bg-ddb-red flex items-center justify-center">
+          <span class="text-white text-2xl font-bold">⚔️</span>
+        </div>
+        <h2 class="text-4xl font-bold text-primary">Recent Chronicles</h2>
+      </div>
+      <p class="text-xl text-secondary max-w-3xl mx-auto">
+        Dive into our latest adventures and memorable moments from the campaign
       </p>
     </div>
 
     {
       latestSessions.length > 0 ? (
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16 max-w-none">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
           {latestSessions.map((session) => (
             <SessionCard entry={session} />
           ))}
         </div>
       ) : (
-        <div class="text-center py-20 bg-surface-elevated rounded-2xl border border-primary max-w-2xl mx-auto">
-          <div class="text-8xl mb-6">🎲</div>
-          <h3 class="text-3xl font-bold text-primary mb-4">
+        <div class="ddb-card p-12 text-center max-w-2xl mx-auto">
+          <div class="w-20 h-20 bg-gold-600 mx-auto mb-6 flex items-center justify-center">
+            <span class="text-white text-3xl">🎲</span>
+          </div>
+          <h3 class="text-2xl font-bold text-primary mb-4">
             Adventure Awaits!
           </h3>
           <p class="text-secondary text-lg">
-            Our first session will be documented here soon.
+            Our first session will be chronicled here soon. Check back for
+            updates!
           </p>
         </div>
       )
@@ -49,19 +57,21 @@ const latestSessions = allSessions.slice(0, 3);
     <div class="text-center">
       <a
         href="/journal"
-        class="group inline-flex items-center px-8 py-4 border-2 border-transparent text-lg font-semibold rounded-xl text-white transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105"
-        style="background: linear-gradient(135deg, rgb(var(--accent-600)), rgb(var(--accent-500)));"
+        class="ddb-button-primary px-8 py-4 inline-flex items-center gap-3 text-lg font-semibold"
       >
-        <span>View All Sessions</span>
+        <span>📚</span>
+        <span>View All Chronicles</span>
         <svg
-          class="ml-3 w-6 h-6 group-hover:translate-x-1 transition-transform"
-          fill="currentColor"
-          viewBox="0 0 20 20"
+          class="w-5 h-5 transition-transform group-hover:translate-x-1"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
         >
           <path
-            fill-rule="evenodd"
-            d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
-            clip-rule="evenodd"></path>
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
         </svg>
       </a>
     </div>
