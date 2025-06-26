@@ -1,0 +1,459 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import HoloCard from "../components/ui/HoloCard.astro";
+
+// Import the existing placeholder images from the project
+import blogPlaceholder1 from "../assets/blog-placeholder-1.jpg";
+import blogPlaceholder1Holo from "../assets/blog-placeholder-1-holo.jpg";
+import blogPlaceholder2 from "../assets/blog-placeholder-2.jpg";
+import blogPlaceholder2Holo from "../assets/blog-placeholder-2-holo.jpg";
+import blogPlaceholder3 from "../assets/blog-placeholder-3.jpg";
+import blogPlaceholder3Holo from "../assets/blog-placeholder-3-holo.jpg";
+import blogPlaceholder4 from "../assets/blog-placeholder-4.jpg";
+import blogPlaceholder4Holo from "../assets/blog-placeholder-4-holo.jpg";
+import blogPlaceholder5 from "../assets/blog-placeholder-5.jpg";
+import blogPlaceholder5Holo from "../assets/blog-placeholder-5-holo.jpg";
+---
+
+<BaseLayout
+  title="HoloCard Component Test Page"
+  description="Testing the holographic card component"
+>
+  <main class="min-h-screen bg-surface py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Header -->
+      <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-primary mb-4">
+          HoloCard Component Test
+        </h1>
+        <p class="text-lg text-secondary max-w-2xl mx-auto">
+          Showcase of the holographic hover effect component extracted from the
+          HeroSection. Hover over the cards to see the shimmer and holographic
+          overlay effects.
+        </p>
+      </div>
+
+      <!-- Basic Examples Grid -->
+      <section class="mb-16">
+        <h2 class="text-2xl font-bold text-primary mb-8">Basic Examples</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Simple Background Only -->
+          <HoloCard
+            backgroundImage={blogPlaceholder1.src}
+            class="h-64 rounded-lg overflow-hidden border border-primary"
+          >
+            <div class="p-6 h-full flex flex-col justify-end">
+              <div
+                class="bg-surface/90 backdrop-blur-sm p-4 border-l-4 border-ddb-red"
+              >
+                <h3 class="text-lg font-bold text-primary mb-2">
+                  Background Only
+                </h3>
+                <p class="text-sm text-secondary">
+                  Simple shimmer effect with background image only.
+                </p>
+              </div>
+            </div>
+          </HoloCard>
+
+          <!-- With Holographic Mask -->
+          <HoloCard
+            backgroundImage={blogPlaceholder2.src}
+            holoMask={blogPlaceholder2Holo.src}
+            class="h-64 rounded-lg overflow-hidden border border-primary"
+          >
+            <div class="p-6 h-full flex flex-col justify-center">
+              <div class="text-center">
+                <div
+                  class="w-12 h-12 bg-accent-600 rounded-full flex items-center justify-center mx-auto mb-4"
+                >
+                  <span class="text-white font-bold text-xl">✨</span>
+                </div>
+                <h3 class="text-lg font-bold text-primary mb-2">
+                  With Holo Mask
+                </h3>
+                <p class="text-sm text-secondary">
+                  Background + holographic overlay mask effect.
+                </p>
+              </div>
+            </div>
+          </HoloCard>
+
+          <!-- Custom Opacity Settings -->
+          <HoloCard
+            backgroundImage={blogPlaceholder3.src}
+            holoMask={blogPlaceholder3Holo.src}
+            backgroundOpacity={0.6}
+            holoOpacity={0.25}
+            class="h-64 rounded-lg overflow-hidden border border-primary"
+          >
+            <div class="p-6 h-full flex flex-col justify-center">
+              <div class="text-center">
+                <div
+                  class="w-12 h-12 bg-gold-600 rounded-full flex items-center justify-center mx-auto mb-4"
+                >
+                  <span class="text-white font-bold text-xl">🔮</span>
+                </div>
+                <h3 class="text-lg font-bold text-primary mb-2">
+                  Custom Opacity
+                </h3>
+                <p class="text-sm text-secondary">
+                  Higher background (0.6) and holo (0.25) opacity.
+                </p>
+              </div>
+            </div>
+          </HoloCard>
+        </div>
+      </section>
+
+      <!-- Different Sizes -->
+      <section class="mb-16">
+        <h2 class="text-2xl font-bold text-primary mb-8">Different Sizes</h2>
+
+        <!-- Large Hero Card -->
+        <div class="mb-8">
+          <HoloCard
+            backgroundImage={blogPlaceholder4.src}
+            holoMask={blogPlaceholder4Holo.src}
+            backgroundOpacity={0.7}
+            class="h-96 rounded-xl overflow-hidden border border-primary"
+          >
+            <div class="p-8 h-full flex items-end">
+              <div class="max-w-2xl">
+                <div
+                  class="bg-surface/95 backdrop-blur-sm p-8 border-l-4 border-ddb-red rounded-r-lg"
+                >
+                  <div class="flex items-center gap-3 mb-4">
+                    <div
+                      class="w-10 h-10 bg-ddb-red flex items-center justify-center"
+                    >
+                      <span class="text-white font-bold text-lg">🏰</span>
+                    </div>
+                    <span
+                      class="text-sm uppercase tracking-wider text-ddb-red font-semibold"
+                    >
+                      Large Hero Card
+                    </span>
+                  </div>
+
+                  <h3 class="text-3xl font-bold text-primary mb-4">
+                    Epic Adventure Awaits
+                  </h3>
+                  <p class="text-lg text-secondary mb-6">
+                    This large format card demonstrates how the holographic
+                    effect scales beautifully for hero sections and featured
+                    content areas.
+                  </p>
+
+                  <button
+                    class="ddb-button-primary px-6 py-3 inline-flex items-center gap-2"
+                  >
+                    <span>Start Adventure</span>
+                    <svg
+                      class="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </HoloCard>
+        </div>
+
+        <!-- Small Cards Row -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <HoloCard
+            backgroundImage={blogPlaceholder1.src}
+            holoMask={blogPlaceholder1Holo.src}
+            class="h-32 rounded-lg overflow-hidden border border-primary"
+          >
+            <div class="p-3 h-full flex items-center justify-center">
+              <div class="text-center">
+                <div class="text-2xl mb-1">⚔️</div>
+                <div class="text-xs font-semibold text-primary">Combat</div>
+              </div>
+            </div>
+          </HoloCard>
+
+          <HoloCard
+            backgroundImage={blogPlaceholder2.src}
+            holoMask={blogPlaceholder2Holo.src}
+            class="h-32 rounded-lg overflow-hidden border border-primary"
+          >
+            <div class="p-3 h-full flex items-center justify-center">
+              <div class="text-center">
+                <div class="text-2xl mb-1">🧙‍♂️</div>
+                <div class="text-xs font-semibold text-primary">Magic</div>
+              </div>
+            </div>
+          </HoloCard>
+
+          <HoloCard
+            backgroundImage={blogPlaceholder3.src}
+            holoMask={blogPlaceholder3Holo.src}
+            class="h-32 rounded-lg overflow-hidden border border-primary"
+          >
+            <div class="p-3 h-full flex items-center justify-center">
+              <div class="text-center">
+                <div class="text-2xl mb-1">🗺️</div>
+                <div class="text-xs font-semibold text-primary">Explore</div>
+              </div>
+            </div>
+          </HoloCard>
+
+          <HoloCard
+            backgroundImage={blogPlaceholder4.src}
+            holoMask={blogPlaceholder4Holo.src}
+            class="h-32 rounded-lg overflow-hidden border border-primary"
+          >
+            <div class="p-3 h-full flex items-center justify-center">
+              <div class="text-center">
+                <div class="text-2xl mb-1">💎</div>
+                <div class="text-xs font-semibold text-primary">Loot</div>
+              </div>
+            </div>
+          </HoloCard>
+        </div>
+      </section>
+
+      <!-- Interactive Examples -->
+      <section class="mb-16">
+        <h2 class="text-2xl font-bold text-primary mb-8">
+          Interactive Examples
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Clickable Card with Link -->
+          <HoloCard
+            backgroundImage={blogPlaceholder5.src}
+            holoMask={blogPlaceholder5Holo.src}
+            class="h-64 rounded-lg overflow-hidden border border-primary cursor-pointer hover:border-ddb-red transition-colors"
+          >
+            <a href="/journal" class="block p-6 h-full">
+              <div class="h-full flex flex-col justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="w-6 h-6">📖</span>
+                  <span
+                    class="text-xs uppercase tracking-wider text-accent-600 font-semibold"
+                  >
+                    Clickable
+                  </span>
+                </div>
+
+                <div>
+                  <h3 class="text-lg font-bold text-primary mb-2">
+                    Session Journal
+                  </h3>
+                  <p class="text-sm text-secondary">
+                    Click this card to navigate to the journal section.
+                  </p>
+                </div>
+              </div>
+            </a>
+          </HoloCard>
+
+          <!-- Card with Complex Content -->
+          <HoloCard
+            backgroundImage={blogPlaceholder1.src}
+            holoMask={blogPlaceholder1Holo.src}
+            class="h-64 rounded-lg overflow-hidden border border-primary"
+          >
+            <div class="p-6 h-full flex flex-col">
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-2">
+                  <div
+                    class="w-8 h-8 bg-gold-600 rounded-full flex items-center justify-center"
+                  >
+                    <span class="text-white font-bold text-sm">LV</span>
+                  </div>
+                  <span
+                    class="text-xs uppercase tracking-wider text-gold-600 font-semibold"
+                  >
+                    Character Stats
+                  </span>
+                </div>
+                <span class="text-xs text-muted">Level 5</span>
+              </div>
+
+              <h3 class="text-lg font-bold text-primary mb-3">
+                Aldor the Brave
+              </h3>
+
+              <div class="space-y-2 flex-1">
+                <div class="flex justify-between text-sm">
+                  <span class="text-secondary">Health</span>
+                  <span class="text-primary font-semibold">45/45</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-secondary">Mana</span>
+                  <span class="text-primary font-semibold">20/20</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-secondary">Armor Class</span>
+                  <span class="text-primary font-semibold">16</span>
+                </div>
+              </div>
+
+              <button class="ddb-button-secondary w-full py-2 text-sm mt-4">
+                View Full Sheet
+              </button>
+            </div>
+          </HoloCard>
+        </div>
+      </section>
+
+      <!-- Layout Variations -->
+      <section class="mb-16">
+        <h2 class="text-2xl font-bold text-primary mb-8">Layout Variations</h2>
+
+        <!-- Wide Card -->
+        <div class="mb-6">
+          <HoloCard
+            backgroundImage={blogPlaceholder2.src}
+            holoMask={blogPlaceholder2Holo.src}
+            backgroundOpacity={0.4}
+            class="h-48 rounded-lg overflow-hidden border border-primary"
+          >
+            <div class="p-6 h-full flex items-center">
+              <div class="flex items-center gap-8 w-full">
+                <div
+                  class="w-16 h-16 bg-ddb-red rounded-full flex items-center justify-center flex-shrink-0"
+                >
+                  <span class="text-white font-bold text-2xl">🎲</span>
+                </div>
+                <div class="flex-1">
+                  <h3 class="text-xl font-bold text-primary mb-2">
+                    Wide Format Card
+                  </h3>
+                  <p class="text-secondary">
+                    Perfect for displaying information in a horizontal layout
+                    with icons and extended content.
+                  </p>
+                </div>
+                <button class="ddb-button-primary px-4 py-2 flex-shrink-0">
+                  Action
+                </button>
+              </div>
+            </div>
+          </HoloCard>
+        </div>
+
+        <!-- Square Grid -->
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+          {
+            [1, 2, 3, 4, 5].map((i) => (
+              <HoloCard
+                backgroundImage={
+                  i % 2 === 0 ? blogPlaceholder3.src : blogPlaceholder4.src
+                }
+                holoMask={
+                  i % 2 === 0
+                    ? blogPlaceholder3Holo.src
+                    : blogPlaceholder4Holo.src
+                }
+                class="aspect-square rounded-lg overflow-hidden border border-primary"
+              >
+                <div class="p-4 h-full flex flex-col justify-center text-center">
+                  <div class="text-3xl mb-2">
+                    {i === 1
+                      ? "🗡️"
+                      : i === 2
+                        ? "🛡️"
+                        : i === 3
+                          ? "🏹"
+                          : i === 4
+                            ? "🧪"
+                            : "📜"}
+                  </div>
+                  <div class="text-xs font-semibold text-primary">Item {i}</div>
+                </div>
+              </HoloCard>
+            ))
+          }
+        </div>
+      </section>
+
+      <!-- Performance Test -->
+      <section class="mb-16">
+        <h2 class="text-2xl font-bold text-primary mb-8">
+          Performance Test (Many Cards)
+        </h2>
+        <p class="text-secondary mb-6">
+          This section tests performance with multiple cards to ensure smooth
+          animations.
+        </p>
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+          {
+            Array.from({ length: 18 }).map((_, i) => (
+              <HoloCard
+                backgroundImage={
+                  [blogPlaceholder1, blogPlaceholder2, blogPlaceholder3][i % 3]
+                    .src
+                }
+                holoMask={
+                  [
+                    blogPlaceholder1Holo,
+                    blogPlaceholder2Holo,
+                    blogPlaceholder3Holo,
+                  ][i % 3].src
+                }
+                class="h-24 rounded overflow-hidden border border-primary"
+              >
+                <div class="p-2 h-full flex items-center justify-center">
+                  <div class="text-center">
+                    <div class="text-lg mb-1">
+                      {["⚔️", "🛡️", "🏹", "🧪", "📜", "💎"][i % 6]}
+                    </div>
+                    <div class="text-xs font-semibold text-primary">
+                      {i + 1}
+                    </div>
+                  </div>
+                </div>
+              </HoloCard>
+            ))
+          }
+        </div>
+      </section>
+
+      <!-- Technical Info -->
+      <section class="mb-8">
+        <div class="bg-surface-secondary border border-primary rounded-lg p-6">
+          <h2 class="text-xl font-bold text-primary mb-4">
+            Technical Information
+          </h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+            <div>
+              <h3 class="font-semibold text-primary mb-2">Effects Included:</h3>
+              <ul class="space-y-1 text-secondary">
+                <li>• Shimmer animation (1.2s gradient sweep)</li>
+                <li>• Holographic mask overlay (0.4s fade)</li>
+                <li>• Background opacity enhancement</li>
+                <li>• Content filter adjustments</li>
+                <li>• Hardware-accelerated transforms</li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-semibold text-primary mb-2">
+                Performance Notes:
+              </h3>
+              <ul class="space-y-1 text-secondary">
+                <li>• Uses CSS transforms for smooth animation</li>
+                <li>• Minimal JavaScript footprint</li>
+                <li>• Self-contained styles</li>
+                <li>• Optimized for multiple instances</li>
+                <li>• Respects accessibility preferences</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</BaseLayout>

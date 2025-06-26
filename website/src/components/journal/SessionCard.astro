@@ -1,6 +1,7 @@
 ---
 import { Image } from "astro:assets";
 import FormattedDate from "@/components/layout/FormattedDate.astro";
+import HoloCard from "@/components/ui/HoloCard.astro";
 
 interface Props {
   entry: any;
@@ -21,61 +22,109 @@ const displayTitle =
 const displayDate = entry.data.session_date || entry.data.pubDate;
 ---
 
-<article
-  class={`group bg-surface-elevated rounded-2xl shadow-card hover:shadow-card-hover transition-all duration-300 overflow-hidden border border-primary hover:border-accent-400 hover:scale-105 ${
+<HoloCard
+  backgroundImage={entry.data.heroImage?.src ||
+    "/images/default-session-bg.jpg"}
+  backgroundOpacity={0.4}
+  class={`group rounded-2xl shadow-card hover:shadow-card-hover transition-all duration-300 overflow-hidden border border-primary hover:border-accent-400 ${
     featured ? "md:col-span-2 lg:col-span-3" : ""
   }`}
 >
   <a href={`/journal/${entry.id}/`} class="block h-full">
-    {
-      entry.data.heroImage && (
-        <div class="relative overflow-hidden">
-          <Image
-            width={featured ? 960 : 480}
-            height={featured ? 320 : 240}
-            src={entry.data.heroImage}
-            alt={displayTitle}
-            class="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
-          />
-          <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-          {entry.data.session_number && (
-            <div
-              class="absolute top-4 left-4 px-4 py-2 rounded-full text-sm font-bold session-number shadow-lg"
-              style="background: linear-gradient(135deg, rgb(var(--accent-600)), rgb(var(--accent-500))); color: white;"
-            >
-              Session {entry.data.session_number}
-            </div>
-          )}
-        </div>
-      )
-    }
+    <div class="relative h-full min-h-[320px] flex flex-col">
+      {
+        entry.data.heroImage && (
+          <div class="relative h-48 overflow-hidden flex-shrink-0">
+            {entry.data.session_number && (
+              <div
+                class="absolute top-4 left-4 px-4 py-2 rounded-full text-sm font-bold session-number shadow-lg z-10"
+                style="background: linear-gradient(135deg, rgb(var(--accent-600)), rgb(var(--accent-500))); color: white;"
+              >
+                Session {entry.data.session_number}
+              </div>
+            )}
+          </div>
+        )
+      }
 
-    <div class="p-6">
-      <div class="flex items-start justify-between mb-4">
-        <h3
-          class={`font-bold text-primary group-hover:text-accent-600 transition-colors leading-tight ${
-            featured ? "text-2xl" : "text-xl"
-          }`}
-        >
-          {displayTitle}
-        </h3>
+      <div class="p-6 flex-1 flex flex-col">
+        <div class="flex items-start justify-between mb-4">
+          <h3
+            class={`font-bold text-primary group-hover:text-accent-600 transition-colors leading-tight ${
+              featured ? "text-2xl" : "text-xl"
+            }`}
+          >
+            {displayTitle}
+          </h3>
+          {
+            !entry.data.heroImage && entry.data.session_number && (
+              <span
+                class="px-3 py-1 rounded-full text-sm font-bold session-number border flex-shrink-0"
+                style="background: rgba(var(--accent-100), 0.8); color: rgb(var(--accent-700)); border-color: rgba(var(--accent-300), 0.5);"
+              >
+                Session {entry.data.session_number}
+              </span>
+            )
+          }
+        </div>
+
         {
-          !entry.data.heroImage && entry.data.session_number && (
-            <span
-              class="px-3 py-1 rounded-full text-sm font-bold session-number border"
-              style="background: rgba(var(--accent-100), 0.8); color: rgb(var(--accent-700)); border-color: rgba(var(--accent-300), 0.5);"
-            >
-              Session {entry.data.session_number}
-            </span>
+          displayDate && (
+            <p class="text-tertiary text-sm mb-4 flex items-center gap-2">
+              <svg
+                class="w-4 h-4 flex-shrink-0"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
+              </svg>
+              <FormattedDate date={displayDate} />
+            </p>
           )
         }
-      </div>
 
-      {
-        displayDate && (
-          <p class="text-tertiary text-sm mb-4 flex items-center gap-2">
+        {
+          entry.data.description && (
+            <p
+              class="text-secondary text-sm mb-6 session-description leading-relaxed flex-1"
+              style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;"
+            >
+              {entry.data.description}
+            </p>
+          )
+        }
+
+        {
+          entry.data.tags && entry.data.tags.length > 0 && (
+            <div class="flex flex-wrap gap-2 mb-6">
+              {entry.data.tags.slice(0, 3).map((tag: string) => (
+                <span
+                  class="px-2 py-1 rounded-full text-xs font-medium tag-item border transition-colors hover:scale-105"
+                  style="background: rgba(var(--accent-50), 0.5); color: rgb(var(--accent-700)); border-color: rgba(var(--accent-200), 0.5);"
+                >
+                  {tag}
+                </span>
+              ))}
+              {entry.data.tags.length > 3 && (
+                <span class="text-tertiary text-xs self-center font-medium">
+                  +{entry.data.tags.length - 3} more
+                </span>
+              )}
+            </div>
+          )
+        }
+
+        <div class="mt-auto pt-4 border-t border-secondary">
+          <div class="flex items-center justify-between">
+            <span class="text-secondary text-sm font-medium">Read Session</span>
             <svg
-              class="w-4 h-4"
+              class="w-5 h-5 text-tertiary group-hover:text-accent-500 group-hover:translate-x-1 transition-all"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -84,62 +133,11 @@ const displayDate = entry.data.session_date || entry.data.pubDate;
                 stroke-linecap="round"
                 stroke-linejoin="round"
                 stroke-width="2"
-                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-              />
+                d="M9 5l7 7-7 7"></path>
             </svg>
-            <FormattedDate date={displayDate} />
-          </p>
-        )
-      }
-
-      {
-        entry.data.description && (
-          <p
-            class="text-secondary text-sm mb-6 session-description leading-relaxed"
-            style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;"
-          >
-            {entry.data.description}
-          </p>
-        )
-      }
-
-      {
-        entry.data.tags && entry.data.tags.length > 0 && (
-          <div class="flex flex-wrap gap-2">
-            {entry.data.tags.slice(0, 3).map((tag: string) => (
-              <span
-                class="px-2 py-1 rounded-full text-xs font-medium tag-item border transition-colors hover:scale-105"
-                style="background: rgba(var(--accent-50), 0.5); color: rgb(var(--accent-700)); border-color: rgba(var(--accent-200), 0.5);"
-              >
-                {tag}
-              </span>
-            ))}
-            {entry.data.tags.length > 3 && (
-              <span class="text-tertiary text-xs self-center font-medium">
-                +{entry.data.tags.length - 3} more
-              </span>
-            )}
           </div>
-        )
-      }
-
-      <div class="mt-6 pt-4 border-t border-secondary">
-        <div class="flex items-center justify-between">
-          <span class="text-secondary text-sm font-medium">Read Session</span>
-          <svg
-            class="w-5 h-5 text-tertiary group-hover:text-accent-500 group-hover:translate-x-1 transition-all"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M9 5l7 7-7 7"></path>
-          </svg>
         </div>
       </div>
     </div>
   </a>
-</article>
+</HoloCard>

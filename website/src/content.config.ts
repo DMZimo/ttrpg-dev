@@ -26,10 +26,29 @@ const journal = defineCollection({
       session_date: z.coerce.date().optional(),
       duration: z.coerce.date().optional(),
 
-      // Character and NPC references (as string arrays)
-      // Note: These will be converted from [[Link]] format to proper references when content is added
-      characters_involved: z.array(z.string()).optional(),
-      npcs_encountered: z.array(z.string()).optional(),
+      // Character and NPC references (as objects with name and link)
+      characters_involved: z
+        .array(
+          z.union([
+            z.string(), // For backward compatibility
+            z.object({
+              name: z.string(),
+              link: z.string().optional(),
+            }),
+          ])
+        )
+        .optional(),
+      npcs_encountered: z
+        .array(
+          z.union([
+            z.string(), // For backward compatibility
+            z.object({
+              name: z.string(),
+              link: z.string().optional(),
+            }),
+          ])
+        )
+        .optional(),
 
       // Session navigation
       previous_session: z.string().optional(),
@@ -39,6 +58,7 @@ const journal = defineCollection({
       pubDate: z.coerce.date().optional(),
       updatedDate: z.coerce.date().optional(),
       heroImage: image().optional(),
+      cover_image: image().optional(),
     }),
 });
 

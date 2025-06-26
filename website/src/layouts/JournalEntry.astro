@@ -2,6 +2,7 @@
 import type { CollectionEntry } from "astro:content";
 import BaseLayout from "./BaseLayout.astro";
 import FormattedDate from "@/components/layout/FormattedDate.astro";
+import HoloCard from "@/components/ui/HoloCard.astro";
 import { Image } from "astro:assets";
 
 type Props = CollectionEntry<"journal">["data"];
@@ -11,6 +12,7 @@ const {
   description,
   session_title,
   session_number,
+  session_start,
   session_date,
   duration,
   characters_involved,
@@ -21,12 +23,13 @@ const {
   pubDate,
   updatedDate,
   heroImage,
+  cover_image,
 } = Astro.props;
 
 // Use session_title if available, otherwise fall back to title
 const displayTitle =
   session_title || title || `Session ${session_number || ""}`;
-const displayDate = session_date || pubDate;
+const displayDate = session_start || session_date || pubDate;
 ---
 
 <BaseLayout
@@ -35,115 +38,147 @@ const displayDate = session_date || pubDate;
   image={heroImage}
   class="max-w-none"
 >
-  <article class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <article class="py-6">
     {
-      heroImage && (
-        <div class="hero-image mb-12">
-          <Image
-            src={heroImage}
-            alt={displayTitle}
-            class="w-full h-80 md:h-96 object-cover rounded-2xl shadow-card border border-primary"
-          />
+      (cover_image || heroImage) && (
+        <div class="hero-image mb-6 w-full">
+          <HoloCard
+            backgroundImage={(cover_image || heroImage)!.src}
+            backgroundOpacity={0.7}
+            class="relative overflow-hidden w-full"
+          >
+            <div class="relative h-48 md:h-64">
+              <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+              
+              <!-- Header content overlay -->
+              <div class="absolute inset-0 flex flex-col justify-end p-3 md:p-4">
+                <header class="text-center text-white">
+                  {
+                    session_number && (
+                      <div class="session-number text-xs font-bold text-white mb-1 px-2 py-0.5 bg-black/40 backdrop-blur-sm rounded-full inline-block border border-white/20">
+                        Session {session_number}
+                      </div>
+                    )
+                  }
+                  <h1 class="title text-xl md:text-3xl font-bold text-white mb-2 leading-tight drop-shadow-lg">
+                    {displayTitle}
+                  </h1>
+                  <div class="flex items-center justify-center gap-3 text-xs text-white/90 mb-2">
+                    {
+                      displayDate && (
+                        <div class="date drop-shadow">
+                          <FormattedDate date={displayDate} />
+                        </div>
+                      )
+                    }
+                    {
+                      duration && (
+                        <div class="duration drop-shadow">
+                          Duration: <FormattedDate date={duration} />
+                        </div>
+                      )
+                    }
+                    {
+                      updatedDate && (
+                        <div class="last-updated-on text-white/70 drop-shadow">
+                          Updated: <FormattedDate date={updatedDate} />
+                        </div>
+                      )
+                    }
+                  </div>
+                  
+                  <!-- Session Metadata Overlay -->
+                  {
+                    (characters_involved || npcs_encountered || tags) && (
+                      <div class="session-metadata bg-black/30 backdrop-blur-sm rounded-lg p-2 mt-2 not-prose border border-white/20">
+                        <div class="flex flex-wrap items-start gap-3 text-xs">
+                          {characters_involved && characters_involved.length > 0 && (
+                            <div class="characters flex items-center gap-1">
+                              <span class="text-xs">👥</span>
+                              <div class="flex flex-wrap items-center gap-1">
+                                {characters_involved.slice(0, 3).map((character, index) => (
+                                  <span class="text-white/90">
+                                    {typeof character === "string" ? (
+                                      character.replace(/\[\[|\]\]/g, "")
+                                    ) : (
+                                      <a
+                                        href={
+                                          character.link ||
+                                          `/characters/${character.name.toLowerCase().replace(/\s+/g, "-")}`
+                                        }
+                                        class="text-accent-300 hover:text-accent-100 hover:underline transition-colors"
+                                      >
+                                        {character.name}
+                                      </a>
+                                    )}
+                                    {index < Math.min(characters_involved.length, 3) - 1 && <span class="text-white/60">,</span>}
+                                  </span>
+                                ))}
+                                {characters_involved.length > 3 && (
+                                  <span class="text-white/60">+{characters_involved.length - 3}</span>
+                                )}
+                              </div>
+                            </div>
+                          )}
+
+                          {npcs_encountered && npcs_encountered.length > 0 && (
+                            <div class="npcs flex items-center gap-1">
+                              <span class="text-xs">🏘️</span>
+                              <div class="flex flex-wrap items-center gap-1">
+                                {npcs_encountered.slice(0, 3).map((npc, index) => (
+                                  <span class="text-white/90">
+                                    {typeof npc === "string" ? (
+                                      npc.replace(/\[\[|\]\]/g, "")
+                                    ) : (
+                                      <a
+                                        href={
+                                          npc.link ||
+                                          `/npcs/${npc.name.toLowerCase().replace(/\s+/g, "-")}`
+                                        }
+                                        class="text-gold-300 hover:text-gold-100 hover:underline transition-colors"
+                                      >
+                                        {npc.name}
+                                      </a>
+                                    )}
+                                    {index < Math.min(npcs_encountered.length, 3) - 1 && <span class="text-white/60">,</span>}
+                                  </span>
+                                ))}
+                                {npcs_encountered.length > 3 && (
+                                  <span class="text-white/60">+{npcs_encountered.length - 3}</span>
+                                )}
+                              </div>
+                            </div>
+                          )}
+
+                          {tags && tags.length > 0 && (
+                            <div class="tags flex items-center gap-1">
+                              <span class="text-xs">🏷️</span>
+                              <div class="flex flex-wrap gap-1">
+                                {tags.slice(0, 4).map((tag) => (
+                                  <span class="tag px-1 py-0.5 text-xs font-medium rounded border border-white/30 bg-white/10 text-white/90">
+                                    {tag}
+                                  </span>
+                                ))}
+                                {tags.length > 4 && (
+                                  <span class="text-white/60 text-xs">+{tags.length - 4}</span>
+                                )}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )
+                  }
+                </header>
+              </div>
+            </div>
+          </HoloCard>
         </div>
       )
     }
 
-    <div class="prose prose-lg max-w-none mx-auto">
-      <header class="mb-12 text-center border-b border-primary pb-12">
-        {
-          session_number && (
-            <div class="session-number text-sm font-bold text-accent-600 mb-3 px-4 py-2 bg-accent-50 rounded-full inline-block border border-accent-200">
-              Session {session_number}
-            </div>
-          )
-        }
-        <h1 class="title text-5xl font-bold text-primary mb-6 leading-tight">
-          {displayTitle}
-        </h1>
-        {
-          displayDate && (
-            <div class="date text-secondary mb-3 text-lg">
-              <FormattedDate date={displayDate} />
-            </div>
-          )
-        }
-        {
-          duration && (
-            <div class="duration text-tertiary">
-              Duration: <FormattedDate date={duration} />
-            </div>
-          )
-        }
-        {
-          updatedDate && (
-            <div class="last-updated-on text-tertiary mt-4 text-sm">
-              Last updated on <FormattedDate date={updatedDate} />
-            </div>
-          )
-        }
-      </header>
-
-      <!-- Session Metadata -->
-      {
-        (characters_involved || npcs_encountered || tags) && (
-          <div class="session-metadata bg-surface-elevated rounded-2xl p-8 mb-12 not-prose shadow-card border border-primary">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {characters_involved && characters_involved.length > 0 && (
-                <div class="characters">
-                  <h3 class="text-xl font-bold text-primary mb-4 flex items-center gap-2">
-                    <span class="text-2xl">👥</span>
-                    <span>Characters Involved</span>
-                  </h3>
-                  <ul class="space-y-2">
-                    {characters_involved.map((character) => (
-                      <li class="text-secondary flex items-center gap-2">
-                        <span class="w-2 h-2 bg-accent-400 rounded-full" />
-                        {character.replace(/\[\[|\]\]/g, "")}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {npcs_encountered && npcs_encountered.length > 0 && (
-                <div class="npcs">
-                  <h3 class="text-xl font-bold text-primary mb-4 flex items-center gap-2">
-                    <span class="text-2xl">🏘️</span>
-                    <span>NPCs Encountered</span>
-                  </h3>
-                  <ul class="space-y-2">
-                    {npcs_encountered.map((npc) => (
-                      <li class="text-secondary flex items-center gap-2">
-                        <span class="w-2 h-2 bg-gold-400 rounded-full" />
-                        {npc.replace(/\[\[|\]\]/g, "")}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {tags && tags.length > 0 && (
-                <div class="tags">
-                  <h3 class="text-xl font-bold text-primary mb-4 flex items-center gap-2">
-                    <span class="text-2xl">🏷️</span>
-                    <span>Tags</span>
-                  </h3>
-                  <div class="flex flex-wrap gap-2">
-                    {tags.map((tag) => (
-                      <span
-                        class="tag px-3 py-1 text-sm font-medium rounded-full border transition-colors hover:scale-105"
-                        style="background: rgba(var(--accent-100), 0.5); color: rgb(var(--accent-700)); border-color: rgba(var(--accent-300), 0.5);"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        )
-      }
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="prose prose-lg max-w-none mx-auto">
 
       <!-- Session Content -->
       <div class="prose prose-xl max-w-none text-secondary">
@@ -154,68 +189,83 @@ const displayDate = session_date || pubDate;
       {
         (previous_session || next_session) && (
           <div class="session-navigation mt-16 pt-12 border-t border-primary">
-            <div class="nav-links flex justify-between">
-              {previous_session ? (
-                <a
-                  href={`/journal/${previous_session
-                    .replace(/\[\[|\]\]/g, "")
-                    .toLowerCase()
-                    .replace(/\s+/g, "-")}`}
-                  class="prev-session group bg-surface-elevated hover:bg-surface-tertiary text-primary px-6 py-4 rounded-xl transition-all duration-200 flex items-center gap-3 shadow-card hover:shadow-card-hover border border-primary hover:border-accent-400 hover:scale-105"
+            <div class="nav-links grid grid-cols-1 md:grid-cols-2 gap-6">
+              {previous_session && (
+                <HoloCard
+                  backgroundImage="/images/nav-bg-prev.jpg"
+                  backgroundOpacity={0.2}
+                  class="rounded-xl overflow-hidden border border-primary hover:border-accent-400 transition-colors"
                 >
-                  <svg
-                    class="w-6 h-6 group-hover:-translate-x-1 transition-transform"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
+                  <a
+                    href={`/journal/${previous_session
+                      .replace(/\[\[|\]\]/g, "")
+                      .toLowerCase()
+                      .replace(/\s+/g, "-")}`}
+                    class="prev-session group block p-6 h-full"
                   >
-                    <path
-                      fill-rule="evenodd"
-                      d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                      clip-rule="evenodd"
-                    />
-                  </svg>
-                  <div>
-                    <div class="font-semibold">Previous Session</div>
-                    <div class="text-sm text-secondary">
-                      {previous_session.replace(/\[\[|\]\]/g, "")}
+                    <div class="flex items-center gap-3 h-full">
+                      <svg
+                        class="w-8 h-8 text-secondary group-hover:text-accent-400 group-hover:-translate-x-1 transition-all flex-shrink-0"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                          clip-rule="evenodd"
+                        />
+                      </svg>
+                      <div class="min-w-0">
+                        <div class="font-semibold text-primary group-hover:text-accent-400 transition-colors">Previous Session</div>
+                        <div class="text-sm text-secondary truncate">
+                          {previous_session.replace(/\[\[|\]\]/g, "")}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </a>
-              ) : (
-                <div />
+                  </a>
+                </HoloCard>
               )}
 
               {next_session && (
-                <a
-                  href={`/journal/${next_session
-                    .replace(/\[\[|\]\]/g, "")
-                    .toLowerCase()
-                    .replace(/\s+/g, "-")}`}
-                  class="next-session group bg-surface-elevated hover:bg-surface-tertiary text-primary px-6 py-4 rounded-xl transition-all duration-200 flex items-center gap-3 shadow-card hover:shadow-card-hover border border-primary hover:border-accent-400 hover:scale-105"
+                <HoloCard
+                  backgroundImage="/images/nav-bg-next.jpg"
+                  backgroundOpacity={0.2}
+                  class="rounded-xl overflow-hidden border border-primary hover:border-accent-400 transition-colors"
                 >
-                  <div class="text-right">
-                    <div class="font-semibold">Next Session</div>
-                    <div class="text-sm text-secondary">
-                      {next_session.replace(/\[\[|\]\]/g, "")}
-                    </div>
-                  </div>
-                  <svg
-                    class="w-6 h-6 group-hover:translate-x-1 transition-transform"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
+                  <a
+                    href={`/journal/${next_session
+                      .replace(/\[\[|\]\]/g, "")
+                      .toLowerCase()
+                      .replace(/\s+/g, "-")}`}
+                    class="next-session group block p-6 h-full"
                   >
-                    <path
-                      fill-rule="evenodd"
-                      d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                      clip-rule="evenodd"
-                    />
-                  </svg>
-                </a>
+                    <div class="flex items-center gap-3 h-full justify-end text-right">
+                      <div class="min-w-0">
+                        <div class="font-semibold text-primary group-hover:text-accent-400 transition-colors">Next Session</div>
+                        <div class="text-sm text-secondary truncate">
+                          {next_session.replace(/\[\[|\]\]/g, "")}
+                        </div>
+                      </div>
+                      <svg
+                        class="w-8 h-8 text-secondary group-hover:text-accent-400 group-hover:translate-x-1 transition-all flex-shrink-0"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                          clip-rule="evenodd"
+                        />
+                      </svg>
+                    </div>
+                  </a>
+                </HoloCard>
               )}
             </div>
           </div>
         )
       }
+      </div>
     </div>
   </article>
 </BaseLayout>
