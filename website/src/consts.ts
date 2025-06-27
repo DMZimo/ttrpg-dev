@@ -17,9 +17,9 @@ export const TIMEZONE = "Asia/Jerusalem";
 export const CAMPAIGN_DATE = {
   year: 1491,
   month: 4, // 1-12 (Hammer to Nightal)
-  day: 15, // 1-30
-  hour: 14, // 0-23 (24-hour format)
-  minute: 30, // 0-59
+  day: 17, // 1-30
+  hour: 6, // 0-23 (24-hour format)
+  minute: 0, // 0-59
 };
 
 // Campaign Settings

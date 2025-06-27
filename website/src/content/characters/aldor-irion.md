@@ -1,26 +1,29 @@
 ---
-name: "Aldor Irion"
-race: "Human"
-class: "Wizard"
-level: 3
-hp:
-  current: 16
-  max: 18
-ac: 12
-status: healthy
-description: "Scholar of arcane arts with family ties to Red Larch, bringing magical power and local knowledge."
-gradient: "linear-gradient(135deg, rgb(59 130 246), rgb(99 102 241))"
-roles:
-  - name: "Spellcaster"
-    style: "background: rgb(59 130 246 / 0.1); color: rgb(59 130 246);"
-  - name: "Scholar"
-    style: "background: rgb(147 51 234 / 0.1); color: rgb(147 51 234);"
+player: "TheFlightlessDutchman"
+active: true
+is_public: true
+publish_date_iso: 2025-06-28T00:00:00
+last_updated_iso: 2025-06-28T00:00:00
 tags:
-  - spellcaster
+  - melee
   - scholar
   - local-knowledge
-isPlayerCharacter: true
-active: true
+
+name: "Aldor Irion"
+race: "Aasimar"
+subrace: "Scourge"
+background: "Noble"
+- class: "Paladin"
+  level: 2
+  subclass: "Oath of Conquest"
+description: ""
+status: "alive"
+
+hp: 18
+ac: 12
+roles:
+- name: "Tank"
+- name: "Healer"
 ---
 
 # Aldor Irion - Human Wizard

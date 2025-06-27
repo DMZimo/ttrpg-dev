@@ -22,7 +22,7 @@ tags:
 
 # In-Game Geospatial Metadata
 ingame_start: 1491-04-15T20:00:00
-ingame_end: 1491-04-17T20:00:00
+ingame_end: 1491-04-17T06:00:00
 primary_location: "Red Larch Surroundings"
 locations_visited:
   - name: "Red Larch"

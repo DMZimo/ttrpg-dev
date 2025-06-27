@@ -14,11 +14,11 @@ regions:
 tags: ["calendar", "harptos", "timekeeping"]
 ---
 
-# The Calendar of Harptos
+## The Calendar of Harptos
 
 The Calendar of Harptos is the most widely used calendar system across Faerûn, named after its creator, the wizard Harptos of Kaalethom. This systematic approach to timekeeping has brought order to the diverse cultures and regions of the continent.
 
-## Structure
+### Structure
 
 ### Year Length
 
