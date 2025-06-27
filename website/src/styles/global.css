@@ -377,6 +377,28 @@ body {
   box-shadow: var(--card-shadow-hover);
 }
 
+/* Ring utilities for selection styling */
+.ring-2 {
+  box-shadow: 0 0 0 2px var(--tw-ring-color);
+}
+
+.ring-success {
+  --tw-ring-color: rgb(var(--success));
+}
+
+/* Additional semantic color utilities */
+.bg-success {
+  background-color: rgb(var(--success));
+}
+
+.text-success {
+  color: rgb(var(--success));
+}
+
+.border-success {
+  border-color: rgb(var(--success));
+}
+
 /* Calendar Component Color Classes using CSS Custom Properties */
 .calendar-bg {
   background-color: rgb(var(--surface-light));
