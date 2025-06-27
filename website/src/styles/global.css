@@ -20,9 +20,9 @@
   --primary-900: 28 28 39;
 
   /* D&D Beyond signature colors */
-  --ddb-red: 176 46 46;
-  --ddb-red-dark: 140 32 32;
-  --ddb-red-light: 220 60 60;
+  --hero-red: 176 46 46;
+  --hero-red-dark: 140 32 32;
+  --hero-red-light: 220 60 60;
 
   /* Accent colors - Warm reds for highlights */
   --accent-50: 254 242 242;
@@ -272,35 +272,109 @@ body {
   background-image: var(--texture-noise);
 }
 
-/* D&D Beyond inspired utility classes */
-.ddb-card {
+/* Standard Button System for Button.tsx component */
+.btn-primary {
+  background-color: rgb(var(--accent-500));
+  color: rgb(var(--text-primary));
+  border: 1px solid rgb(var(--accent-500));
+  font-weight: 600;
+  transition: var(--transition);
+}
+
+.btn-primary:hover {
+  background-color: rgb(var(--accent-600));
+  border-color: rgb(var(--accent-600));
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: rgb(var(--text-primary));
+  border: 1px solid rgb(var(--border-secondary));
+  font-weight: 600;
+  transition: var(--transition);
+}
+
+.btn-secondary:hover {
+  background-color: rgb(var(--surface-tertiary));
+  border-color: rgb(var(--accent-500));
+  color: rgb(var(--accent-500));
+  transform: translateY(-1px);
+}
+
+.btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgb(var(--text-tertiary));
+  background: rgb(var(--surface-elevated));
+  border: 1px solid rgb(var(--border-primary));
+  transition: var(--transition);
+}
+
+.btn-icon:hover {
+  color: rgb(var(--accent-500));
+  background: rgb(var(--surface-tertiary));
+  border-color: rgb(var(--accent-400));
+  transform: translateY(-2px);
+}
+
+.btn-icon:focus-visible {
+  outline: 2px solid rgb(var(--accent-500));
+  outline-offset: 2px;
+}
+
+/* Hero Button System for HeroButton.tsx component (D&D Beyond inspired) */
+.hero-card {
   background-color: rgb(var(--card-bg));
   border: 1px solid rgb(var(--border-primary));
   box-shadow: var(--card-shadow);
   transition: var(--transition);
 }
 
-.ddb-card:hover {
+.hero-card:hover {
   box-shadow: var(--card-shadow-hover);
   transform: translateY(-2px);
 }
 
-.ddb-button-primary {
-  background-color: rgb(var(--ddb-red));
+.hero-button-primary {
+  background-color: rgb(var(--hero-red));
   color: rgb(var(--text-primary));
   border: none;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   transition: var(--transition);
+  position: relative;
+  overflow: hidden;
 }
 
-.ddb-button-primary:hover {
-  background-color: rgb(var(--ddb-red-dark));
+.hero-button-primary::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.hero-button-primary:hover::before {
+  left: 100%;
+}
+
+.hero-button-primary:hover {
+  background-color: rgb(var(--hero-red-dark));
   transform: translateY(-1px);
 }
 
-.ddb-button-secondary {
+.hero-button-secondary {
   background-color: transparent;
   color: rgb(var(--text-primary));
   border: 2px solid rgb(var(--border-secondary));
@@ -310,9 +384,22 @@ body {
   transition: var(--transition);
 }
 
-.ddb-button-secondary:hover {
+.hero-button-secondary:hover {
   background-color: rgb(var(--surface-tertiary));
   border-color: rgb(var(--text-primary));
+  transform: translateY(-1px);
+}
+
+/* Button states for better accessibility */
+.hero-button-primary:active,
+.hero-button-secondary:active {
+  transform: translateY(0);
+}
+
+.hero-button-primary:focus-visible,
+.hero-button-secondary:focus-visible {
+  outline: 2px solid rgb(var(--hero-red));
+  outline-offset: 2px;
 }
 
 .hero-section-bg {
@@ -433,11 +520,11 @@ body {
 }
 
 .calendar-accent {
-  color: rgb(var(--ddb-red));
+  color: rgb(var(--hero-red));
 }
 
 .calendar-accent:hover {
-  color: rgb(var(--ddb-red-light));
+  color: rgb(var(--hero-red-light));
 }
 
 .calendar-accent-bg {
@@ -445,7 +532,7 @@ body {
 }
 
 .calendar-accent-border {
-  border-color: rgb(var(--ddb-red));
+  border-color: rgb(var(--hero-red));
 }
 
 .calendar-success-bg {
@@ -547,13 +634,13 @@ body {
 .bg-gradient-to-r {
   background-image: linear-gradient(to right, var(--tw-gradient-stops));
 }
-.from-ddb-red-dark {
-  --tw-gradient-from: rgb(var(--ddb-red-dark));
-  --tw-gradient-to: rgb(var(--ddb-red-dark) / 0);
+.from-hero-red-dark {
+  --tw-gradient-from: rgb(var(--hero-red-dark));
+  --tw-gradient-to: rgb(var(--hero-red-dark) / 0);
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
-.to-ddb-red {
-  --tw-gradient-to: rgb(var(--ddb-red));
+.to-hero-red {
+  --tw-gradient-to: rgb(var(--hero-red));
 }
 .from-accent-600 {
   --tw-gradient-from: rgb(var(--accent-600));
@@ -611,7 +698,7 @@ body {
 }
 
 .prose blockquote {
-  border-left: 4px solid rgb(var(--ddb-red));
+  border-left: 4px solid rgb(var(--hero-red));
   padding-left: 1rem;
   margin: 1.5rem 0;
   font-style: italic;
@@ -631,14 +718,14 @@ body {
 }
 
 .prose a {
-  color: rgb(var(--ddb-red-light));
+  color: rgb(var(--hero-red-light));
   text-decoration: none;
   font-weight: 500;
   transition: var(--transition);
 }
 
 .prose a:hover {
-  color: rgb(var(--ddb-red));
+  color: rgb(var(--hero-red));
   text-decoration: underline;
 }
 
@@ -667,7 +754,7 @@ body {
 
 /* Focus styles for accessibility */
 *:focus-visible {
-  outline: 2px solid rgb(var(--ddb-red));
+  outline: 2px solid rgb(var(--hero-red));
   outline-offset: 2px;
 }
 
@@ -775,128 +862,87 @@ html {
   filter: contrast(1.02) saturate(1.05) brightness(1.02);
 }
 
-/* Calendar Component Responsive Styles */
-.calendar-day {
+/* Button utilities for both Button.tsx and HeroButton.tsx */
+.button-loading {
   position: relative;
+  color: transparent;
 }
 
-.calendar-day:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+.button-loading::after {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  top: 50%;
+  left: 50%;
+  margin-left: -8px;
+  margin-top: -8px;
+  border: 2px solid transparent;
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
 }
 
-@media (prefers-color-scheme: dark) {
-  .calendar-day:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  }
-}
-
-.event-indicator {
-  display: inline-block;
-  transition: transform 0.2s ease;
-}
-
-.event-indicator:hover {
-  transform: scale(1.3);
-}
-
-.day-details {
-  max-width: 250px;
-  word-wrap: break-word;
-}
-
-/* Transition effects for view changes */
-.transitioning {
-  opacity: 0.7;
-  transition: opacity 0.3s ease;
-}
-
-/* Weather icon reveal on hover */
-.calendar-day .weather-icon {
-  transition: opacity 0.2s ease;
-}
-
-/* Mobile responsive adjustments */
-@media (max-width: 768px) {
-  .calendar-day {
-    min-height: 3.5rem !important;
-    padding: 0.25rem !important;
-  }
-
-  .day-details {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    max-width: 90vw;
-    z-index: 50;
-  }
-
-  /* Make month info panel stack better on mobile */
-  .month-info .grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-  }
-
-  /* Compact quick jump on mobile */
-  .quick-jump .grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.5rem;
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 
-@media (max-width: 480px) {
-  .calendar-day {
-    min-height: 3rem !important;
-    padding: 0.125rem !important;
-  }
-
-  /* Single column layout for very small screens */
-  .month-info .grid {
-    grid-template-columns: 1fr;
-    gap: 0.75rem;
-  }
-
-  /* Hide some less critical elements on very small screens */
-  .calendar-day .weather-icon {
-    display: none;
-  }
-
-  /* Adjust font sizes for mobile */
-  .calendar-day span {
-    font-size: 0.75rem;
-  }
-
-  .event-indicator {
-    font-size: 0.625rem;
-  }
+/* Button group utilities */
+.btn-group {
+  display: inline-flex;
 }
 
-/* Accessibility improvements */
-@media (prefers-reduced-motion: reduce) {
-  .calendar-day:hover {
-    transform: none;
-  }
-
-  .event-indicator:hover {
-    transform: none;
-  }
-
-  .transitioning {
-    transition: none;
-  }
+.btn-group > * {
+  border-radius: 0;
+  border-right-width: 0;
 }
 
-/* Print styles */
-@media print {
-  .calendar-container .calendar-nav,
-  .calendar-container .quick-jump,
-  .day-details {
-    display: none !important;
-  }
+.btn-group > *:first-child {
+  border-top-left-radius: 0.5rem;
+  border-bottom-left-radius: 0.5rem;
+}
 
-  .calendar-day:hover {
-    transform: none;
-    box-shadow: none;
-  }
+.btn-group > *:last-child {
+  border-top-right-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
+  border-right-width: 1px;
+}
+
+.btn-group > *:not(:last-child) {
+  margin-right: -1px;
+}
+
+/* Additional hero-button utilities */
+.bg-hero-red {
+  background-color: rgb(var(--hero-red));
+}
+
+.bg-hero-red-dark {
+  background-color: rgb(var(--hero-red-dark));
+}
+
+.bg-hero-red-light {
+  background-color: rgb(var(--hero-red-light));
+}
+
+.border-hero-red {
+  border-color: rgb(var(--hero-red));
+}
+
+.text-hero-red {
+  color: rgb(var(--hero-red));
+}
+
+.text-hero-red-light {
+  color: rgb(var(--hero-red-light));
+}
+
+.focus\:ring-hero-red:focus {
+  --tw-ring-color: rgb(var(--hero-red));
+}
+
+.focus\:ring-accent-500:focus {
+  --tw-ring-color: rgb(var(--accent-500));
 }

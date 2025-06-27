@@ -24,7 +24,7 @@ const ANNOUNCEMENT_STYLES = {
   warning: "bg-gradient-to-r from-gold-600 to-gold-500 text-inverse",
   success: "bg-gradient-to-r from-green-600 to-green-500 text-inverse",
   error: "bg-gradient-to-r from-red-600 to-red-500 text-inverse",
-  campaign: "bg-gradient-to-r from-ddb-red-dark to-ddb-red text-inverse",
+  campaign: "bg-gradient-to-r from-hero-red-dark to-hero-red text-inverse",
 };
 
 const DEFAULT_ICONS = {

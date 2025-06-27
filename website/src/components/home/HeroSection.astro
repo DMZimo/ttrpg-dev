@@ -1,5 +1,6 @@
 ---
 import { getCollection } from "astro:content";
+import { HeroButton } from "../ui/HeroButton.tsx";
 
 // Import assets
 import blogPlaceholder1 from "../../assets/blog-placeholder-1.jpg";
@@ -8,11 +9,13 @@ import blogPlaceholder2 from "../../assets/blog-placeholder-2.jpg";
 import blogPlaceholder2Holo from "../../assets/blog-placeholder-2-holo.jpg";
 import blogPlaceholder3 from "../../assets/blog-placeholder-3.jpg";
 import blogPlaceholder3Holo from "../../assets/blog-placeholder-3-holo.jpg";
+// Session covers will be imported from the content collections dynamically
 
 // Get campaign stats
 const allSessions = (await getCollection("journal")).sort((a, b) => {
-  const dateA = a.data.session_date || a.data.pubDate;
-  const dateB = b.data.session_date || b.data.pubDate;
+  // Use session_start, session_date, or pubDate for sorting
+  const dateA = a.data.session_start || a.data.session_date || a.data.pubDate;
+  const dateB = b.data.session_start || b.data.session_date || b.data.pubDate;
 
   if (!dateA && !dateB) return 0;
   if (!dateA) return 1;
@@ -24,22 +27,41 @@ const allSessions = (await getCollection("journal")).sort((a, b) => {
 const totalSessions = allSessions.length;
 const latestSession = allSessions[0];
 
-// Get unique tags
+// Create a description from the first few main events if available
+const getSessionDescription = (session: any) => {
+  if (session.data.main_events && session.data.main_events.length > 0) {
+    const firstEvent = session.data.main_events[0];
+    return `${firstEvent}${session.data.main_events.length > 1 ? " and more adventures await..." : ""}`;
+  }
+  return "Our latest adventure in the Dessarin Valley unfolds with danger and discovery...";
+};
+
+// Get unique tags and locations
 const allTags = new Set<string>();
+const allLocations = new Set<string>();
+
 allSessions.forEach((session) => {
   if (session.data.tags) {
     session.data.tags.forEach((tag: string) => allTags.add(tag));
+  }
+  if (session.data.locations_visited) {
+    session.data.locations_visited.forEach((location: string) =>
+      allLocations.add(location)
+    );
+  }
+  if (session.data.primary_location) {
+    allLocations.add(session.data.primary_location);
   }
 });
 
 // Find next upcoming session (look for sessions with future dates)
 const today = new Date();
 const upcomingSession = allSessions.find((session) => {
-  const sessionDate = session.data.session_date;
+  const sessionDate = session.data.session_start || session.data.session_date;
   return sessionDate && sessionDate > today;
 });
 
-// Format date helper
+// Format date helper with time support
 const formatDate = (date: Date) => {
   return date.toLocaleDateString("en-US", {
     weekday: "long",
@@ -49,16 +71,41 @@ const formatDate = (date: Date) => {
   });
 };
 
+const formatDateTime = (date: Date) => {
+  return date.toLocaleDateString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+};
+
 // Placeholder for Discord webhook data
 const nextDiscordSession = {
-  title: "Session 4 - The Goblin Ambush",
+  title: "Session 4",
   date: new Date("2025-06-30T19:00:00"),
-  description:
-    "Join us for our next adventure as we explore the mysterious caves near Triboar!",
+  description: "Weakly game night!",
   players: ["Oliver", "Aldor", "Daijo", "Finn"],
 };
 
 const isDiscordSessionUpcoming = nextDiscordSession.date > today;
+
+// Helper function to generate holo mask image path from cover image
+const getHoloMaskPath = (coverImageSrc: string) => {
+  if (!coverImageSrc) return blogPlaceholder1Holo.src;
+
+  // Extract the path and filename
+  const lastSlashIndex = coverImageSrc.lastIndexOf("/");
+  const path = coverImageSrc.substring(0, lastSlashIndex + 1);
+  const filename = coverImageSrc.substring(lastSlashIndex + 1);
+
+  // Replace .jpg with -holo.jpg (or other extensions)
+  const holoFilename = filename.replace(/\.([^.]+)$/, "-holo.$1");
+
+  return path + holoFilename;
+};
 ---
 
 <section
@@ -69,25 +116,33 @@ const isDiscordSessionUpcoming = nextDiscordSession.date > today;
     <!-- Latest Journal Entry - Large Featured Card -->
     <div
       class="lg:col-span-2 relative overflow-hidden min-h-[calc(100vh-8rem)] holo-container"
-      data-holo-image="blog-placeholder-1"
-      style={`--holo-mask: url('${blogPlaceholder1Holo.src}');`}
+      data-holo-image="latest-session"
+      style={`--holo-mask: url('${
+        latestSession?.data.cover_image
+          ? getHoloMaskPath(latestSession.data.cover_image.src)
+          : blogPlaceholder1Holo.src
+      }');`}
     >
       <div
         class="absolute inset-0 bg-cover bg-center"
-        style={`background-image: linear-gradient(135deg, rgba(28, 28, 39, 0.8) 0%, rgba(39, 39, 55, 0.6) 100%), url('${blogPlaceholder1.src}');`}
+        style={`background-image: linear-gradient(135deg, rgba(28, 28, 39, 0.8) 0%, rgba(39, 39, 55, 0.6) 100%), url('${
+          latestSession?.data.cover_image
+            ? latestSession.data.cover_image.src
+            : blogPlaceholder1.src
+        }');`}
       >
       </div>
 
       <div class="relative h-full flex flex-col justify-end p-8 lg:p-12">
         <div
-          class="bg-surface/90 backdrop-blur-sm p-6 lg:p-8 border-l-4 border-ddb-red"
+          class="bg-surface/90 backdrop-blur-sm p-6 lg:p-8 border-l-4 border-hero-red"
         >
           <div class="flex items-center gap-3 mb-4">
-            <div class="w-10 h-10 bg-ddb-red flex items-center justify-center">
+            <div class="w-10 h-10 bg-hero-red flex items-center justify-center">
               <span class="text-white font-bold text-lg">📖</span>
             </div>
             <span
-              class="text-sm uppercase tracking-wider text-ddb-red font-semibold"
+              class="text-sm uppercase tracking-wider text-hero-red font-semibold"
               >Latest Adventure</span
             >
           </div>
@@ -100,34 +155,43 @@ const isDiscordSessionUpcoming = nextDiscordSession.date > today;
                     `Session ${latestSession.data.session_number}`}
                 </h2>
                 <p class="text-lg text-secondary mb-6 leading-relaxed">
-                  {latestSession.data.description ||
-                    "Our latest adventure in the Dessarin Valley unfolds with danger and discovery..."}
+                  {getSessionDescription(latestSession)}
                 </p>
+                <div class="flex flex-col gap-3 mb-6">
+                  {latestSession.data.primary_location && (
+                    <div class="flex items-center gap-2 text-muted">
+                      <span class="w-4 h-4">📍</span>
+                      <span class="text-sm">
+                        Primary Location: {latestSession.data.primary_location}
+                      </span>
+                    </div>
+                  )}
+                  {latestSession.data.session_length_hours && (
+                    <div class="flex items-center gap-2 text-muted">
+                      <span class="w-4 h-4">⏱️</span>
+                      <span class="text-sm">
+                        Session Length:{" "}
+                        {latestSession.data.session_length_hours} hours
+                      </span>
+                    </div>
+                  )}
+                </div>
                 <div class="flex items-center justify-between">
                   <div class="text-sm text-muted">
-                    {latestSession.data.session_date
-                      ? formatDate(latestSession.data.session_date)
-                      : "Recently"}
+                    {latestSession.data.session_start
+                      ? formatDate(latestSession.data.session_start)
+                      : latestSession.data.session_date
+                        ? formatDate(latestSession.data.session_date)
+                        : "Recently"}
                   </div>
-                  <a
+                  <HeroButton
+                    variant="primary"
                     href={`/journal/${latestSession.id}`}
-                    class="ddb-button-primary px-6 py-3 inline-flex items-center gap-2 hover:gap-3 transition-all"
+                    iconType="book"
+                    client:load
                   >
-                    <span>Read Full Chronicle</span>
-                    <svg
-                      class="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M13 7l5 5m0 0l-5 5m5-5H6"
-                      />
-                    </svg>
-                  </a>
+                    Read Latest Session Report
+                  </HeroButton>
                 </div>
               </>
             )
@@ -182,10 +246,6 @@ const isDiscordSessionUpcoming = nextDiscordSession.date > today;
                       {nextDiscordSession.players.length} Adventurers
                     </span>
                   </div>
-                  <div class="flex items-center gap-2 text-secondary">
-                    <span class="w-4 h-4">💬</span>
-                    <span class="text-sm">Discord Integration</span>
-                  </div>
                 </div>
                 <p class="text-sm text-muted mb-4">
                   {nextDiscordSession.description}
@@ -208,9 +268,15 @@ const isDiscordSessionUpcoming = nextDiscordSession.date > today;
             )
           }
 
-          <button class="ddb-button-secondary w-full py-2 text-sm">
-            Join Discord Server
-          </button>
+          <HeroButton
+            variant="secondary"
+            fullWidth
+            size="md"
+            iconType="beer"
+            client:load
+          >
+            Visit the Inn
+          </HeroButton>
         </div>
       </div>
 
@@ -249,33 +315,27 @@ const isDiscordSessionUpcoming = nextDiscordSession.date > today;
           <div class="space-y-2 mb-6">
             <div class="flex items-center gap-2 text-secondary">
               <span class="w-4 h-4">🏰</span>
-              <span class="text-sm">{totalSessions} Locations Visited</span>
+              <span class="text-sm">{allLocations.size} Locations Visited</span>
+            </div>
+            <div class="flex items-center gap-2 text-secondary">
+              <span class="w-4 h-4">�️</span>
+              <span class="text-sm">{totalSessions} Sessions Completed</span>
             </div>
             <div class="flex items-center gap-2 text-secondary">
               <span class="w-4 h-4">🔍</span>
-              <span class="text-sm">{allTags.size} Points of Interest</span>
+              <span class="text-sm">{allTags.size} Story Tags</span>
             </div>
           </div>
 
-          <a
+          <HeroButton
+            variant="primary"
             href="/atlas"
-            class="ddb-button-primary w-full py-3 text-center inline-flex items-center justify-center gap-2"
+            fullWidth
+            iconType="map"
+            client:load
           >
-            <span>Explore Map</span>
-            <svg
-              class="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m0 0L9 7"
-              ></path>
-            </svg>
-          </a>
+            Explore Map
+          </HeroButton>
         </div>
       </div>
     </div>
