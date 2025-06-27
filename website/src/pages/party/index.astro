@@ -1,0 +1,762 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Party Portal - Dessarin Valley Chronicles"
+  description="Complete party dashboard with characters, quests, and adventure tracking"
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Page Header -->
+    <div class="text-center mb-12">
+      <h1 class="text-5xl font-bold text-primary mb-6">⚔️ Party Portal</h1>
+      <p class="text-xl text-secondary max-w-3xl mx-auto leading-relaxed">
+        Your complete adventure dashboard - characters, quests, mysteries, and
+        everything the party needs for their journey through the Dessarin
+        Valley.
+      </p>
+    </div>
+
+    <!-- Quick Stats Overview -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+      <div
+        class="bg-surface-elevated rounded-lg p-4 text-center border border-primary"
+      >
+        <div class="text-2xl font-bold text-accent-400">5</div>
+        <div class="text-secondary text-sm">Party Members</div>
+      </div>
+      <div
+        class="bg-surface-elevated rounded-lg p-4 text-center border border-primary"
+      >
+        <div class="text-2xl font-bold text-gold-400">2</div>
+        <div class="text-secondary text-sm">Active Quests</div>
+      </div>
+      <div
+        class="bg-surface-elevated rounded-lg p-4 text-center border border-primary"
+      >
+        <div class="text-2xl font-bold text-success">1</div>
+        <div class="text-secondary text-sm">Completed</div>
+      </div>
+      <div
+        class="bg-surface-elevated rounded-lg p-4 text-center border border-primary"
+      >
+        <div class="text-2xl font-bold" style="color: rgb(var(--accent-300))">
+          3
+        </div>
+        <div class="text-secondary text-sm">Mysteries</div>
+      </div>
+    </div>
+
+    <!-- Party Members Section -->
+    <div class="mb-16">
+      <h2 class="text-3xl font-bold text-primary mb-8 flex items-center">
+        👥 The Adventuring Party
+      </h2>
+
+      <!-- Characters Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <!-- Oliver -->
+        <div
+          class="bg-surface-elevated rounded-2xl shadow-card hover:shadow-card-hover overflow-hidden border border-primary hover:border-accent-400 hover:scale-105 transition-all duration-300"
+        >
+          <div
+            class="h-24 relative overflow-hidden"
+            style="background: linear-gradient(135deg, rgb(var(--gold-400)), rgb(var(--gold-500)));"
+          >
+            <div
+              class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"
+            >
+            </div>
+          </div>
+          <div class="p-4">
+            <h3 class="text-xl font-bold text-primary mb-1">Oliver</h3>
+            <p class="text-accent-600 font-semibold mb-3">Human Paladin</p>
+            <p class="text-secondary mb-3 text-sm leading-relaxed">
+              Noble warrior and moral compass, serving as the party's frontline
+              defender and healer.
+            </p>
+            <div class="flex flex-wrap gap-1">
+              <span
+                class="text-xs font-medium px-2 py-0.5 rounded-full border"
+                style="background: rgba(var(--gold-100), 0.8); color: rgb(var(--gold-700)); border-color: rgba(var(--gold-300), 0.5);"
+                >Tank</span
+              >
+              <span
+                class="text-xs font-medium px-2 py-0.5 rounded-full border"
+                style="background: rgba(var(--accent-100), 0.8); color: rgb(var(--accent-700)); border-color: rgba(var(--accent-300), 0.5);"
+                >Healer</span
+              >
+              <span
+                class="text-xs font-medium px-2 py-0.5 rounded-full border"
+                style="background: rgba(var(--accent-100), 0.8); color: rgb(var(--accent-700)); border-color: rgba(var(--accent-300), 0.5);"
+                >Leadership</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Jain Farstrider -->
+        <div
+          class="bg-surface-elevated rounded-2xl shadow-card hover:shadow-card-hover overflow-hidden border border-primary hover:border-accent-400 hover:scale-105 transition-all duration-300"
+        >
+          <div
+            class="h-24 relative overflow-hidden bg-gradient-to-r from-green-500 to-emerald-500"
+          >
+            <div
+              class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"
+            >
+            </div>
+          </div>
+          <div class="p-4">
+            <h3 class="text-xl font-bold text-primary mb-1">Jain Farstrider</h3>
+            <p class="text-accent-600 font-semibold mb-3">Human Ranger</p>
+            <p class="text-secondary mb-3 text-sm leading-relaxed">
+              Seasoned tracker and wilderness expert, invaluable for navigating
+              the dangerous Dessarin Valley.
+            </p>
+            <div class="flex flex-wrap gap-1">
+              <span
+                class="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 text-xs font-medium px-2 py-0.5 rounded"
+                >Scout</span
+              >
+              <span
+                class="bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200 text-xs font-medium px-2 py-0.5 rounded"
+                >Tracker</span
+              >
+              <span
+                class="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 text-xs font-medium px-2 py-0.5 rounded"
+                >Survival</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Aldor Irion -->
+        <div
+          class="bg-surface-elevated rounded-2xl shadow-card hover:shadow-card-hover overflow-hidden border border-primary hover:border-accent-400 hover:scale-105 transition-all duration-300"
+        >
+          <div
+            class="h-24 relative overflow-hidden bg-gradient-to-r from-blue-500 to-indigo-500"
+          >
+            <div
+              class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"
+            >
+            </div>
+          </div>
+          <div class="p-4">
+            <h3 class="text-xl font-bold text-primary mb-1">Aldor Irion</h3>
+            <p class="text-accent-600 font-semibold mb-3">Human Wizard</p>
+            <p class="text-secondary mb-3 text-sm leading-relaxed">
+              Scholar of arcane arts with family ties to Red Larch, bringing
+              magical power and local knowledge.
+            </p>
+            <div class="flex flex-wrap gap-1">
+              <span
+                class="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 text-xs font-medium px-2 py-0.5 rounded"
+                >Spellcaster</span
+              >
+              <span
+                class="bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200 text-xs font-medium px-2 py-0.5 rounded"
+                >Scholar</span
+              >
+              <span
+                class="bg-gray-100 dark:bg-gray-700/30 text-gray-800 dark:text-gray-200 text-xs font-medium px-2 py-0.5 rounded"
+                >Local</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Daijo -->
+        <div
+          class="bg-surface-elevated rounded-2xl shadow-card hover:shadow-card-hover overflow-hidden border border-primary hover:border-accent-400 hover:scale-105 transition-all duration-300"
+        >
+          <div
+            class="h-24 relative overflow-hidden bg-gradient-to-r from-purple-500 to-pink-500"
+          >
+            <div
+              class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"
+            >
+            </div>
+          </div>
+          <div class="p-4">
+            <h3 class="text-xl font-bold text-primary mb-1">Daijo</h3>
+            <p class="text-accent-600 font-semibold mb-3">
+              Variant Human Cleric
+            </p>
+            <p class="text-secondary mb-3 text-sm leading-relaxed">
+              Devoted servant of the divine, providing healing and spiritual
+              guidance while wielding divine magic.
+            </p>
+            <div class="flex flex-wrap gap-1">
+              <span
+                class="bg-white dark:bg-gray-100/20 text-gray-800 dark:text-gray-200 text-xs font-medium px-2 py-0.5 rounded border border-gray-300 dark:border-gray-600"
+                >Healer</span
+              >
+              <span
+                class="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 text-xs font-medium px-2 py-0.5 rounded"
+                >Divine</span
+              >
+              <span
+                class="bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200 text-xs font-medium px-2 py-0.5 rounded"
+                >Support</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Finn Quickfoot -->
+        <div
+          class="bg-surface-elevated rounded-2xl shadow-card hover:shadow-card-hover overflow-hidden border border-primary hover:border-accent-400 hover:scale-105 transition-all duration-300"
+        >
+          <div
+            class="h-24 relative overflow-hidden bg-gradient-to-r from-red-500 to-pink-500"
+          >
+            <div
+              class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"
+            >
+            </div>
+          </div>
+          <div class="p-4">
+            <h3 class="text-xl font-bold text-primary mb-1">Finn Quickfoot</h3>
+            <p class="text-accent-600 font-semibold mb-3">Halfling Rogue</p>
+            <p class="text-secondary mb-3 text-sm leading-relaxed">
+              Nimble and cunning rogue bringing stealth, lockpicking, and a
+              knack for getting into trouble.
+            </p>
+            <div class="flex flex-wrap gap-1">
+              <span
+                class="bg-gray-100 dark:bg-gray-700/30 text-gray-800 dark:text-gray-200 text-xs font-medium px-2 py-0.5 rounded"
+                >Stealth</span
+              >
+              <span
+                class="bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 text-xs font-medium px-2 py-0.5 rounded"
+                >Damage</span
+              >
+              <span
+                class="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 text-xs font-medium px-2 py-0.5 rounded"
+                >Utility</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Quests Section -->
+    <div class="mb-16">
+      <h2 class="text-3xl font-bold text-primary mb-8 flex items-center">
+        🎯 Active Quests
+      </h2>
+      <div class="space-y-6">
+        <!-- Quest 1 -->
+        <div
+          class="bg-surface-elevated rounded-lg shadow-card border-l-4 border-yellow-500 p-6"
+        >
+          <div class="flex items-start justify-between mb-4">
+            <h3 class="text-xl font-semibold text-primary">
+              Investigate the Bandits
+            </h3>
+            <span
+              class="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 text-sm font-medium px-3 py-1 rounded"
+              >In Progress</span
+            >
+          </div>
+          <p class="text-secondary mb-4">
+            Bandit attacks have been disrupting trade routes south of Red Larch.
+            The merchant Endrith Vallivoe mentioned a plan to lure them into a
+            trap, but the other participants have gotten cold feet.
+          </p>
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span
+              class="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 text-xs font-medium px-2.5 py-0.5 rounded"
+              >Combat</span
+            >
+            <span
+              class="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 text-xs font-medium px-2.5 py-0.5 rounded"
+              >Investigation</span
+            >
+            <span
+              class="bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200 text-xs font-medium px-2.5 py-0.5 rounded"
+              >Trade</span
+            >
+          </div>
+          <div class="text-sm text-tertiary">
+            <strong>Location:</strong> South of Red Larch • <strong
+              >Giver:</strong
+            > Endrith Vallivoe
+          </div>
+        </div>
+
+        <!-- Quest 2 -->
+        <div
+          class="bg-surface-elevated rounded-lg shadow-card border-l-4 border-red-500 p-6"
+        >
+          <div class="flex items-start justify-between mb-4">
+            <h3 class="text-xl font-semibold text-primary">
+              The Mystery of Lance Rock
+            </h3>
+            <span
+              class="bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 text-sm font-medium px-3 py-1 rounded"
+              >Urgent</span
+            >
+          </div>
+          <p class="text-secondary mb-4">
+            The ancient menhir at Lance Rock is not native to the area and shows
+            signs of recent placement. Magical investigation revealed strong
+            necromantic energies beneath the hill, suggesting a hidden cave or
+            chamber.
+          </p>
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span
+              class="bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200 text-xs font-medium px-2.5 py-0.5 rounded"
+              >Magic</span
+            >
+            <span
+              class="bg-gray-100 dark:bg-gray-700/30 text-gray-800 dark:text-gray-200 text-xs font-medium px-2.5 py-0.5 rounded"
+              >Undead</span
+            >
+            <span
+              class="bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 text-xs font-medium px-2.5 py-0.5 rounded"
+              >Dangerous</span
+            >
+          </div>
+          <div class="text-sm text-tertiary">
+            <strong>Location:</strong> Lance Rock, SW of Red Larch • <strong
+              >Discovered:</strong
+            > Session 3
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Completed Adventures Section -->
+    <div class="mb-16">
+      <h2 class="text-3xl font-bold text-primary mb-8 flex items-center">
+        ✅ Completed Adventures
+      </h2>
+      <div class="space-y-6">
+        <div
+          class="bg-surface-elevated rounded-lg shadow-card border-l-4 border-green-500 p-6 opacity-90"
+        >
+          <div class="flex items-start justify-between mb-4">
+            <h3 class="text-xl font-semibold text-primary">
+              Rescue Kaylessa Irkell
+            </h3>
+            <span
+              class="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 text-sm font-medium px-3 py-1 rounded"
+              >Completed</span
+            >
+          </div>
+          <p class="text-secondary mb-4">
+            Successfully rescued the innkeeper Kaylessa from two dangerous bears
+            while she was out picking mushrooms. The party defeated both bears
+            and escorted her safely back to Red Larch.
+          </p>
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span
+              class="bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 text-xs font-medium px-2.5 py-0.5 rounded"
+              >Combat</span
+            >
+            <span
+              class="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 text-xs font-medium px-2.5 py-0.5 rounded"
+              >Rescue</span
+            >
+            <span
+              class="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 text-xs font-medium px-2.5 py-0.5 rounded"
+              >Heroic</span
+            >
+          </div>
+          <div class="text-sm text-tertiary">
+            <strong>Reward:</strong> Free lodging at the Swinging Sword Inn • <strong
+              >Experience:</strong
+            > 400 XP
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rumors & Potential Adventures Section -->
+    <div class="mb-16">
+      <h2 class="text-3xl font-bold text-primary mb-8 flex items-center">
+        👂 Rumors & Potential Adventures
+      </h2>
+      <div class="space-y-4">
+        <div
+          class="bg-surface-elevated rounded-lg shadow-card border-l-4 border-purple-500 p-6"
+        >
+          <div class="flex items-start justify-between mb-4">
+            <h3 class="text-xl font-semibold text-primary">
+              Strange Lights at the Sumber Hills
+            </h3>
+            <span
+              class="bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200 text-sm font-medium px-3 py-1 rounded"
+              >Unconfirmed</span
+            >
+          </div>
+          <p class="text-secondary mb-4">
+            Local farmers report seeing unusual magical lights and hearing
+            strange sounds from the direction of the Sumber Hills at night. Some
+            believe it's connected to the ancient ruins scattered throughout the
+            area.
+          </p>
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span
+              class="bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200 text-xs font-medium px-2.5 py-0.5 rounded"
+              >Magic</span
+            >
+            <span
+              class="bg-gray-100 dark:bg-gray-700/30 text-gray-800 dark:text-gray-200 text-xs font-medium px-2.5 py-0.5 rounded"
+              >Mystery</span
+            >
+            <span
+              class="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 text-xs font-medium px-2.5 py-0.5 rounded"
+              >Exploration</span
+            >
+          </div>
+          <div class="text-sm text-tertiary">
+            <strong>Source:</strong> Local farmers & traders • <strong
+              >Reliability:</strong
+            > Medium
+          </div>
+        </div>
+
+        <div
+          class="bg-surface-elevated rounded-lg shadow-card border-l-4 border-orange-500 p-6"
+        >
+          <div class="flex items-start justify-between mb-4">
+            <h3 class="text-xl font-semibold text-primary">
+              Missing Caravan on the Long Road
+            </h3>
+            <span
+              class="bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200 text-sm font-medium px-3 py-1 rounded"
+              >Investigating</span
+            >
+          </div>
+          <p class="text-secondary mb-4">
+            A merchant caravan traveling from Waterdeep to Triboar has gone
+            missing. Last seen three days ago near the Dessarin River crossing.
+            Local authorities are offering a reward for information.
+          </p>
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span
+              class="bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 text-xs font-medium px-2.5 py-0.5 rounded"
+              >Urgent</span
+            >
+            <span
+              class="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 text-xs font-medium px-2.5 py-0.5 rounded"
+              >Reward</span
+            >
+            <span
+              class="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 text-xs font-medium px-2.5 py-0.5 rounded"
+              >Rescue</span
+            >
+          </div>
+          <div class="text-sm text-tertiary">
+            <strong>Reward:</strong> 500 gold pieces • <strong>Contact:</strong>
+            Sheriff Harburk
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Campaign Timeline Section -->
+    <div class="mb-16">
+      <h2 class="text-3xl font-bold text-primary mb-8 flex items-center">
+        ⏰ Campaign Timeline
+      </h2>
+      <div class="relative">
+        <!-- Timeline Line -->
+        <div class="absolute left-8 top-0 bottom-0 w-0.5 bg-accent-400"></div>
+
+        <div class="space-y-8">
+          <!-- Timeline Event 1 -->
+          <div class="relative flex items-start">
+            <div
+              class="flex-shrink-0 w-16 h-16 bg-accent-500 rounded-full flex items-center justify-center text-white font-bold text-lg relative z-10"
+            >
+              1
+            </div>
+            <div
+              class="ml-6 bg-surface-elevated rounded-lg shadow-card p-6 flex-1 border border-primary"
+            >
+              <div class="flex items-start justify-between mb-2">
+                <h3 class="text-lg font-semibold text-primary">
+                  Arrival in Red Larch
+                </h3>
+                <span class="text-sm text-tertiary"
+                  >Day 1 - 15th Eleint, 1491 DR</span
+                >
+              </div>
+              <p class="text-secondary text-sm mb-3">
+                The party arrived in Red Larch and took rooms at the Swinging
+                Sword Inn. First encounters with local townsfolk including
+                Kaylessa Irkell and various merchants.
+              </p>
+              <div class="flex flex-wrap gap-1">
+                <span
+                  class="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 text-xs font-medium px-2 py-0.5 rounded"
+                  >Arrival</span
+                >
+                <span
+                  class="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 text-xs font-medium px-2 py-0.5 rounded"
+                  >Social</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- Timeline Event 2 -->
+          <div class="relative flex items-start">
+            <div
+              class="flex-shrink-0 w-16 h-16 bg-accent-500 rounded-full flex items-center justify-center text-white font-bold text-lg relative z-10"
+            >
+              2
+            </div>
+            <div
+              class="ml-6 bg-surface-elevated rounded-lg shadow-card p-6 flex-1 border border-primary"
+            >
+              <div class="flex items-start justify-between mb-2">
+                <h3 class="text-lg font-semibold text-primary">
+                  Bear Rescue Mission
+                </h3>
+                <span class="text-sm text-tertiary"
+                  >Day 2 - 16th Eleint, 1491 DR</span
+                >
+              </div>
+              <p class="text-secondary text-sm mb-3">
+                Successfully rescued Kaylessa Irkell from two dangerous bears
+                while she was mushroom picking. First major combat encounter and
+                heroic deed in Red Larch.
+              </p>
+              <div class="flex flex-wrap gap-1">
+                <span
+                  class="bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 text-xs font-medium px-2 py-0.5 rounded"
+                  >Combat</span
+                >
+                <span
+                  class="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 text-xs font-medium px-2 py-0.5 rounded"
+                  >Rescue</span
+                >
+                <span
+                  class="bg-gold-100 dark:bg-yellow-900/30 text-gold-800 dark:text-yellow-200 text-xs font-medium px-2 py-0.5 rounded"
+                  >Completed</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- Timeline Event 3 -->
+          <div class="relative flex items-start">
+            <div
+              class="flex-shrink-0 w-16 h-16 bg-accent-500 rounded-full flex items-center justify-center text-white font-bold text-lg relative z-10"
+            >
+              3
+            </div>
+            <div
+              class="ml-6 bg-surface-elevated rounded-lg shadow-card p-6 flex-1 border border-primary"
+            >
+              <div class="flex items-start justify-between mb-2">
+                <h3 class="text-lg font-semibold text-primary">
+                  Discovery at Lance Rock
+                </h3>
+                <span class="text-sm text-tertiary"
+                  >Day 3 - 17th Eleint, 1491 DR</span
+                >
+              </div>
+              <p class="text-secondary text-sm mb-3">
+                Investigation of the mysterious menhir at Lance Rock revealed
+                strong necromantic energies and evidence of recent placement.
+                The party discovered potential undead threats beneath the hill.
+              </p>
+              <div class="flex flex-wrap gap-1">
+                <span
+                  class="bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200 text-xs font-medium px-2 py-0.5 rounded"
+                  >Magic</span
+                >
+                <span
+                  class="bg-gray-100 dark:bg-gray-700/30 text-gray-800 dark:text-gray-200 text-xs font-medium px-2 py-0.5 rounded"
+                  >Investigation</span
+                >
+                <span
+                  class="bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 text-xs font-medium px-2 py-0.5 rounded"
+                  >Ongoing</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- Timeline Event 4 - Future -->
+          <div class="relative flex items-start opacity-60">
+            <div
+              class="flex-shrink-0 w-16 h-16 bg-gray-400 rounded-full flex items-center justify-center text-white font-bold text-lg relative z-10"
+            >
+              ?
+            </div>
+            <div
+              class="ml-6 bg-surface-elevated rounded-lg shadow-card p-6 flex-1 border border-primary border-dashed"
+            >
+              <div class="flex items-start justify-between mb-2">
+                <h3 class="text-lg font-semibold text-primary">
+                  Future Adventures
+                </h3>
+                <span class="text-sm text-tertiary">To Be Determined</span>
+              </div>
+              <p class="text-secondary text-sm">
+                The next chapter of the party's journey through the Dessarin
+                Valley awaits...
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ongoing Mysteries Section -->
+    <div class="mb-16">
+      <h2 class="text-3xl font-bold text-primary mb-8 flex items-center">
+        🔍 Ongoing Mysteries
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Mystery 1 -->
+        <div
+          class="bg-surface-elevated rounded-lg shadow-card p-6 border border-primary"
+        >
+          <h3 class="text-lg font-semibold text-primary mb-3">
+            🏚️ Aldor's Family Cottage
+          </h3>
+          <p class="text-secondary text-sm mb-3">
+            A scroll discovered in the Allfaiths Shrine mentions that Aldor's
+            great-great-grandfather owned a cottage in Red Larch.
+          </p>
+          <span
+            class="bg-gray-100 dark:bg-gray-700/30 text-gray-800 dark:text-gray-200 text-xs font-medium px-2.5 py-0.5 rounded"
+            >Family History</span
+          >
+        </div>
+
+        <!-- Mystery 2 -->
+        <div
+          class="bg-surface-elevated rounded-lg shadow-card p-6 border border-primary"
+        >
+          <h3 class="text-lg font-semibold text-primary mb-3">
+            🗡️ Imdarr's Lost Sword
+          </h3>
+          <p class="text-secondary text-sm mb-3">
+            The retired adventurer's sword was pawned to fund town repairs, sold
+            to a banker in Yartar. The party procured a replacement from
+            Ironhead Arms.
+          </p>
+          <span
+            class="bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200 text-xs font-medium px-2.5 py-0.5 rounded"
+            >Equipment</span
+          >
+        </div>
+
+        <!-- Mystery 3 -->
+        <div
+          class="bg-surface-elevated rounded-lg shadow-card p-6 border border-primary"
+        >
+          <h3 class="text-lg font-semibold text-primary mb-3">
+            🌪️ The Freak Storm
+          </h3>
+          <p class="text-secondary text-sm mb-3">
+            A mysterious storm damaged Red Larch's grain silo, requiring
+            expensive repairs funded by selling Imdarr's sword. What caused this
+            unusual weather?
+          </p>
+          <span
+            class="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 text-xs font-medium px-2.5 py-0.5 rounded"
+            >Weather</span
+          >
+        </div>
+      </div>
+    </div>
+
+    <!-- Party Resources & Navigation -->
+    <div
+      class="bg-gradient-to-r from-hero-red-dark to-accent-600 text-white rounded-lg p-8"
+    >
+      <div class="text-center mb-6">
+        <h2 class="text-3xl font-bold mb-3">Party Resources</h2>
+        <p class="text-gray-100">
+          Quick access to everything your party needs for their adventure
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <a
+          href="/journal"
+          class="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center hover:bg-white/20 transition-all duration-200 group"
+        >
+          <div
+            class="text-2xl font-bold text-green-300 group-hover:scale-110 transition-transform"
+          >
+            �
+          </div>
+          <div class="text-gray-100 text-sm font-medium">Session Journal</div>
+          <div class="text-gray-300 text-xs mt-1">Read past adventures</div>
+        </a>
+        <a
+          href="/timekeeping"
+          class="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center hover:bg-white/20 transition-all duration-200 group"
+        >
+          <div
+            class="text-2xl font-bold text-purple-300 group-hover:scale-110 transition-transform"
+          >
+            🗓️
+          </div>
+          <div class="text-gray-100 text-sm font-medium">Campaign Calendar</div>
+          <div class="text-gray-300 text-xs mt-1">Track important dates</div>
+        </a>
+        <a
+          href="/atlas"
+          class="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center hover:bg-white/20 transition-all duration-200 group"
+        >
+          <div
+            class="text-2xl font-bold text-blue-300 group-hover:scale-110 transition-transform"
+          >
+            �️
+          </div>
+          <div class="text-gray-100 text-sm font-medium">World Atlas</div>
+          <div class="text-gray-300 text-xs mt-1">Explore locations</div>
+        </a>
+      </div>
+
+      <!-- Quick Navigation -->
+      <div class="mt-8 pt-6 border-t border-white/20">
+        <h3 class="text-xl font-semibold mb-4 text-center">Quick Navigation</h3>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <a
+            href="/people"
+            class="flex items-center gap-2 bg-white/10 rounded-lg p-3 text-sm hover:bg-white/20 transition-all"
+          >
+            <span>👥</span>
+            <span>People</span>
+          </a>
+          <a
+            href="/timekeeping"
+            class="flex items-center gap-2 bg-white/10 rounded-lg p-3 text-sm hover:bg-white/20 transition-all"
+          >
+            <span>⏰</span>
+            <span>Timeline</span>
+          </a>
+          <a
+            href="/journal"
+            class="flex items-center gap-2 bg-white/10 rounded-lg p-3 text-sm hover:bg-white/20 transition-all"
+          >
+            <span>�</span>
+            <span>Lore</span>
+          </a>
+          <a
+            href="/atlas"
+            class="flex items-center gap-2 bg-white/10 rounded-lg p-3 text-sm hover:bg-white/20 transition-all"
+          >
+            <span>🏛️</span>
+            <span>Places</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>

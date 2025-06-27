@@ -3,8 +3,6 @@ import { Brand } from "./Brand.tsx";
 import { CampaignStats } from "./CampaignStats.tsx";
 import { Navigation } from "./Navigation.tsx";
 import { Search } from "./Search.tsx";
-import { ThemeToggle } from "./ThemeToggle.tsx";
-import { MobileMenu } from "./MobileMenu.tsx";
 import type { CampaignStatsData } from "../../../utils/campaignStats.ts";
 import { DISCORD_INVITE, FOUNDRY_VTT_URL } from "../../../consts.ts";
 import { useAnnouncementHeight } from "../AnnouncementBanner.tsx";
@@ -20,7 +18,6 @@ export const Header: React.FC<HeaderProps> = ({
   campaignStats,
 }) => {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
   const lastScrollY = useRef(0);
@@ -77,21 +74,12 @@ export const Header: React.FC<HeaderProps> = ({
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         if (isSearchOpen) setIsSearchOpen(false);
-        if (isMenuOpen) setIsMenuOpen(false);
       }
     };
 
     document.addEventListener("keydown", handleEscape);
     return () => document.removeEventListener("keydown", handleEscape);
-  }, [isSearchOpen, isMenuOpen]);
-
-  // Manage body overflow when mobile menu is open
-  useEffect(() => {
-    document.body.style.overflow = isMenuOpen ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isMenuOpen]);
+  }, [isSearchOpen]);
 
   const handleBrandClick = () => {
     window.location.href = "/";
@@ -142,38 +130,6 @@ export const Header: React.FC<HeaderProps> = ({
                 <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
               </svg>
             </button>
-
-            {/* Theme Toggle */}
-            <ThemeToggle />
-
-            {/* Mobile Menu Toggle */}
-            <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className={`md:hidden p-2 rounded-lg transition-colors ${
-                isMenuOpen
-                  ? "bg-accent-500/10 text-accent-500"
-                  : "bg-surface-elevated text-tertiary"
-              }`}
-              aria-label="Toggle mobile menu"
-            >
-              <div className="flex flex-col gap-1 w-5">
-                <span
-                  className={`h-0.5 bg-current transition-all duration-200 ${
-                    isMenuOpen ? "rotate-45 translate-y-1.5" : ""
-                  }`}
-                ></span>
-                <span
-                  className={`h-0.5 bg-current transition-all duration-200 ${
-                    isMenuOpen ? "opacity-0" : ""
-                  }`}
-                ></span>
-                <span
-                  className={`h-0.5 bg-current transition-all duration-200 ${
-                    isMenuOpen ? "-rotate-45 -translate-y-1.5" : ""
-                  }`}
-                ></span>
-              </div>
-            </button>
           </div>
         </nav>
       </header>
@@ -198,15 +154,6 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Search Overlay */}
       <Search isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
-
-      {/* Mobile Menu */}
-      <MobileMenu
-        isOpen={isMenuOpen}
-        onClose={() => setIsMenuOpen(false)}
-        currentPath={currentPath}
-        announcementHeight={announcementHeight}
-        campaignStats={campaignStats}
-      />
     </>
   );
 };

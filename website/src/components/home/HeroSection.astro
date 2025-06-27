@@ -5,8 +5,8 @@ import { HeroButton } from "../ui/HeroButton.tsx";
 // Import assets
 import blogPlaceholder1 from "../../assets/blog-placeholder-1.jpg";
 import blogPlaceholder1Holo from "../../assets/blog-placeholder-1-holo.jpg";
-import blogPlaceholder2 from "../../assets/blog-placeholder-2.jpg";
-import blogPlaceholder2Holo from "../../assets/blog-placeholder-2-holo.jpg";
+import sessionSplashScreen from "../../assets/splash-screen.jpg";
+import sessionSplashScreenHolo from "../../assets/splash-screen-holo.jpg";
 import blogPlaceholder3 from "../../assets/blog-placeholder-3.jpg";
 import blogPlaceholder3Holo from "../../assets/blog-placeholder-3-holo.jpg";
 // Session covers will be imported from the content collections dynamically
@@ -207,12 +207,12 @@ const getHoloMaskPath = (coverImageSrc: string) => {
       <!-- Next Session Card -->
       <div
         class="h-1/2 border-b border-primary relative overflow-hidden holo-container"
-        data-holo-image="blog-placeholder-2"
-        style={`--holo-mask: url('${blogPlaceholder2Holo.src}');`}
+        data-holo-image="blog-splash-screen"
+        style={`--holo-mask: url('${sessionSplashScreenHolo.src}');`}
       >
         <div
           class="absolute inset-0 bg-cover bg-center opacity-20"
-          style={`background-image: url('${blogPlaceholder2.src}');`}
+          style={`background-image: url('${sessionSplashScreen.src}');`}
         >
         </div>
 

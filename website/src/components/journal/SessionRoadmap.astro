@@ -1,0 +1,227 @@
+---
+interface Props {
+  currentSession: number;
+}
+
+const { currentSession } = Astro.props;
+
+// Define milestone sessions (locked items)
+const milestones = [10, 20, 25, 30, 40, 50, 60, 70, 75, 80, 90, 100];
+
+// Generate roadmap items
+const roadmapItems = [];
+for (let i = 1; i <= 100; i++) {
+  const isMilestone = milestones.includes(i);
+  const isCompleted = i <= currentSession;
+  const isLocked = isMilestone && !isCompleted;
+
+  roadmapItems.push({
+    session: i,
+    completed: isCompleted,
+    milestone: isMilestone,
+    locked: isLocked,
+  });
+}
+
+// Get milestone descriptions
+const getMilestoneDescription = (session: number) => {
+  switch (session) {
+    case 10:
+      return "First Major Boss";
+    case 20:
+      return "Campaign Arc Complete";
+    case 25:
+      return "Quarter Century Mark";
+    case 30:
+      return "Character Development Milestone";
+    case 40:
+      return "Midpoint Challenge";
+    case 50:
+      return "Half Century Achievement";
+    case 60:
+      return "Advanced Campaign Phase";
+    case 70:
+      return "Epic Tier Begins";
+    case 75:
+      return "Three Quarters Complete";
+    case 80:
+      return "Final Arc Preparation";
+    case 90:
+      return "Climax Approaches";
+    case 100:
+      return "Campaign Conclusion";
+    default:
+      return "";
+  }
+};
+---
+
+<div
+  class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8"
+>
+  <h2
+    class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center"
+  >
+    <svg
+      class="w-6 h-6 mr-2 text-blue-600"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 00-2-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+      ></path>
+    </svg>
+    Campaign Roadmap
+  </h2>
+
+  <div class="mb-4">
+    <div
+      class="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400 mb-2"
+    >
+      <span>Progress: {currentSession}/100 Sessions</span>
+      <span>{Math.round((currentSession / 100) * 100)}% Complete</span>
+    </div>
+    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+      <div
+        class="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-300"
+        style={`width: ${(currentSession / 100) * 100}%`}
+      >
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-10 gap-2 mb-6">
+    {
+      roadmapItems.map((item) => (
+        <div class="relative group">
+          {item.milestone ? (
+            <div
+              class={`
+            relative w-8 h-8 rounded-lg border-2 flex items-center justify-center text-xs font-bold transition-all duration-200
+            ${
+              item.completed
+                ? "bg-gradient-to-br from-yellow-400 to-orange-500 border-yellow-400 text-white shadow-lg"
+                : item.locked
+                  ? "bg-gray-300 dark:bg-gray-600 border-gray-400 dark:border-gray-500 text-gray-500 dark:text-gray-400"
+                  : "bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300"
+            }
+          `}
+            >
+              {item.locked ? (
+                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                  <path
+                    fill-rule="evenodd"
+                    d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              ) : (
+                <span>{item.session}</span>
+              )}
+            </div>
+          ) : (
+            <div
+              class={`
+            w-6 h-6 mx-1 rounded-full border-2 transition-all duration-200
+            ${
+              item.completed
+                ? "bg-blue-500 border-blue-500"
+                : "bg-gray-200 dark:bg-gray-700 border-gray-300 dark:border-gray-600"
+            }
+          `}
+            />
+          )}
+
+          {/* Tooltip */}
+          <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10">
+            {item.milestone ? (
+              <div class="text-center">
+                <div class="font-bold">Session {item.session}</div>
+                <div>{getMilestoneDescription(item.session)}</div>
+                {item.locked && <div class="text-yellow-300">🔒 Locked</div>}
+              </div>
+            ) : (
+              `Session ${item.session}`
+            )}
+          </div>
+        </div>
+      ))
+    }
+  </div>
+
+  <div class="flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-400">
+    <div class="flex items-center">
+      <div class="w-4 h-4 bg-blue-500 rounded-full mr-2"></div>
+      <span>Completed Sessions</span>
+    </div>
+    <div class="flex items-center">
+      <div
+        class="w-4 h-4 bg-gray-200 dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600 rounded-full mr-2"
+      >
+      </div>
+      <span>Upcoming Sessions</span>
+    </div>
+    <div class="flex items-center">
+      <div
+        class="w-4 h-4 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-lg mr-2"
+      >
+      </div>
+      <span>Milestone Achievements</span>
+    </div>
+    <div class="flex items-center">
+      <div
+        class="w-4 h-4 bg-gray-300 dark:bg-gray-600 rounded-lg mr-2 flex items-center justify-center"
+      >
+        <svg
+          class="w-2 h-2 text-gray-500"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+            clip-rule="evenodd"></path>
+        </svg>
+      </div>
+      <span>Locked Milestones</span>
+    </div>
+  </div>
+
+  <!-- Upcoming Milestones -->
+  {
+    (() => {
+      const nextMilestones = milestones
+        .filter((m) => m > currentSession)
+        .slice(0, 3);
+      if (nextMilestones.length > 0) {
+        return (
+          <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
+              Upcoming Milestones
+            </h3>
+            <div class="space-y-2">
+              {nextMilestones.map((milestone) => (
+                <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                  <div class="flex items-center">
+                    <div class="w-3 h-3 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-sm mr-3" />
+                    <span class="font-medium text-gray-900 dark:text-gray-100">
+                      Session {milestone}
+                    </span>
+                  </div>
+                  <span class="text-sm text-gray-600 dark:text-gray-400">
+                    {getMilestoneDescription(milestone)}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      }
+      return null;
+    })()
+  }
+</div>
