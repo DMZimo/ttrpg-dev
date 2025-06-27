@@ -1,6 +1,7 @@
 import { glob } from "astro/loaders";
 import { defineCollection, z } from "astro:content";
 
+//  Journal collection for campaign sessions.
 const journal = defineCollection({
   // Load Markdown and MDX files in the `src/content/journal/` directory.
   loader: glob({ base: "./src/content/journal", pattern: "**/*.{md,mdx}" }),
@@ -176,156 +177,57 @@ const journal = defineCollection({
     }),
 });
 
-// Unified timekeeping collection - all calendar-related content
-const timekeeping = defineCollection({
-  loader: glob({ base: "./src/content/timekeeping", pattern: "**/*.{md,mdx}" }),
-  schema: z.object({
-    // Basic metadata
-    title: z.string().optional(),
-    name: z.string().optional(), // For holidays, months, etc.
-    description: z.string().optional(),
-    type: z.enum([
-      "calendar-system",
-      "time-period",
-      "historical-era",
-      "dating-system",
-      "holiday",
-      "month",
-      "celestial-body",
-      "season",
-      "moon",
-      "celestial",
-      "seasonal",
-    ]),
-
-    // Month-specific fields
-    commonName: z.string().optional(),
-    monthNumber: z.number().min(1).max(12).optional(),
-    season: z.enum(["winter", "spring", "summer", "autumn"]).optional(),
-    days: z.number().default(30).optional(),
-
-    // Holiday-specific fields
-    date: z
-      .union([
-        z.string(), // For legacy string dates like "21st of Eleint"
-        z.object({
-          month: z.number().optional(), // 1-12 for regular dates
-          day: z.number().optional(), // 1-30 for regular dates
-          specialDay: z.string().optional(), // for inter-month festivals
-        }),
-      ])
-      .optional(),
-    observance: z.enum(["major", "minor", "regional", "local"]).optional(),
-    duration: z.number().default(1).optional(), // days
-    isRecurring: z.boolean().default(true).optional(),
-    leapYearOnly: z.boolean().default(false).optional(),
-
-    // Celestial body fields
-    celestialType: z
-      .enum(["moon", "planet", "star", "constellation", "comet"])
-      .optional(),
-    appearance: z.string().optional(),
-    cycle: z
-      .object({
-        period: z.number(), // in days
-        phases: z.array(z.string()).optional(),
-      })
-      .optional(),
-
-    // Seasonal characteristics
-    weather: z
-      .object({
-        typical: z.string().optional(),
-        temperature: z.string().optional(),
-        precipitation: z.string().optional(),
-        storms: z.string().optional(),
-        winds: z.string().optional(),
-      })
-      .optional(),
-
-    // Cultural context
-    significance: z.string().optional(),
-    origins: z.string().optional(),
-    traditions: z.array(z.string()).optional(),
-    activities: z.array(z.string()).optional(),
-    festivals: z.array(z.string()).optional(),
-    regions: z.array(z.string()).optional(),
-    cultures: z.array(z.string()).optional(),
-    deities: z.array(z.string()).optional(),
-
-    // Agricultural/economic
-    crops: z.array(z.string()).optional(),
-    trade: z.string().optional(),
-
-    // Celestial events
-    celestialEvents: z.array(z.string()).optional(),
-
-    // Historical significance
-    historicalEvents: z
-      .array(
-        z.object({
-          year: z.number(),
-          event: z.string(),
-        })
-      )
-      .optional(),
-
-    // Game mechanics
-    mechanicalEffects: z.array(z.string()).optional(),
-    seasonalEffects: z.array(z.string()).optional(),
-    weatherEffects: z.string().optional(),
-    survivalChallenges: z.array(z.string()).optional(),
-    spellcastingEffects: z.string().optional(),
-
-    // Calendar system details
-    yearLength: z.number().optional(), // in days
-    monthsPerYear: z.number().optional(),
-    daysPerMonth: z.number().optional(),
-    weekLength: z.number().optional(),
-    hoursPerDay: z.number().optional(),
-    timekeepingMethods: z.array(z.string()).optional(),
-
-    // System relationships
-    creator: z.string().optional(),
-    adoption: z.string().optional(),
-    predecessors: z.array(z.string()).optional(),
-    successors: z.array(z.string()).optional(),
-    contemporaries: z.array(z.string()).optional(),
-
-    // Related content
-    relatedHolidays: z.array(z.string()).optional(),
-    relatedContent: z.array(z.string()).optional(),
-
-    // Metadata
-    tags: z.array(z.string()).optional(),
-    aliases: z.array(z.string()).optional(),
-  }),
-});
-
 // Characters collection of all player and non-player characters used in the campaign.
 // Character types:
-// - Player Character (PC): Main characters controlled by players.
-// - Sidekick: Same as characters, but used by guests or as secondary characters/role fillers.
-// - Non-Player Character (NPC): Characters controlled by the DM, including allies, enemies, and neutral characters.
+// - Player Character (pc): Main characters controlled by players.
+// - Sidekick (sidekick): Same as characters, but used by guests or as secondary characters/role fillers.
+// - Non-Player Character (npc): Characters controlled by the DM, including allies, enemies, and neutral characters.
 const characters = defineCollection({
   loader: glob({ base: "./src/content/characters", pattern: "**/*.{md,mdx}" }),
   schema: z.object({
+    owner: z.string().default("DM"),
+    isPublic: z.boolean().default(false),
+    publishDate: z.coerce.date().optional(),
+    lastUpdated: z.coerce.date().optional(),
+    tags: z.array(z.string()).optional(),
+
     // Basic character info
     name: z.string(),
     race: z.string(),
-    class: z.string(),
-    level: z.number().default(1),
+    subrace: z.string(),
+    background: z.string().optional(),
+    class: z
+      .array(
+        z.object({
+          name: z.string(),
+          level: z.number().min(1).max(20).default(1),
+          subclass: z.string().optional(),
+        })
+      )
+      .default([]),
+    type: z.enum(["pc", "sidekick", "npc"]).default("pc"),
+
     description: z.string().optional(),
+    birthdate: z.coerce.date().optional(),
+    birthplace: z.string().optional(),
+    status: z
+      .enum([
+        "alive",
+        "injured",
+        "dead",
+        "missing",
+        "retired",
+        "absent",
+        "traveling",
+        "captured",
+        "incapacitated",
+        "inactive",
+      ])
+      .default("alive"),
 
     // Stats and health
-    hp: z.object({
-      current: z.number(),
-      max: z.number(),
-    }),
+    hp: z.number(),
     ac: z.number(),
-    status: z
-      .enum(["healthy", "injured", "unconscious", "absent"])
-      .default("healthy"),
 
     // Character appearance and styling
     gradient: z.string().optional(),
@@ -333,16 +235,9 @@ const characters = defineCollection({
       .array(
         z.object({
           name: z.string(),
-          style: z.string(),
         })
       )
       .optional(),
-
-    // Metadata
-    tags: z.array(z.string()).optional(),
-    aliases: z.array(z.string()).optional(),
-    isPlayerCharacter: z.boolean().default(true),
-    active: z.boolean().default(true),
   }),
 });
 
@@ -393,7 +288,6 @@ const campaign = defineCollection({
 
 export const collections = {
   journal,
-  timekeeping,
   characters,
   campaign,
 };
