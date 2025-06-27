@@ -5,7 +5,7 @@
   "hostname": null,
   "language": "en.core",
   "localHostname": null,
-  "port": 31000,
+  "port": 30000,
   "proxyPort": null,
   "proxySSL": false,
   "routePrefix": null,

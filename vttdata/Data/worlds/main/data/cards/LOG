@@ -1,5 +1,21 @@
-2025/06/25-14:47:21.355787 75ba60ffa6c0 Recovering log #113
-2025/06/25-14:47:21.355835 75ba60ffa6c0 Level-0 table #115: started
-2025/06/25-14:47:21.357549 75ba60ffa6c0 Level-0 table #115: 9636 bytes OK
-2025/06/25-14:47:21.359083 75ba60ffa6c0 Delete type=3 #112
-2025/06/25-14:47:21.359096 75ba60ffa6c0 Delete type=0 #113
+2025/06/27-08:32:28.503017 7012ed9fa6c0 Recovering log #132
+2025/06/27-08:32:28.514853 7012ed9fa6c0 Delete type=0 #132
+2025/06/27-08:32:28.514932 7012ed9fa6c0 Delete type=3 #131
+2025/06/27-08:53:28.133326 7012c53ff6c0 Level-0 table #136: started
+2025/06/27-08:53:28.133345 7012c53ff6c0 Level-0 table #136: 0 bytes OK
+2025/06/27-08:53:28.134303 7012c53ff6c0 Delete type=0 #134
+2025/06/27-08:53:28.215439 7012c53ff6c0 Manual compaction at level-0 from '!cards!Hpi4V0b14uvrt7Q1' @ 72057594037927935 : 1 .. '!cards.cards!Hpi4V0b14uvrt7Q1.yxoaqq59SilIfT0i' @ 0 : 0; will stop at '!cards.cards!Hpi4V0b14uvrt7Q1.yxoaqq59SilIfT0i' @ 24 : 1
+2025/06/27-08:53:28.215444 7012c53ff6c0 Compacting 1@0 + 0@1 files
+2025/06/27-08:53:28.216377 7012c53ff6c0 Generated table #137@0: 21 keys, 9636 bytes
+2025/06/27-08:53:28.216381 7012c53ff6c0 Compacted 1@0 + 0@1 files => 9636 bytes
+2025/06/27-08:53:28.217115 7012c53ff6c0 compacted to: files[ 0 1 1 0 0 0 0 ]
+2025/06/27-08:53:28.217134 7012c53ff6c0 Delete type=2 #115
+2025/06/27-08:53:28.217179 7012c53ff6c0 Manual compaction at level-0 from '!cards.cards!Hpi4V0b14uvrt7Q1.yxoaqq59SilIfT0i' @ 24 : 1 .. '!cards.cards!Hpi4V0b14uvrt7Q1.yxoaqq59SilIfT0i' @ 0 : 0; will stop at (end)
+2025/06/27-08:53:28.217194 7012c53ff6c0 Manual compaction at level-1 from '!cards!Hpi4V0b14uvrt7Q1' @ 72057594037927935 : 1 .. '!cards.cards!Hpi4V0b14uvrt7Q1.yxoaqq59SilIfT0i' @ 0 : 0; will stop at '!cards.cards!Hpi4V0b14uvrt7Q1.yxoaqq59SilIfT0i' @ 24 : 1
+2025/06/27-08:53:28.217196 7012c53ff6c0 Compacting 1@1 + 1@2 files
+2025/06/27-08:53:28.217928 7012c53ff6c0 Generated table #138@1: 21 keys, 9636 bytes
+2025/06/27-08:53:28.217933 7012c53ff6c0 Compacted 1@1 + 1@2 files => 9636 bytes
+2025/06/27-08:53:28.218652 7012c53ff6c0 compacted to: files[ 0 0 1 0 0 0 0 ]
+2025/06/27-08:53:28.218669 7012c53ff6c0 Delete type=2 #47
+2025/06/27-08:53:28.218690 7012c53ff6c0 Delete type=2 #137
+2025/06/27-08:53:28.244174 7012c53ff6c0 Manual compaction at level-1 from '!cards.cards!Hpi4V0b14uvrt7Q1.yxoaqq59SilIfT0i' @ 24 : 1 .. '!cards.cards!Hpi4V0b14uvrt7Q1.yxoaqq59SilIfT0i' @ 0 : 0; will stop at (end)

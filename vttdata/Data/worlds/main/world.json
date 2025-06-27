@@ -9,7 +9,7 @@
     "verified": "13"
   },
   "systemVersion": "5.0.4",
-  "lastPlayed": "Wed Jun 25 2025 14:47:22 GMT+0300 (Israel Daylight Time)",
+  "lastPlayed": "Fri Jun 27 2025 08:53:28 GMT+0300 (Israel Daylight Time)",
   "packs": [
     {
       "type": "Item",
@@ -24,7 +24,7 @@
       "flags": {}
     }
   ],
-  "playtime": 239962,
+  "playtime": 241216,
   "background": "systems/dnd5e/ui/official/dnd5e-background.webp",
   "nextSession": "2025-06-23T16:00:00.000Z"
 }
