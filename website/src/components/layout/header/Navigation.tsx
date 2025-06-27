@@ -64,6 +64,12 @@ const worldItems: NavItem[] = [
     description: "History & world building",
   },
   {
+    href: "/timekeeping",
+    icon: "📅",
+    label: "Calendar",
+    description: "Calendar of Harptos & time tracking",
+  },
+  {
     href: "/timeline",
     icon: "⏰",
     label: "Timeline",

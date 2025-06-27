@@ -30,6 +30,22 @@ const {
 const displayTitle =
   session_title || title || `Session ${session_number || ""}`;
 const displayDate = session_start || session_date || pubDate;
+
+// Extract additional props for expanded metadata
+const {
+  session_length_hours,
+  primary_location,
+  locations_visited,
+  weather,
+  time_of_day,
+  season,
+  combat_encounters,
+  main_events,
+  loot_gained,
+  currency_gained,
+  experience_gained,
+  level_ups,
+} = Astro.props;
 ---
 
 <BaseLayout
@@ -47,11 +63,11 @@ const displayDate = session_start || session_date || pubDate;
             backgroundOpacity={0.7}
             class="relative overflow-hidden w-full"
           >
-            <div class="relative h-48 md:h-64">
+            <div class="relative h-64 md:h-80">
               <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
               
               <!-- Header content overlay -->
-              <div class="absolute inset-0 flex flex-col justify-end p-3 md:p-4">
+              <div class="absolute inset-0 flex flex-col justify-end p-4 md:p-6">
                 <header class="text-center text-white">
                   {
                     session_number && (
@@ -60,10 +76,10 @@ const displayDate = session_start || session_date || pubDate;
                       </div>
                     )
                   }
-                  <h1 class="title text-xl md:text-3xl font-bold text-white mb-2 leading-tight drop-shadow-lg">
+                  <h1 class="title text-2xl md:text-4xl font-bold text-white mb-3 leading-tight drop-shadow-lg">
                     {displayTitle}
                   </h1>
-                  <div class="flex items-center justify-center gap-3 text-xs text-white/90 mb-2">
+                  <div class="flex items-center justify-center gap-4 text-sm text-white/90 mb-3">
                     {
                       displayDate && (
                         <div class="date drop-shadow">
@@ -72,9 +88,9 @@ const displayDate = session_start || session_date || pubDate;
                       )
                     }
                     {
-                      duration && (
+                      session_length_hours && (
                         <div class="duration drop-shadow">
-                          Duration: <FormattedDate date={duration} />
+                          {session_length_hours}h session
                         </div>
                       )
                     }
@@ -89,43 +105,59 @@ const displayDate = session_start || session_date || pubDate;
                   
                   <!-- Session Metadata Overlay -->
                   {
-                    (characters_involved || npcs_encountered || tags) && (
-                      <div class="session-metadata bg-black/30 backdrop-blur-sm rounded-lg p-2 mt-2 not-prose border border-white/20">
-                        <div class="flex flex-wrap items-start gap-3 text-xs">
-                          {characters_involved && characters_involved.length > 0 && (
-                            <div class="characters flex items-center gap-1">
-                              <span class="text-xs">👥</span>
-                              <div class="flex flex-wrap items-center gap-1">
-                                {characters_involved.slice(0, 3).map((character, index) => (
-                                  <span class="text-white/90">
-                                    {typeof character === "string" ? (
-                                      character.replace(/\[\[|\]\]/g, "")
-                                    ) : (
-                                      <a
-                                        href={
-                                          character.link ||
-                                          `/characters/${character.name.toLowerCase().replace(/\s+/g, "-")}`
-                                        }
-                                        class="text-accent-300 hover:text-accent-100 hover:underline transition-colors"
-                                      >
-                                        {character.name}
-                                      </a>
-                                    )}
-                                    {index < Math.min(characters_involved.length, 3) - 1 && <span class="text-white/60">,</span>}
-                                  </span>
-                                ))}
-                                {characters_involved.length > 3 && (
-                                  <span class="text-white/60">+{characters_involved.length - 3}</span>
-                                )}
+                    (characters_involved || npcs_encountered || tags || locations_visited || combat_encounters || main_events) && (
+                      <div class="session-metadata bg-black/30 backdrop-blur-sm rounded-lg p-3 mt-3 not-prose border border-white/20">
+                        <div class="space-y-2 text-xs">
+                          
+                          <!-- First Row: Characters, NPCs, and Location -->
+                          <div class="flex flex-wrap items-start gap-4">
+                            {characters_involved && characters_involved.length > 0 && (
+                              <div class="characters flex items-center gap-1">
+                                <span class="text-sm">👥</span>
+                                <div class="flex flex-wrap items-center gap-1">
+                                  {characters_involved.map((character, index) => (
+                                    <span class="text-white/90">
+                                      {typeof character === "string" ? (
+                                        character.replace(/\[\[|\]\]/g, "")
+                                      ) : (
+                                        <a
+                                          href={
+                                            character.link ||
+                                            `/characters/${character.name.toLowerCase().replace(/\s+/g, "-")}`
+                                          }
+                                          class="text-accent-300 hover:text-accent-100 hover:underline transition-colors"
+                                        >
+                                          {character.name}
+                                        </a>
+                                      )}
+                                      {index < characters_involved.length - 1 && <span class="text-white/60">,</span>}
+                                    </span>
+                                  ))}
+                                </div>
                               </div>
-                            </div>
-                          )}
+                            )}
 
+                            {primary_location && (
+                              <div class="location flex items-center gap-1">
+                                <span class="text-sm">📍</span>
+                                <span class="text-white/90">{primary_location}</span>
+                              </div>
+                            )}
+
+                            {weather && (
+                              <div class="weather flex items-center gap-1">
+                                <span class="text-sm">🌦️</span>
+                                <span class="text-white/90">{weather}</span>
+                              </div>
+                            )}
+                          </div>
+
+                          <!-- Second Row: NPCs -->
                           {npcs_encountered && npcs_encountered.length > 0 && (
                             <div class="npcs flex items-center gap-1">
-                              <span class="text-xs">🏘️</span>
+                              <span class="text-sm">🏘️</span>
                               <div class="flex flex-wrap items-center gap-1">
-                                {npcs_encountered.slice(0, 3).map((npc, index) => (
+                                {npcs_encountered.map((npc, index) => (
                                   <span class="text-white/90">
                                     {typeof npc === "string" ? (
                                       npc.replace(/\[\[|\]\]/g, "")
@@ -140,31 +172,61 @@ const displayDate = session_start || session_date || pubDate;
                                         {npc.name}
                                       </a>
                                     )}
-                                    {index < Math.min(npcs_encountered.length, 3) - 1 && <span class="text-white/60">,</span>}
+                                    {index < npcs_encountered.length - 1 && <span class="text-white/60">,</span>}
                                   </span>
                                 ))}
-                                {npcs_encountered.length > 3 && (
-                                  <span class="text-white/60">+{npcs_encountered.length - 3}</span>
-                                )}
                               </div>
                             </div>
                           )}
 
+                          <!-- Third Row: Combat, Experience, and Loot -->
+                          <div class="flex flex-wrap items-start gap-4">
+                            {combat_encounters && combat_encounters.length > 0 && (
+                              <div class="combat flex items-center gap-1">
+                                <span class="text-sm">⚔️</span>
+                                <span class="text-white/90">{combat_encounters.length} combat{combat_encounters.length > 1 ? 's' : ''}</span>
+                              </div>
+                            )}
+
+                            {experience_gained && (
+                              <div class="experience flex items-center gap-1">
+                                <span class="text-sm">⭐</span>
+                                <span class="text-white/90">{experience_gained} XP</span>
+                              </div>
+                            )}
+
+                            {level_ups && level_ups.length > 0 && (
+                              <div class="level-up flex items-center gap-1">
+                                <span class="text-sm">📈</span>
+                                <span class="text-accent-300">Level Up!</span>
+                              </div>
+                            )}
+
+                            {(currency_gained || loot_gained) && (
+                              <div class="loot flex items-center gap-1">
+                                <span class="text-sm">💰</span>
+                                <span class="text-gold-300">
+                                  {currency_gained && `${currency_gained.gold || 0}g`}
+                                  {loot_gained && ` + ${loot_gained.length} item${loot_gained.length > 1 ? 's' : ''}`}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+
+                          <!-- Fourth Row: Tags -->
                           {tags && tags.length > 0 && (
                             <div class="tags flex items-center gap-1">
-                              <span class="text-xs">🏷️</span>
+                              <span class="text-sm">🏷️</span>
                               <div class="flex flex-wrap gap-1">
-                                {tags.slice(0, 4).map((tag) => (
-                                  <span class="tag px-1 py-0.5 text-xs font-medium rounded border border-white/30 bg-white/10 text-white/90">
+                                {tags.map((tag) => (
+                                  <span class="tag px-1.5 py-0.5 text-xs font-medium rounded border border-white/30 bg-white/10 text-white/90">
                                     {tag}
                                   </span>
                                 ))}
-                                {tags.length > 4 && (
-                                  <span class="text-white/60 text-xs">+{tags.length - 4}</span>
-                                )}
                               </div>
                             </div>
                           )}
+
                         </div>
                       </div>
                     )

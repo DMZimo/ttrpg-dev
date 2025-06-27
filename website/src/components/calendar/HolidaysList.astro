@@ -1,0 +1,117 @@
+---
+import { HARPTOS_HOLIDAYS, HARPTOS_MONTHS } from "../../utils/fantasyCalendar";
+import type { HarptosHoliday } from "../../utils/fantasyCalendar";
+
+interface Props {
+  filterBySeason?: "winter" | "spring" | "summer" | "autumn" | "all";
+  maxHolidays?: number;
+}
+
+const { filterBySeason = "all", maxHolidays = 8 } = Astro.props;
+
+const filteredHolidays = HARPTOS_HOLIDAYS.filter(holiday => {
+  if (filterBySeason === "all") return true;
+  if (holiday.month) {
+    const monthData = HARPTOS_MONTHS[holiday.month - 1];
+    return monthData.season === filterBySeason;
+  }
+  return true;
+}).slice(0, maxHolidays);
+---
+
+<div class="holidays-list bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+  <div class="header-section flex items-center justify-between mb-4">
+    <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+      🎉 Holidays & Festivals
+    </h3>
+    
+    <!-- Season Filter -->
+    <select 
+      class="season-filter text-sm bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded px-2 py-1"
+      onchange="filterHolidays(this.value)"
+    >
+      <option value="all" selected={filterBySeason === "all"}>All Seasons</option>
+      <option value="winter" selected={filterBySeason === "winter"}>❄️ Winter</option>
+      <option value="spring" selected={filterBySeason === "spring"}>🌸 Spring</option>
+      <option value="summer" selected={filterBySeason === "summer"}>☀️ Summer</option>
+      <option value="autumn" selected={filterBySeason === "autumn"}>🍂 Autumn</option>
+    </select>
+  </div>
+
+  <div class="holidays-container space-y-3">
+    {filteredHolidays.map((holiday) => (
+      <a 
+        href={`/timekeeping/holidays/${holiday.id}`}
+        class="holiday-item block p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-300 dark:border-amber-800 hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-all duration-200 group"
+        data-holiday-id={holiday.id}
+      >
+        <div class="flex items-start justify-between">
+          <div class="flex-1">
+            <div class="font-semibold text-amber-800 dark:text-amber-200 text-sm group-hover:text-amber-900 dark:group-hover:text-amber-100">
+              {holiday.name}
+              {holiday.leapYearOnly && (
+                <span class="ml-1 text-xs bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 px-1 rounded" title="Leap year only">
+                  Leap
+                </span>
+              )}
+            </div>
+            <div class="text-xs text-amber-700 dark:text-amber-300 mt-1 line-clamp-2">
+              {holiday.description}
+            </div>
+            {holiday.month && holiday.day && (
+              <div class="text-xs text-amber-600 dark:text-amber-400 mt-1 flex items-center gap-1">
+                <span>📅</span>
+                <span>{holiday.day} {HARPTOS_MONTHS[holiday.month - 1].name}</span>
+                <span class="text-gray-500">•</span>
+                <span class="capitalize">{HARPTOS_MONTHS[holiday.month - 1].season}</span>
+              </div>
+            )}
+            {holiday.specialDay && (
+              <div class="text-xs text-amber-600 dark:text-amber-400 mt-1 flex items-center gap-1">
+                <span>✨</span>
+                <span>Special festival day</span>
+              </div>
+            )}
+          </div>
+          
+          <!-- Navigation Arrow -->
+          <div class="nav-arrow opacity-0 group-hover:opacity-100 ml-2 text-amber-600 dark:text-amber-400 transition-opacity duration-200">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </div>
+        </div>
+      </a>
+    ))}
+  </div>
+
+  <!-- Holiday Statistics -->
+  <div class="holiday-stats mt-4 text-xs text-gray-500 dark:text-gray-400 flex justify-between">
+    <span>{filteredHolidays.length} holidays shown</span>
+    <span>{HARPTOS_HOLIDAYS.length} total holidays</span>
+  </div>
+</div>
+
+<script>
+  function filterHolidays(season: string) {
+    const url = new URL(window.location.href);
+    if (season === "all") {
+      url.searchParams.delete("holidaySeason");
+    } else {
+      url.searchParams.set("holidaySeason", season);
+    }
+    window.location.href = url.toString();
+  }
+
+  // Make function globally available
+  (window as any).filterHolidays = filterHolidays;
+</script>
+
+<style>
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>

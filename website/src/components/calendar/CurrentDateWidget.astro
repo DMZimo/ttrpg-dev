@@ -1,0 +1,257 @@
+---
+import {
+  formatHarptosDate,
+  formatHarptosTime,
+  getMoonPhase,
+  getNextHoliday,
+  getSeasonEmoji,
+  getSeasonTextColor,
+  HARPTOS_MONTHS,
+  isLeapYear,
+} from "../../utils/fantasyCalendar";
+import type { HarptosDate, HarptosTime } from "../../utils/fantasyCalendar";
+
+interface Props {
+  currentDate: HarptosDate;
+  currentTime: HarptosTime;
+}
+
+const { currentDate, currentTime } = Astro.props;
+const currentMoonPhase = getMoonPhase(currentDate);
+const nextHoliday = getNextHoliday(currentDate);
+const currentSeasonEmoji = getSeasonEmoji(currentDate.season);
+const currentSeasonText = getSeasonTextColor(currentDate.season);
+const monthData = HARPTOS_MONTHS[currentDate.month - 1];
+---
+
+<div class="fantasy-calendar-widget">
+  <div
+    class="widget-container bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-900/30 dark:to-indigo-900/30 border-blue-200 dark:border-blue-800 border rounded-xl shadow-lg overflow-hidden"
+  >
+    <!-- Widget Header -->
+    <div
+      class="widget-header px-4 py-3 bg-white/40 dark:bg-black/20 border-b border-white/20 dark:border-black/20"
+    >
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <h3 class="font-bold text-blue-800 dark:text-blue-200 text-lg">
+            Current Date & Time
+          </h3>
+        </div>
+        <span class="text-lg">{currentSeasonEmoji}</span>
+        <div class="moon-display flex items-center gap-1">
+          <span
+            class="text-lg cursor-help"
+            title={currentMoonPhase.description}
+          >
+            {currentMoonPhase.emoji}
+          </span>
+          <span class="text-xs text-blue-800 dark:text-blue-200 opacity-80">
+            {currentMoonPhase.phase.replace("_", " ")}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Widget Content -->
+    <div class="widget-content p-4">
+      <!-- Current Date -->
+      <div class="current-date mb-3">
+        <div class="text-2xl font-bold text-blue-800 dark:text-blue-200 mb-1">
+          {formatHarptosDate(currentDate, "formal")}
+        </div>
+        <div class="text-sm text-blue-800 dark:text-blue-200 opacity-80">
+          {monthData.commonName} • {
+            currentDate.season.charAt(0).toUpperCase() +
+              currentDate.season.slice(1)
+          }
+        </div>
+        {
+          currentDate.isHoliday && (
+            <div class="holiday-notice mt-2 p-2 bg-amber-100 dark:bg-amber-900/30 rounded-lg border border-amber-200 dark:border-amber-800 text-sm">
+              <div class="flex items-center gap-2">
+                <span>🎉</span>
+                <span class="font-semibold text-amber-800 dark:text-amber-200">
+                  {currentDate.holidayName}
+                </span>
+              </div>
+            </div>
+          )
+        }
+      </div>
+
+      <!-- Current Time -->
+      <div
+        class="current-time mb-3 p-3 bg-white/20 dark:bg-black/20 rounded-lg"
+      >
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="text-lg font-semibold text-blue-800 dark:text-blue-200">
+              {formatHarptosTime(currentTime, "short")}
+            </div>
+            <div class="text-xs text-blue-800 dark:text-blue-200 opacity-70">
+              {currentTime.formalName}
+            </div>
+          </div>
+          <div class="text-xs text-blue-800 dark:text-blue-200 opacity-60">
+            Campaign Time
+          </div>
+        </div>
+      </div>
+
+      <!-- Tenday Progress -->
+      <div class="tenday-progress mb-3">
+        <div
+          class="text-xs text-blue-800 dark:text-blue-200 opacity-80 mb-1 flex justify-between"
+        >
+          <span>Tenday {currentDate.tenday}</span>
+          <span>Day {currentDate.dayOfTenday} of 10</span>
+        </div>
+        <div
+          class="progress-bar w-full bg-white/30 dark:bg-black/30 rounded-full h-2 overflow-hidden"
+        >
+          <div
+            class="progress-fill h-full bg-gradient-to-r from-blue-400 to-indigo-400 dark:from-blue-600 dark:to-indigo-600 rounded-full transition-all duration-500 ease-out"
+            style={`width: ${(currentDate.dayOfTenday / 10) * 100}%`}
+          >
+          </div>
+        </div>
+      </div>
+
+      <!-- Month Details -->
+      <div
+        class="month-details mb-3 p-3 bg-white/20 dark:bg-black/20 rounded-lg"
+      >
+        <div
+          class="text-sm text-blue-800 dark:text-blue-200 opacity-80 mb-2 flex items-center gap-2"
+        >
+          <span>🗓️</span>
+          <span>Month Details</span>
+        </div>
+
+        <div class="grid grid-cols-1 gap-2 text-xs">
+          <div class="flex justify-between items-center">
+            <span class="text-blue-800 dark:text-blue-200 opacity-70"
+              >Official Name:</span
+            >
+            <span class="font-medium text-blue-800 dark:text-blue-200"
+              >{monthData.name}</span
+            >
+          </div>
+
+          <div class="flex justify-between items-center">
+            <span class="text-blue-800 dark:text-blue-200 opacity-70"
+              >Days in Month:</span
+            >
+            <span class="font-medium text-blue-800 dark:text-blue-200"
+              >{monthData.days} days</span
+            >
+          </div>
+
+          <div class="flex justify-between items-center">
+            <span class="text-blue-800 dark:text-blue-200 opacity-70"
+              >Year Type:</span
+            >
+            <span
+              class="font-medium text-blue-800 dark:text-blue-200 flex items-center gap-1"
+            >
+              {
+                isLeapYear(currentDate.year) ? (
+                  <>
+                    <span>🗓️</span>
+                    <span>Leap (366 days)</span>
+                  </>
+                ) : (
+                  <>
+                    <span>📅</span>
+                    <span>Common (365 days)</span>
+                  </>
+                )
+              }
+            </span>
+          </div>
+        </div>
+
+        <!-- Season Progress -->
+        <div
+          class="season-progress mt-3 pt-3 border-t border-white/20 dark:border-black/20"
+        >
+          <div
+            class="text-xs text-blue-800 dark:text-blue-200 opacity-70 mb-2 flex justify-between"
+          >
+            <span>Season Progress</span>
+            <span
+              >{currentDate.month % 3 === 0 ? 3 : currentDate.month % 3} of 3 months</span
+            >
+          </div>
+          <div
+            class="w-full bg-white/30 dark:bg-black/30 rounded-full h-2 overflow-hidden"
+          >
+            <div
+              class={`h-full rounded-full transition-all duration-500 ${
+                currentDate.season === "winter"
+                  ? "bg-blue-400"
+                  : currentDate.season === "spring"
+                    ? "bg-green-400"
+                    : currentDate.season === "summer"
+                      ? "bg-yellow-400"
+                      : "bg-orange-400"
+              }`}
+              style={`width: ${(currentDate.month % 3 === 0 ? 3 : currentDate.month % 3) * 33.33}%`}
+            >
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Next Holiday -->
+      {
+        nextHoliday && (
+          <div class="next-holiday p-3 bg-white/20 dark:bg-black/20 rounded-lg">
+            <div class="text-sm text-blue-800 dark:text-blue-200 opacity-80 mb-1">
+              Next Holiday:
+            </div>
+            <div class="text-base font-medium text-blue-800 dark:text-blue-200 flex items-center gap-2">
+              <span>🗓️</span>
+              <div>
+                <a
+                  href={`/timekeeping/holidays/${nextHoliday.holiday.id}`}
+                  class="hover:underline"
+                >
+                  {nextHoliday.holiday.name}
+                </a>
+                <div class="text-sm opacity-70">
+                  in {nextHoliday.daysUntil} day
+                  {nextHoliday.daysUntil !== 1 ? "s" : ""}
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+      }
+
+      <!-- Quick Reference Links -->
+      <div class="quick-references mt-3 grid grid-cols-2 gap-2">
+        <a
+          href="/timekeeping"
+          class="reference-link text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded transition-colors flex items-center justify-center gap-1"
+          title="Explore timekeeping resources"
+        >
+          <span>�</span>
+          Resources
+        </a>
+        <a
+          href={`/timekeeping/seasons/${currentDate.season}`}
+          class="reference-link text-xs bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded transition-colors flex items-center justify-center gap-1"
+          title={`Learn about ${currentDate.season}`}
+        >
+          <span>{currentSeasonEmoji}</span>
+          {
+            currentDate.season.charAt(0).toUpperCase() +
+              currentDate.season.slice(1)
+          }
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

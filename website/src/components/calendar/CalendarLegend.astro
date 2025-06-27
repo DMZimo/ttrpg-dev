@@ -1,0 +1,205 @@
+---
+// No props needed anymore
+---
+
+<div
+  class="calendar-legend bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg border border-gray-200 dark:border-gray-700"
+>
+  <h3
+    class="font-bold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2 text-lg"
+  >
+    📖 Calendar Guide
+  </h3>
+
+  <div class="space-y-2 text-sm">
+    <!-- Visual Indicators -->
+    <div class="legend-section">
+      <div
+        class="legend-title font-medium text-gray-800 dark:text-gray-200 mb-2"
+      >
+        Visual Indicators
+      </div>
+      <div class="space-y-2">
+        <div class="flex items-center gap-2">
+          <div
+            class="w-4 h-4 bg-blue-100 dark:bg-blue-900 border border-blue-400 rounded"
+          >
+          </div>
+          <span class="text-gray-600 dark:text-gray-400">Current Day</span>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <div
+            class="w-4 h-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-300 rounded"
+          >
+          </div>
+          <span class="text-gray-600 dark:text-gray-400">Holiday/Festival</span>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <div
+            class="w-4 h-4 bg-green-50 dark:bg-green-900/20 border-2 border-green-300 dark:border-green-600 rounded"
+          >
+          </div>
+          <span class="text-gray-600 dark:text-gray-400">Selected Date</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Symbols -->
+    <div
+      class="legend-section pt-2 border-t border-gray-200 dark:border-gray-700"
+    >
+      <div
+        class="legend-title font-medium text-gray-800 dark:text-gray-200 mb-2"
+      >
+        Symbols
+      </div>
+      <div class="grid grid-cols-2 gap-2">
+        <div class="flex items-center gap-2">
+          <span class="text-sm">🌕</span>
+          <span class="text-gray-600 dark:text-gray-400">Moon Phase</span>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <span class="text-sm">🎉</span>
+          <span class="text-gray-600 dark:text-gray-400">Festival Day</span>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <span class="text-sm">❄️</span>
+          <span class="text-gray-600 dark:text-gray-400">Winter</span>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <span class="text-sm">🌸</span>
+          <span class="text-gray-600 dark:text-gray-400">Spring</span>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <span class="text-sm">☀️</span>
+          <span class="text-gray-600 dark:text-gray-400">Summer</span>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <span class="text-sm">🍂</span>
+          <span class="text-gray-600 dark:text-gray-400">Autumn</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Calendar System Info -->
+    <div
+      class="legend-section pt-2 border-t border-gray-200 dark:border-gray-700"
+    >
+      <div
+        class="legend-title font-medium text-gray-800 dark:text-gray-200 mb-2"
+      >
+        <a
+          href="/timekeeping/calendar-systems/harptos"
+          class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
+        >
+          Calendar System
+        </a>
+      </div>
+      <div class="space-y-1 text-gray-500 dark:text-gray-400 text-xs">
+        <div class="flex justify-between">
+          <span>Year:</span>
+          <span>365 days (366 in leap years)</span>
+        </div>
+        <div class="flex justify-between">
+          <span>Month:</span>
+          <span>30 days each</span>
+        </div>
+        <div class="flex justify-between">
+          <span>Tenday:</span>
+          <span>10 days (like our week)</span>
+        </div>
+        <div class="flex justify-between">
+          <span>Special Days:</span>
+          <span>5-6 festival days</span>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="calendar-note mt-4 pt-4 border-t border-gray-200 dark:border-gray-700"
+    >
+      <div class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+        <strong
+          >About the
+          <a
+            href="/timekeeping/calendar-systems/harptos"
+            class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
+          >
+            Calendar of Harptos
+          </a>:
+        </strong> This is the official calendar system used throughout Faerûn and
+        the Sword Coast. Each month has exactly 30 days divided into 3 tendays. Special
+        festival days occur between certain months and are not counted as part of
+        any month.
+      </div>
+    </div>
+  </div>
+
+  <!-- Tips & Tricks -->
+  <div
+    class="tips-section mt-4 pt-4 border-t border-gray-200 dark:border-gray-700"
+  >
+    <details class="group">
+      <summary
+        class="cursor-pointer text-sm font-medium text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-gray-100 transition-colors flex items-center gap-2"
+      >
+        💡 Tips & Tricks
+        <svg
+          class="w-4 h-4 transition-transform group-open:rotate-180"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M19 9l-7 7-7-7"></path>
+        </svg>
+      </summary>
+      <div class="mt-2 text-xs text-gray-600 dark:text-gray-400 space-y-2">
+        <div>
+          • Use the moon phases to plan magical events or werewolf encounters
+        </div>
+        <div>
+          • Festival days are perfect for town celebrations and plot hooks
+        </div>
+        <div>• Track long-term spells and effects using the calendar</div>
+        <div>
+          • Use season changes to alter travel conditions and encounters
+        </div>
+        <div>
+          • Plan character birthdays and important campaign anniversaries
+        </div>
+        <div>• Export calendar data to share with your gaming group</div>
+      </div>
+    </details>
+  </div>
+</div>
+
+<style>
+  .calendar-legend {
+    position: relative;
+  }
+
+  .legend-section:not(:first-child) {
+    margin-top: 0.75rem;
+  }
+
+  @media (max-width: 640px) {
+    .calendar-legend {
+      padding: 1rem;
+    }
+
+    .legend-section .grid-cols-2 {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
