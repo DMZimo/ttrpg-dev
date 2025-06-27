@@ -1,3 +1,21 @@
-2025/06/26-23:13:23.208226 750c54ffa6c0 Recovering log #132
-2025/06/26-23:13:23.210192 750c54ffa6c0 Delete type=0 #132
-2025/06/26-23:13:23.210207 750c54ffa6c0 Delete type=3 #131
+2025/06/27-08:32:28.576410 7012c7fff6c0 Recovering log #134
+2025/06/27-08:32:28.578761 7012c7fff6c0 Delete type=3 #133
+2025/06/27-08:32:28.578811 7012c7fff6c0 Delete type=0 #134
+2025/06/27-08:53:28.324652 7012c53ff6c0 Level-0 table #138: started
+2025/06/27-08:53:28.324663 7012c53ff6c0 Level-0 table #138: 0 bytes OK
+2025/06/27-08:53:28.325499 7012c53ff6c0 Delete type=0 #136
+2025/06/27-08:53:28.326308 7012c53ff6c0 Manual compaction at level-0 from '!journal!6m3FJZtJ3ytsdtSd' @ 72057594037927935 : 1 .. '!journal.pages!sFNvdXiFwUdtImfr.0000000000000014' @ 0 : 0; will stop at '!journal!uGL9X2kwNvJfKzZ5' @ 90 : 1
+2025/06/27-08:53:28.326311 7012c53ff6c0 Compacting 1@0 + 0@1 files
+2025/06/27-08:53:28.326986 7012c53ff6c0 Generated table #139@0: 10 keys, 2125 bytes
+2025/06/27-08:53:28.326990 7012c53ff6c0 Compacted 1@0 + 0@1 files => 2125 bytes
+2025/06/27-08:53:28.327714 7012c53ff6c0 compacted to: files[ 0 1 1 0 0 0 0 ]
+2025/06/27-08:53:28.327730 7012c53ff6c0 Delete type=2 #115
+2025/06/27-08:53:28.329302 7012c53ff6c0 Manual compaction at level-0 from '!journal!uGL9X2kwNvJfKzZ5' @ 90 : 1 .. '!journal.pages!sFNvdXiFwUdtImfr.0000000000000014' @ 0 : 0; will stop at (end)
+2025/06/27-08:53:28.330972 7012c53ff6c0 Manual compaction at level-1 from '!journal!6m3FJZtJ3ytsdtSd' @ 72057594037927935 : 1 .. '!journal.pages!sFNvdXiFwUdtImfr.0000000000000014' @ 0 : 0; will stop at '!journal!uGL9X2kwNvJfKzZ5' @ 90 : 1
+2025/06/27-08:53:28.330976 7012c53ff6c0 Compacting 1@1 + 1@2 files
+2025/06/27-08:53:28.348481 7012c53ff6c0 Generated table #140@1: 81 keys, 1874927 bytes
+2025/06/27-08:53:28.348491 7012c53ff6c0 Compacted 1@1 + 1@2 files => 1874927 bytes
+2025/06/27-08:53:28.349268 7012c53ff6c0 compacted to: files[ 0 0 1 0 0 0 0 ]
+2025/06/27-08:53:28.349328 7012c53ff6c0 Delete type=2 #23
+2025/06/27-08:53:28.349521 7012c53ff6c0 Delete type=2 #139
+2025/06/27-08:53:28.351967 7012c53ff6c0 Manual compaction at level-1 from '!journal!uGL9X2kwNvJfKzZ5' @ 90 : 1 .. '!journal.pages!sFNvdXiFwUdtImfr.0000000000000014' @ 0 : 0; will stop at (end)
