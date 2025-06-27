@@ -1,0 +1,120 @@
+---
+import { getCollection } from 'astro:content';
+
+// Get active mysteries from content collection
+const allPartyContent = await getCollection('party');
+const mysteries = allPartyContent.filter(entry => 
+  entry.data.type === 'mystery' && entry.data.status === 'active'
+);
+
+const getPriorityColor = (priority: string) => {
+  switch (priority) {
+    case "high":
+      return "border-l-red-500";
+    case "medium":
+      return "border-l-yellow-500";
+    case "low":
+      return "border-l-green-500";
+    default:
+      return "border-l-gray-500";
+  }
+};
+
+const getTagColor = (tag: string) => {
+  const colors: Record<string, string> = {
+    'family-history': 'bg-gray-100 dark:bg-gray-700/30 text-gray-800 dark:text-gray-200',
+    'equipment': 'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200',
+    'weather': 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200',
+    'supernatural': 'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200',
+    'red-larch': 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200',
+    'aldor': 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-200',
+    'imdarr': 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200'
+  };
+  return colors[tag.toLowerCase()] || 'bg-gray-100 dark:bg-gray-700/30 text-gray-800 dark:text-gray-200';
+};
+---
+
+<div class="mb-6">
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="text-xl md:text-2xl font-bold text-primary flex items-center">
+      🔍 Ongoing Mysteries
+    </h2>
+    <div class="text-sm text-secondary">
+      {mysteries.length} Unsolved
+    </div>
+  </div>
+
+  <div class="space-y-4">
+    {
+      mysteries.map((mystery) => (
+        <div
+          class={`hero-card bg-surface-elevated rounded-xl shadow-card p-5 border-l-4 ${getPriorityColor(mystery.data.priority || 'medium')} hover:border-accent-400 hover:shadow-card-hover transition-all duration-300 group relative overflow-hidden`}
+        >
+          <!-- Mystery background pattern -->
+          <div class="absolute inset-0 opacity-5 group-hover:opacity-10 transition-opacity duration-300">
+            <div class="w-full h-full bg-gradient-to-br from-purple-500 via-transparent to-blue-500"></div>
+          </div>
+          
+          <div class="relative z-10">
+            <div class="flex items-start justify-between mb-3">
+              <h3 class="text-lg font-bold text-primary group-hover:text-accent-400 transition-colors duration-200 flex items-center gap-2">
+                <span class="text-xl">🔍</span>
+                {mystery.data.title}
+              </h3>
+              <div class="flex items-center gap-3 text-sm text-secondary">
+                <div class="bg-surface-secondary px-3 py-1 rounded-full border">
+                  <span class="font-semibold">{mystery.data.cluesFound?.length || 0}</span>
+                  <span class="text-muted">/{mystery.data.totalClues || '?'} clues</span>
+                </div>
+              </div>
+            </div>
+            
+            <p class="text-secondary text-sm mb-4 leading-relaxed">
+              {mystery.data.description}
+            </p>
+            
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex flex-wrap gap-2">
+                {mystery.data.tags?.map((tag: string) => (
+                  <span
+                    class={`${getTagColor(tag)} text-xs font-semibold px-3 py-1 rounded-full border hover:scale-105 transition-transform duration-200`}
+                  >
+                    {tag.charAt(0).toUpperCase() + tag.slice(1).replace('-', ' ')}
+                  </span>
+                ))}
+              </div>
+              
+              <!-- Enhanced clue progress bar -->
+              <div class="flex items-center gap-2">
+                <span class="text-xs text-muted">Progress:</span>
+                <div class="w-20 h-2 bg-surface-secondary rounded-full overflow-hidden shadow-inner">
+                  <div
+                    class="h-2 bg-gradient-to-r from-accent-500 to-accent-600 rounded-full transition-all duration-500 relative"
+                    style={`width: ${mystery.data.cluesFound?.length && mystery.data.totalClues ? (mystery.data.cluesFound.length / mystery.data.totalClues) * 100 : 0}%`}
+                  >
+                    <div class="absolute inset-0 bg-white/30 animate-pulse"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Show clues if any found */}
+            {mystery.data.cluesFound && mystery.data.cluesFound.length > 0 && (
+              <div class="text-xs text-tertiary pt-3 border-t border-primary/20">
+                <div class="font-medium mb-1">Known Clues:</div>
+                <ul class="space-y-1">
+                  {mystery.data.cluesFound.map((clue: string, index: number) => (
+                    <li class="flex items-center gap-2">
+                      <span class="text-accent-500">•</span>
+                      <span>{clue}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        </div>
+      ))
+    }
+  </div>
+</div>

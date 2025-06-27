@@ -8,60 +8,41 @@ const journal = defineCollection({
   schema: ({ image }) =>
     z.object({
       // Basic metadata
-      title: z.string().optional(),
-      description: z.string().optional(),
-
-      // Aliases and CSS classes
-      aliases: z.array(z.string()).optional(),
-      cssclasses: z.array(z.string()).optional(),
-
-      // Tags
+      session_number: z.number(),
+      session_title: z.string(),
+      cover_image: image().optional(),
+      previous_session: z.string().optional(),
+      next_session: z.string().optional(),
+      is_public: z.boolean().default(false),
+      publish_date_iso: z.coerce.date(),
+      last_updated_iso: z.coerce.date(),
       tags: z.array(z.string()).optional(),
 
-      // Session-specific fields
-      session_number: z.number().optional(),
-      session_title: z.string().optional(),
-      session_start: z.coerce.date().optional(),
-      session_end: z.coerce.date().optional(),
-      session_date: z.coerce.date().optional(),
-      duration: z.coerce.date().optional(),
-      session_length_hours: z.number().optional(),
+      // Session timing
+      session_start: z.coerce.date(),
+      session_end: z.coerce.date(),
 
-      // Location and Setting
+      // In-game Geospatial tracking
+      ingame_start: z.coerce.date(),
+      ingame_end: z.coerce.date(),
       primary_location: z.string().optional(),
-      locations_visited: z.array(z.string()).optional(),
-      weather: z.string().optional(),
-      time_of_day: z.string().optional(),
-      season: z.string().optional(),
-
-      // Character and NPC references (as objects with name and link)
-      characters_involved: z
+      locations_visited: z
         .array(
-          z.union([
-            z.string(), // For backward compatibility
-            z.object({
-              name: z.string(),
-              link: z.string().optional(),
-              status: z
-                .enum(["active", "injured", "absent", "deceased"])
-                .optional(),
-            }),
-          ])
+          z.object({
+            name: z.string(),
+            link: z.string().optional(),
+          })
         )
         .optional(),
+
+      // Social tracking
       npcs_encountered: z
         .array(
-          z.union([
-            z.string(), // For backward compatibility
-            z.object({
-              name: z.string(),
-              link: z.string().optional(),
-              relationship: z
-                .enum(["ally", "enemy", "neutral", "unknown"])
-                .optional(),
-              first_encounter: z.boolean().optional(),
-            }),
-          ])
+          z.object({
+            name: z.string(),
+            link: z.string().optional(),
+            first_encounter: z.boolean().optional(),
+          })
         )
         .optional(),
 
@@ -70,104 +51,128 @@ const journal = defineCollection({
         .array(
           z.object({
             name: z.string(),
-            difficulty: z
-              .enum(["trivial", "easy", "medium", "hard", "deadly"])
-              .optional(),
+            weather: z.array(z.string()).optional(),
+            terrain: z.array(z.string()).optional(),
+            date: z.coerce.date().optional(),
+            rounds: z.number().optional(),
             outcome: z
               .enum(["victory", "defeat", "retreat", "negotiated"])
               .optional(),
+            enemies: z
+              .array(
+                z.object({
+                  name: z.string(),
+                  type: z.string().optional(),
+                  equipment: z.array(z.string()).optional(),
+                  count: z.number().optional(),
+                  difficulty: z.number().optional(),
+                  experience: z.number().optional(),
+                })
+              )
+              .optional(),
           })
         )
         .optional(),
-      skill_challenges: z
+
+      // Characters Progression
+      characters_involved: z
         .array(
           z.object({
             name: z.string(),
-            difficulty: z.number().optional(),
-            outcome: z.enum(["success", "failure", "partial"]).optional(),
-          })
-        )
-        .optional(),
-
-      // Story and Plot
-      main_events: z.array(z.string()).optional(),
-      plot_hooks_introduced: z.array(z.string()).optional(),
-      plot_hooks_resolved: z.array(z.string()).optional(),
-      mysteries_discovered: z.array(z.string()).optional(),
-      clues_found: z.array(z.string()).optional(),
-
-      // Items and Rewards
-      loot_gained: z
-        .array(
-          z.object({
-            item: z.string(),
-            value: z.string().optional(),
-            rarity: z
-              .enum([
-                "common",
-                "uncommon",
-                "rare",
-                "very rare",
-                "legendary",
-                "artifact",
-              ])
+            link: z.string(),
+            status: z.enum(["alive", "injured", "dead"]),
+            rewards: z
+              .array(
+                z.union([
+                  z.object({
+                    experience: z.number(),
+                  }),
+                  z.object({
+                    loot: z.array(
+                      z.object({
+                        name: z.string(),
+                        rarity: z
+                          .enum([
+                            "common",
+                            "uncommon",
+                            "rare",
+                            "very rare",
+                            "legendary",
+                            "artifact",
+                            "unidentified",
+                          ])
+                          .optional(),
+                        quantity: z.number().optional(),
+                        value: z.number().optional(),
+                        coin: z
+                          .enum(["copper", "silver", "gold", "platinum"])
+                          .optional(),
+                      })
+                    ),
+                  }),
+                  z.object({
+                    currency: z.object({
+                      copper: z.number().optional(),
+                      silver: z.number().optional(),
+                      gold: z.number().optional(),
+                      platinum: z.number().optional(),
+                    }),
+                  }),
+                ])
+              )
               .optional(),
           })
         )
         .optional(),
-      magic_items_found: z.array(z.string()).optional(),
-      currency_gained: z
-        .object({
-          copper: z.number().optional(),
-          silver: z.number().optional(),
-          gold: z.number().optional(),
-          platinum: z.number().optional(),
-        })
+
+      // Group Rewards
+      group_rewards: z
+        .array(
+          z.union([
+            z.object({
+              loot: z.array(
+                z.object({
+                  name: z.string(),
+                  rarity: z
+                    .enum([
+                      "common",
+                      "uncommon",
+                      "rare",
+                      "very rare",
+                      "legendary",
+                      "artifact",
+                      "unidentified",
+                    ])
+                    .optional(),
+                  quantity: z.number().optional(),
+                  value: z.number().optional(),
+                  coin: z
+                    .enum(["copper", "silver", "gold", "platinum"])
+                    .optional(),
+                })
+              ),
+            }),
+            z.object({
+              currency: z.object({
+                copper: z.number().optional(),
+                silver: z.number().optional(),
+                gold: z.number().optional(),
+                platinum: z.number().optional(),
+              }),
+            }),
+          ])
+        )
         .optional(),
 
       // Character Development
-      experience_gained: z.number().optional(),
-      level_ups: z.array(z.string()).optional(),
-      new_abilities: z.array(z.string()).optional(),
-      character_moments: z
+      level_ups: z
         .array(
           z.object({
             character: z.string(),
-            moment: z.string(),
-            type: z
-              .enum([
-                "heroic",
-                "tragic",
-                "comedic",
-                "dramatic",
-                "character_development",
-              ])
-              .optional(),
+            new_level: z.number(),
           })
         )
         .optional(),
-
-      // Session Quality and Notes
-      dm_notes: z.string().optional(),
-      player_feedback: z.array(z.string()).optional(),
-      memorable_quotes: z
-        .array(
-          z.object({
-            quote: z.string(),
-            character: z.string(),
-          })
-        )
-        .optional(),
-
-      // Session navigation
-      previous_session: z.string().optional(),
-      next_session: z.string().optional(),
-
-      // Standard content collection fields
-      pubDate: z.coerce.date().optional(),
-      updatedDate: z.coerce.date().optional(),
-      heroImage: image().optional(),
-      cover_image: image().optional(),
     }),
 });
 
@@ -297,7 +302,98 @@ const timekeeping = defineCollection({
   }),
 });
 
+// Characters collection of all player and non-player characters used in the campaign.
+// Character types:
+// - Player Character (PC): Main characters controlled by players.
+// - Sidekick: Same as characters, but used by guests or as secondary characters/role fillers.
+// - Non-Player Character (NPC): Characters controlled by the DM, including allies, enemies, and neutral characters.
+const characters = defineCollection({
+  loader: glob({ base: "./src/content/characters", pattern: "**/*.{md,mdx}" }),
+  schema: z.object({
+    // Basic character info
+    name: z.string(),
+    race: z.string(),
+    class: z.string(),
+    level: z.number().default(1),
+    description: z.string().optional(),
+
+    // Stats and health
+    hp: z.object({
+      current: z.number(),
+      max: z.number(),
+    }),
+    ac: z.number(),
+    status: z
+      .enum(["healthy", "injured", "unconscious", "absent"])
+      .default("healthy"),
+
+    // Character appearance and styling
+    gradient: z.string().optional(),
+    roles: z
+      .array(
+        z.object({
+          name: z.string(),
+          style: z.string(),
+        })
+      )
+      .optional(),
+
+    // Metadata
+    tags: z.array(z.string()).optional(),
+    aliases: z.array(z.string()).optional(),
+    isPlayerCharacter: z.boolean().default(true),
+    active: z.boolean().default(true),
+  }),
+});
+
+// Party collection for quests, mysteries, rumors, etc.
+const campaign = defineCollection({
+  loader: glob({ base: "./src/content/campaign", pattern: "**/*.{md,mdx}" }),
+  schema: z.object({
+    // Content type
+    type: z.enum(["quest", "mystery", "rumor", "timeline-event"]),
+
+    // Basic info
+    title: z.string(),
+    description: z.string().optional(),
+    status: z
+      .enum(["active", "completed", "failed", "abandoned", "paused"])
+      .default("active"),
+
+    // Quest-specific fields
+    priority: z.enum(["low", "medium", "high", "urgent"]).optional(),
+    difficulty: z
+      .enum(["trivial", "easy", "medium", "hard", "deadly"])
+      .optional(),
+    progress: z.number().min(0).max(100).default(0),
+    questGiver: z.string().optional(),
+    location: z.string().optional(),
+    reward: z.string().optional(),
+
+    // Mystery-specific fields
+    cluesFound: z.array(z.string()).optional(),
+    totalClues: z.number().optional(),
+
+    // Timeline event fields
+    sessionNumber: z.number().optional(),
+    eventDate: z.coerce.date().optional(),
+    experienceGained: z.number().optional(),
+
+    // General fields
+    tags: z.array(z.string()).optional(),
+    relatedCharacters: z.array(z.string()).optional(),
+    relatedLocations: z.array(z.string()).optional(),
+
+    // Metadata
+    startDate: z.coerce.date().optional(),
+    completedDate: z.coerce.date().optional(),
+    lastUpdated: z.coerce.date().optional(),
+  }),
+});
+
 export const collections = {
   journal,
   timekeeping,
+  characters,
+  campaign,
 };

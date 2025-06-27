@@ -1,0 +1,57 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PartyHeader from "@/components/campaign/PartyHeader.astro";
+import PartyStats from "@/components/campaign/PartyStats.astro";
+import PartyMembers from "@/components/campaign/PartyMembers.astro";
+import ActiveQuests from "@/components/campaign/ActiveQuests.astro";
+import CompletedQuests from "@/components/campaign/CompletedQuests.astro";
+import RumorsAndAdventures from "@/components/campaign/RumorsAndAdventures.astro";
+import CampaignTimeline from "@/components/campaign/CampaignTimeline.astro";
+import OngoingMysteries from "@/components/campaign/OngoingMysteries.astro";
+---
+
+<BaseLayout
+  title="Party Portal - Dessarin Valley Chronicles"
+  description="Complete party dashboard with characters, quests, and adventure tracking"
+>
+  <div
+    class="min-h-screen py-6 bg-gradient-to-br from-surface/30 to-surface-secondary/20"
+  >
+    <!-- Enhanced Header with Better Spacing -->
+    <div class="px-4 sm:px-6 lg:px-8 mb-8">
+      <div
+        class="hero-card bg-surface-elevated rounded-2xl p-6 shadow-card-hover flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6"
+      >
+        <PartyHeader />
+        <div class="lg:w-auto">
+          <PartyStats />
+        </div>
+      </div>
+    </div>
+
+    <!-- Improved Grid Layout with Better Responsive Design -->
+    <div class="px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <!-- Left Column - Party Members (Sticky on larger screens) -->
+        <div class="lg:col-span-3">
+          <div class="lg:sticky lg:top-8 space-y-6">
+            <PartyMembers />
+          </div>
+        </div>
+
+        <!-- Middle Column - Active Content -->
+        <div class="lg:col-span-6 space-y-8">
+          <ActiveQuests />
+          <CampaignTimeline />
+        </div>
+
+        <!-- Right Column - Secondary Content -->
+        <div class="lg:col-span-3 space-y-6">
+          <CompletedQuests />
+          <OngoingMysteries />
+          <RumorsAndAdventures />
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>

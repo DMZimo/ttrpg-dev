@@ -1,13 +1,15 @@
 ---
-date: 2025-06-23
+# Session Metadata
 session_number: 3
 session_title: Session 3 - Bears and Bows
 cover_image: "../../assets/session-3-cover.jpg"
 previous_session: "Session-2"
 next_session: "Session-4"
+is_public: true
 session_start: 2025-06-23T21:00:00
 session_end: 2025-06-24T01:30:00
-session_length_hours: 4.5
+publish_date_iso: 2025-06-28T00:00:00
+last_updated_iso: 2025-06-28T00:00:00
 tags:
   - session-report
   - combat-report
@@ -18,97 +20,147 @@ tags:
   - necromancy
   - storm
 
+# In-Game Geospatial Metadata
 ingame_start: 1491-04-15T20:00:00
 ingame_end: 1491-04-17T20:00:00
+primary_location: "Red Larch Surroundings"
+locations_visited:
+  - name: "Red Larch"
+    link: "/atlas/red-larch"
+  - name: "Lance Rock"
+    link: "/atlas/lance-rock"
+  - name: "Bandit Camp East of Lance Rock"
+    link: "/atlas/bandit-camp-east-of-lance-rock"
+
+# Social Metadata
+npcs_encountered:
+  - name: "Endrith Vallivoe"
+    link: "/npcs/endrith-vallivoe"
+    first_encounter: false
+  - name: "Imdarr Relvaunder"
+    link: "/npcs/imdarr-relvaunder"
+    first_encounter: false
+  - name: "Haeleeya Hanadroum"
+    link: "/npcs/haeleeya-hanadroum"
+    first_encounter: true
+  - name: "Ilmeth Waelvur"
+    link: "/npcs/ilmeth-waelvur"
+    first_encounter: true
+  - name: "Harburk Tuthmarillar"
+    link: "/npcs/harburk-tuthmarillar"
+    first_encounter: false
+
+# Combat Encounters
+combat_encounters:
+  - name: "Bandit Camp south of Lance Rock"
+    weather:
+      - "Rain"
+      - "Night"
+    terrain:
+      - "Forest"
+      - "Hills"
+    date: 1491-04-16T20:00:00
+    rounds: 4
+    outcome: "victory"
+    enemies:
+      - name: "Bandit"
+        type: "humanoid"
+        equipment:
+          - "Shortbow"
+          - "Scimitar"
+        count: 2
+        difficulty: 0.5
+        experience: 25
+      - name: "Bandit"
+        type: "humanoid"
+        equipment:
+          - "Crossbow"
+          - "Scimitar"
+        count: 2
+        difficulty: 0.5
+        experience: 25
+      - name: "Black Bear"
+        type: "beast"
+        count: 1
+        difficulty: 0.25
+
+# Characters Progression
 characters_involved:
   - name: "Aldor Irion"
     link: "/characters/aldor-irion"
     status: "alive"
+    rewards:
+      - experience: 300
+
   - name: "Daijo"
     link: "/characters/daijo"
     status: "alive"
+    rewards:
+      - experience: 300
+      - loot:
+          - name: "Crossbow bolt"
+            rarity: "common"
+            quantity: 20
+            value: 5
+            coin: "copper"
+      - currency:
+          copper: 10
+          silver: 5
+          gold: 2
+
   - name: "Finn Quickfoot"
     link: "/characters/finn-quickfoot"
     status: "alive"
+    rewards:
+      - experience: 300
+
   - name: "Jain Farstrider"
     link: "/characters/jain-farstrider"
     status: "alive"
+    rewards:
+      - experience: 300
+      - loot:
+          - name: "Strange amber-colored gem"
+            rarity: "unidentified"
+            quantity: 1
 
-primary_location: "Red Larch Surroundings"
-locations_visited:
-  - "Red Larch"
-  - "Lance Rock"
-  - "Bandit Camp East of Lance Rock"
-
-npcs_encountered:
-  - name: "Endrith Vallivoe"
-    link: "/npcs/endrith-vallivoe"
-    relationship: "ally"
-    first_encounter: false
-  - name: "Imdarr Relvaunder"
-    link: "/npcs/imdarr-relvaunder"
-    relationship: "neutral"
-    first_encounter: false
-  - name: "Haeleeya Hanadroum"
-    link: "/npcs/haeleeya-hanadroum"
-    relationship: "neutral"
-    first_encounter: false
-  - name: "Ilmeth Waelvur"
-    link: "/npcs/ilmeth-waelvur"
-    relationship: "neutral"
-    first_encounter: false
-  - name: "Harburk Tuthmarillar"
-    link: "/npcs/harburk-tuthmarillar"
-    relationship: "ally"
-    first_encounter: false
-
-combat_encounters:
-  - name: "Bandit Camp Assault"
-    difficulty: "medium"
-    outcome: "victory"
-  - name: "Caged Black Bear"
-    difficulty: "easy"
-    outcome: "victory"
-
-main_events:
-  - "Learned about failed bandit trap plan from Endrith"
-  - "Scouted Lance Rock and discovered necromancy magic underneath"
-  - "Tracked bandits to their camp during a storm"
-  - "Successfully ambushed the bandit camp"
-plot_hooks_introduced:
-  - "Necromancy magic detected under Lance Rock"
-  - "Hidden cave entrance somewhere at Lance Rock"
-mysteries_discovered:
-  - "Lance Rock menhir is not native to the area"
-  - "Strong necromancy magic emanates from beneath Lance Rock"
-  - "Cave system exists under Lance Rock hill"
-clues_found:
-  - "Lance Rock stone arrived recently"
-  - "Bandits using caged bears in their operations"
-  - "Storm appeared suddenly and disappeared just as quickly"
-
-rewards:
-  - loot: "Assorted weapons and gear"
-      rarity: "common"
-      value: "100 gp bulk"
-  - loot: "Strange amber-colored gem"
-      rarity: "uncommon"
-      value: "unknown"
+# Shared Rewards
+group_rewards:
+  - loot:
+      - name: "Liberated trade goods"
+        rarity: "common"
+        quantity: 1
+        value: 50
+        coin: "gold"
+      - name: "Light Crossbow"
+        rarity: "common"
+        quantity: 2
+        value: 25
+        coin: "gold"
+      - name: "Shortbow"
+        rarity: "common"
+        quantity: 2
+        value: 25
+        coin: "gold"
+      - name: "Scimitar"
+        rarity: "common"
+        quantity: 4
+        value: 25
+        coin: "gold"
+      - name: "Crossbow Bolt"
+        rarity: "common"
+        quantity: 20
+        value: 5
+        coin: "copper"
+      - name: "Arrow"
+        rarity: "common"
+        quantity: 40
+        value: 5
+        coin: "copper"
   - currency:
       copper: 99
       silver: 74
       gold: 13
-  - experience_gained: level
-
-level_ups:
-  - character: "Aldor Irion"
-    new_level: 2
-  - character: "Daijo"
-    new_level: 2
-  - character: "Finn Quickfoot"
-    new_level: 3
-  - character: "Jain Farstrider"
-    new_level: 2
 ---
 
 # Summary

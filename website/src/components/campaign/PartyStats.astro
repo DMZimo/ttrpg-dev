@@ -1,0 +1,103 @@
+---
+import { getCollection } from 'astro:content';
+
+// Get data from content collections
+const allPartyContent = await getCollection('party');
+const characters = await getCollection('characters');
+
+// Calculate dynamic stats
+const partyMembers = characters.filter(char => char.data.isPlayerCharacter && char.data.active);
+const activeQuests = allPartyContent.filter(entry => 
+  entry.data.type === 'quest' && entry.data.status === 'active'
+);
+const completedQuests = allPartyContent.filter(entry => 
+  entry.data.type === 'quest' && entry.data.status === 'completed'
+);
+const mysteries = allPartyContent.filter(entry => 
+  entry.data.type === 'mystery' && entry.data.status === 'active'
+);
+
+interface StatCard {
+  value: number;
+  label: string;
+  color: string;
+  icon: string;
+  trend?: "up" | "down" | "stable";
+}
+
+const stats: StatCard[] = [
+  {
+    value: partyMembers.length,
+    label: "Party Members",
+    color: "text-accent-400",
+    icon: "👥",
+    trend: "stable",
+  },
+  {
+    value: activeQuests.length,
+    label: "Active Quests",
+    color: "text-gold-400",
+    icon: "🎯",
+    trend: "up",
+  },
+  {
+    value: completedQuests.length,
+    label: "Completed",
+    color: "text-success",
+    icon: "✅",
+    trend: "up",
+  },
+  {
+    value: mysteries.length,
+    label: "Mysteries",
+    color: "text-accent-300",
+    icon: "🔍",
+    trend: "stable",
+  },
+];
+
+const getTrendIcon = (trend?: string) => {
+  switch (trend) {
+    case "up":
+      return "↗️";
+    case "down":
+      return "↘️";
+    default:
+      return "➖";
+  }
+};
+---
+
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+  {
+    stats.map((stat) => (
+      <div class="hero-card bg-surface-elevated rounded-xl p-4 text-center border border-primary hover:border-accent-400 transition-all duration-300 group relative overflow-hidden">
+        <!-- Background gradient effect -->
+        <div class="absolute inset-0 bg-gradient-to-br from-accent-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        
+        <div class="relative z-10">
+          <div class="flex items-center justify-center gap-2 mb-2">
+            <span class="text-2xl group-hover:scale-110 transition-transform duration-300">{stat.icon}</span>
+            <span class="text-xs opacity-60 group-hover:opacity-80 transition-opacity">
+              {getTrendIcon(stat.trend)}
+            </span>
+          </div>
+          <div
+            class={`text-2xl font-bold ${stat.color} mb-2 group-hover:scale-105 transition-transform duration-300`}
+          >
+            {stat.value}
+          </div>
+          <div class="text-secondary text-sm font-medium">{stat.label}</div>
+          
+          <!-- Progress ring for visual appeal -->
+          <div class="mt-2 flex justify-center">
+            <div class="w-8 h-1 bg-surface-secondary rounded-full overflow-hidden">
+              <div class={`h-1 ${stat.color.replace('text-', 'bg-')} rounded-full transition-all duration-1000 ease-out`} 
+                   style={`width: ${Math.min(stat.value * 20, 100)}%`}></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    ))
+  }
+</div>

@@ -1,0 +1,133 @@
+---
+import { getCollection } from 'astro:content';
+
+// Get party members from content collection
+const characters = await getCollection('characters');
+const partyMembers = characters.filter(character => 
+  character.data.isPlayerCharacter && character.data.active
+);
+
+const getHealthPercentage = (hp: { current: number; max: number }) => (hp.current / hp.max) * 100;
+const getHealthColor = (percentage: number) => {
+  if (percentage > 75) return 'bg-green-500';
+  if (percentage > 50) return 'bg-yellow-500';
+  if (percentage > 25) return 'bg-orange-500';
+  return 'bg-red-500';
+};
+
+const getStatusIcon = (status: string) => {
+  switch (status) {
+    case 'healthy': return '💚';
+    case 'injured': return '💛';
+    case 'unconscious': return '💔';
+    case 'absent': return '❓';
+    default: return '💚';
+  }
+};
+---
+
+<div class="mb-6">
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="text-xl md:text-2xl font-bold text-primary flex items-center">
+      👥 Party Members
+    </h2>
+    <div class="text-sm text-secondary">
+      Level 3 • {partyMembers.length} Members
+    </div>
+  </div>
+
+  <div class="space-y-4">
+    {partyMembers.map((character) => {
+      const healthPercentage = getHealthPercentage(character.data.hp);
+      const healthColor = getHealthColor(healthPercentage);
+      
+      return (
+        <div class="hero-card bg-surface-elevated rounded-xl shadow-card border border-primary hover:border-accent-400 transition-all duration-300 p-4 group relative overflow-hidden">
+          <!-- Character background effect -->
+          <div class="absolute inset-0 opacity-5 group-hover:opacity-10 transition-opacity duration-300"
+               style={`background: ${character.data.gradient || 'linear-gradient(135deg, rgb(99 102 241), rgb(139 92 246))'};`}>
+          </div>
+          
+          <div class="relative z-10">
+            <div class="flex items-center gap-4">
+              <!-- Enhanced Character Avatar -->
+              <div 
+                class="w-16 h-16 rounded-xl flex-shrink-0 relative overflow-hidden shadow-lg group-hover:scale-105 transition-transform duration-300"
+                style={`background: ${character.data.gradient || 'linear-gradient(135deg, rgb(99 102 241), rgb(139 92 246))'};`}
+              >
+                <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+                <div class="absolute inset-0 flex items-center justify-center text-white font-bold text-xl">
+                  {character.data.name.charAt(0)}
+                </div>
+                <div class="absolute top-1 right-1">
+                  <span class="text-xs">{getStatusIcon(character.data.status)}</span>
+                </div>
+              </div>
+
+              <!-- Enhanced Character Info -->
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between mb-2">
+                  <h3 class="font-bold text-primary text-lg truncate group-hover:text-accent-400 transition-colors">
+                    {character.data.name}
+                  </h3>
+                  <div class="flex items-center gap-3 text-sm text-secondary">
+                    <div class="bg-surface-secondary px-2 py-1 rounded-md border">
+                      <span class="font-bold">AC {character.data.ac}</span>
+                    </div>
+                    <div class="bg-surface-secondary px-2 py-1 rounded-md border">
+                      <span class="font-bold">Lv.{character.data.level}</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="flex items-center justify-between mb-3">
+                  <p class="text-sm text-accent-600 font-semibold">
+                    {character.data.race} {character.data.class}
+                  </p>
+                  
+                  <!-- Enhanced Health Display -->
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs text-muted">HP:</span>
+                    <div class="w-20 h-3 bg-surface-secondary rounded-full overflow-hidden shadow-inner">
+                      <div 
+                        class={`h-full transition-all duration-500 ease-out ${healthColor} relative`}
+                        style={`width: ${healthPercentage}%`}
+                      >
+                        <div class="absolute inset-0 bg-white/20 animate-pulse"></div>
+                      </div>
+                    </div>
+                    <span class="text-xs text-secondary font-mono bg-surface-secondary px-1.5 py-0.5 rounded border">
+                      {character.data.hp.current}/{character.data.hp.max}
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Enhanced Roles with better styling -->
+                {character.data.roles && character.data.roles.length > 0 && (
+                  <div class="flex flex-wrap gap-2">
+                    {character.data.roles.map((role) => (
+                      <span 
+                        class="text-xs font-semibold px-3 py-1 rounded-full border shadow-sm hover:scale-105 transition-transform duration-200"
+                        style={role.style}
+                      >
+                        {role.name}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                <!-- Character description on hover -->
+                {character.data.description && (
+                  <div class="mt-3 text-xs text-tertiary opacity-0 group-hover:opacity-100 transition-opacity duration-300 line-clamp-2">
+                    {character.data.description}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    })}
+  </div>
+  </div>
+</div>

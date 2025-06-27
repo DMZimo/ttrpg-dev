@@ -9,6 +9,9 @@ export const SITE_DESCRIPTION =
 export const DISCORD_INVITE = "https://discord.gg/cNv4wN5t64";
 export const FOUNDRY_VTT_URL = "http://109.67.171.166:31000/"; // Add your Foundry VTT URL here
 
+// Timezone Configuration
+export const TIMEZONE = "Asia/Jerusalem";
+
 // Campaign Date and Time Configuration
 // Update these values after each session to reflect the current campaign date/time
 export const CAMPAIGN_DATE = {
