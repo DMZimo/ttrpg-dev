@@ -1,0 +1,25 @@
+<div>
+    <p class="hint">{{localize 'MonksCommonDisplay.player-select-hint'}}</p>
+    <header>
+        <label class="name">{{localize 'MonksCommonDisplay.players'}}</label>
+        <div class="display" data-tooltip="{{localize 'MonksCommonDisplay.display.hint'}}">{{localize 'MonksCommonDisplay.display.name'}}</div>
+    </header>
+    <ol class="scrollable user-list" data-users>
+        {{#each players as |player i|}}
+        <li class="sound draggable" data-index="{{i}}" draggable="true" data-sound-id="{{player.id}}">
+            <div class="name">
+                {{{player.name}}}
+            </div>
+
+            <div class="display">
+                <input type="checkbox" name="{{player.id}}.display" {{#if player.display}} checked{{/if}} />
+            </div>
+        </li>
+        {{/each}}
+    </ol>
+    <footer class="sheet-footer flexrow" style="flex-grow:0;">
+        <button type="submit" name="submit">
+            <i class="far fa-save"></i> {{localize 'MonksCommonDisplay.save'}}
+        </button>
+    </footer>
+</div>
