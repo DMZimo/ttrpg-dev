@@ -28,6 +28,14 @@ export interface HarptosDate {
   holidayName?: string;
   tenday: number;
   dayOfTenday: number;
+  isSpecialDay?: boolean;
+  specialDayType?:
+    | "midwinter"
+    | "greengrass"
+    | "midsummer"
+    | "shieldmeet"
+    | "highharvestide"
+    | "feast-of-the-moon";
 }
 
 export interface HarptosTime {
@@ -134,26 +142,10 @@ export const HARPTOS_HOLIDAYS: HarptosHoliday[] = [
     isRecurring: true,
   },
   {
-    id: "spring-equinox",
-    name: "Spring Equinox",
-    description: "The spring equinox celebration",
-    month: 3,
-    day: 19,
-    isRecurring: true,
-  },
-  {
     id: "greengrass",
     name: "Greengrass",
     description: "Spring festival between Tarsakh 30 and Mirtul 1",
     specialDay: "greengrass",
-    isRecurring: true,
-  },
-  {
-    id: "summer-solstice",
-    name: "Summer Solstice",
-    description: "The longest day of the year",
-    month: 6,
-    day: 20,
     isRecurring: true,
   },
   {
@@ -173,14 +165,6 @@ export const HARPTOS_HOLIDAYS: HarptosHoliday[] = [
     leapYearOnly: true,
   },
   {
-    id: "autumn-equinox",
-    name: "Autumn Equinox",
-    description: "The autumn equinox celebration",
-    month: 9,
-    day: 21,
-    isRecurring: true,
-  },
-  {
     id: "highharvestide",
     name: "Highharvestide",
     description: "Harvest festival between Eleint 30 and Marpenoth 1",
@@ -192,6 +176,31 @@ export const HARPTOS_HOLIDAYS: HarptosHoliday[] = [
     name: "Feast of the Moon",
     description: "Festival of the dead between Uktar 30 and Nightal 1",
     specialDay: "feast-of-the-moon",
+    isRecurring: true,
+  },
+  // Astronomical events
+  {
+    id: "spring-equinox",
+    name: "Spring Equinox",
+    description: "The spring equinox celebration",
+    month: 3,
+    day: 19,
+    isRecurring: true,
+  },
+  {
+    id: "summer-solstice",
+    name: "Summer Solstice",
+    description: "The longest day of the year",
+    month: 6,
+    day: 20,
+    isRecurring: true,
+  },
+  {
+    id: "autumn-equinox",
+    name: "Autumn Equinox",
+    description: "The autumn equinox celebration",
+    month: 9,
+    day: 21,
     isRecurring: true,
   },
   {
@@ -235,6 +244,71 @@ export function createHarptosDate(
     tenday,
     dayOfTenday,
   };
+}
+
+export function createSpecialDay(
+  year: number,
+  specialDayType:
+    | "midwinter"
+    | "greengrass"
+    | "midsummer"
+    | "shieldmeet"
+    | "highharvestide"
+    | "feast-of-the-moon"
+): HarptosDate {
+  const holiday = HARPTOS_HOLIDAYS.find((h) => h.specialDay === specialDayType);
+  if (!holiday) throw new Error(`Unknown special day: ${specialDayType}`);
+
+  // Determine season and preceding month for special days
+  const specialDayInfo = {
+    midwinter: { season: "winter" as const, precedingMonth: 1 },
+    greengrass: { season: "spring" as const, precedingMonth: 4 },
+    midsummer: { season: "summer" as const, precedingMonth: 7 },
+    shieldmeet: { season: "summer" as const, precedingMonth: 7 },
+    highharvestide: { season: "autumn" as const, precedingMonth: 9 },
+    "feast-of-the-moon": { season: "winter" as const, precedingMonth: 11 },
+  };
+
+  const info = specialDayInfo[specialDayType];
+
+  return {
+    year,
+    month: info.precedingMonth,
+    day: 31, // Special day appears as day 31 (after the 30th day)
+    season: info.season,
+    isHoliday: true,
+    holidayName: holiday.name,
+    tenday: 4, // Special days belong to the "fourth tenday"
+    dayOfTenday: 1, // Always the first (and only) day of the special tenday
+    isSpecialDay: true,
+    specialDayType,
+  };
+}
+
+export function getSpecialDaysForMonth(
+  year: number,
+  month: number
+): HarptosDate[] {
+  const specialDays: HarptosDate[] = [];
+
+  // Special days occur AFTER specific months (between the end of one month and start of the next)
+  // So they are shown when viewing the month they follow
+  const specialDaysByMonth: Record<number, string[]> = {
+    1: ["midwinter"], // Midwinter comes after Hammer (month 1), before Alturiak (month 2)
+    4: ["greengrass"], // Greengrass comes after Tarsakh (month 4), before Mirtul (month 5)
+    7: isLeapYear(year) ? ["midsummer", "shieldmeet"] : ["midsummer"], // Midsummer (and Shieldmeet in leap years) come after Flamerule (month 7), before Eleasis (month 8)
+    9: ["highharvestide"], // Highharvestide comes after Eleint (month 9), before Marpenoth (month 10)
+    11: ["feast-of-the-moon"], // Feast of the Moon comes after Uktar (month 11), before Nightal (month 12)
+  };
+
+  const daysForThisMonth = specialDaysByMonth[month];
+  if (daysForThisMonth) {
+    for (const dayType of daysForThisMonth) {
+      specialDays.push(createSpecialDay(year, dayType as any));
+    }
+  }
+
+  return specialDays;
 }
 
 export function getCurrentCampaignDate(): HarptosDate {
@@ -474,7 +548,7 @@ export function getSpecialEvents(date: HarptosDate): Array<{
 }> {
   const events = [];
 
-  // Check for holidays
+  // Check for regular holidays on specific dates
   const holiday = HARPTOS_HOLIDAYS.find(
     (h) => h.month === date.month && h.day === date.day
   );
@@ -485,6 +559,21 @@ export function getSpecialEvents(date: HarptosDate): Array<{
       description: holiday.description,
       emoji: "🎉",
     });
+  }
+
+  // Check for special days (these are handled differently, appearing as separate special day events)
+  if (date.isSpecialDay && date.specialDayType) {
+    const specialHoliday = HARPTOS_HOLIDAYS.find(
+      (h) => h.specialDay === date.specialDayType
+    );
+    if (specialHoliday) {
+      events.push({
+        name: specialHoliday.name,
+        type: "holiday" as const,
+        description: specialHoliday.description,
+        emoji: "🎊",
+      });
+    }
   }
 
   // Check for special days based on day of month

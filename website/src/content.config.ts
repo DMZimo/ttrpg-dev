@@ -286,8 +286,47 @@ const campaign = defineCollection({
   }),
 });
 
+// Holidays collection for special days and festivals
+const holidays = defineCollection({
+  loader: glob({
+    base: "./src/content/timekeeping/holidays",
+    pattern: "**/*.{md,mdx}",
+  }),
+  schema: z.object({
+    name: z.string(),
+    description: z.string(),
+    date: z.union([
+      z.object({
+        specialDay: z.enum([
+          "midwinter",
+          "greengrass",
+          "midsummer",
+          "shieldmeet",
+          "highharvestide",
+          "feast-of-the-moon",
+        ]),
+      }),
+      z.object({
+        month: z.number().min(1).max(12),
+        day: z.number().min(1).max(30),
+      }),
+    ]),
+    type: z.enum(["seasonal", "astronomical", "political", "religious"]),
+    observance: z.enum(["major", "minor", "local"]).optional(),
+    duration: z.number().default(1),
+    isRecurring: z.boolean().default(true),
+    origins: z.string().optional(),
+    traditions: z.array(z.string()).optional(),
+    regions: z.array(z.string()).optional(),
+    mechanicalEffects: z.array(z.string()).optional(),
+    tags: z.array(z.string()).optional(),
+    aliases: z.array(z.string()).optional(),
+  }),
+});
+
 export const collections = {
   journal,
   characters,
   campaign,
+  holidays,
 };

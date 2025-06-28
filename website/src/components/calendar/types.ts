@@ -22,9 +22,11 @@ export interface CalendarDayData extends HarptosDate {
 
 export interface CalendarGridProps {
   calendarDays: CalendarDayData[];
+  specialDays: CalendarDayData[];
   displayYear: number;
   displayMonth: number;
   selectedDate: string | null;
   compact: boolean;
   onDayClick: (day: number) => void;
+  onSpecialDayClick: (specialDay: CalendarDayData) => void;
 }

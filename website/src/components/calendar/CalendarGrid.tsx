@@ -4,16 +4,19 @@ import type { CalendarDayData, CalendarGridProps } from "./types";
 
 export default function CalendarGrid({
   calendarDays,
+  specialDays,
   displayYear,
   displayMonth,
   selectedDate,
   compact,
   onDayClick,
+  onSpecialDayClick,
 }: CalendarGridProps) {
   const monthData = HARPTOS_MONTHS[displayMonth - 1];
 
   return (
     <div className="calendar-bg rounded-b-lg shadow-lg border calendar-border overflow-visible">
+      {/* Regular month view - 3 tendays of 10 days each */}
       <table className="w-full table-fixed">
         <thead>
           <tr className="calendar-surface-secondary">
@@ -167,6 +170,46 @@ export default function CalendarGrid({
           ))}
         </tbody>
       </table>
+
+      {/* Special Days Section - shown after the regular month */}
+      {specialDays.length > 0 && (
+        <div className="border-t calendar-border p-6 text-center bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-amber-900/20 dark:to-yellow-900/20">
+          {specialDays.map((specialDay, index) => (
+            <div key={index} className="space-y-3">
+              <div className="text-2xl font-bold calendar-text-primary">
+                🎉 {specialDay.holidayName} 🎉
+              </div>
+              <div className="text-sm calendar-text-secondary max-w-2xl mx-auto">
+                {specialDay.specialDayType === "shieldmeet"
+                  ? "The rare leap day celebration occurring every four years"
+                  : `Special festival day between ${monthData.name} 30 and ${
+                      HARPTOS_MONTHS[displayMonth === 12 ? 0 : displayMonth]
+                        .name
+                    } 1`}
+              </div>
+              <div className="flex flex-wrap justify-center gap-4 text-xs calendar-text-secondary">
+                <span>
+                  🌤️ {specialDay.weather.condition} (
+                  {specialDay.weather.temperature})
+                </span>
+                <span>🌙 {specialDay.moon.description}</span>
+                {specialDay.events.length > 0 && (
+                  <span>
+                    🎊 {specialDay.events.length} Festival Event
+                    {specialDay.events.length !== 1 ? "s" : ""}
+                  </span>
+                )}
+              </div>
+              <button
+                onClick={() => onSpecialDayClick(specialDay)}
+                className="calendar-accent-bg hover:opacity-90 text-white px-4 py-2 rounded-lg transition-colors text-sm"
+              >
+                Learn More About {specialDay.holidayName}
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

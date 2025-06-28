@@ -5,6 +5,7 @@ import {
   getWeatherForDate,
   getSpecialEvents,
   getDayDetails,
+  getSpecialDaysForMonth,
   HARPTOS_MONTHS,
   type HarptosDate,
 } from "../../utils/fantasyCalendar";
@@ -59,6 +60,26 @@ export default function Calendar({
     }
   );
 
+  // Generate special days for this month
+  const specialDays: CalendarDayData[] = getSpecialDaysForMonth(
+    displayYear,
+    displayMonth
+  ).map((specialDay) => {
+    const weather = getWeatherForDate(specialDay);
+    const events = getSpecialEvents(specialDay);
+    const details = getDayDetails(specialDay);
+    const moon = getMoonPhase(specialDay);
+
+    return {
+      ...specialDay,
+      weather,
+      events,
+      details,
+      moon,
+      isToday: false, // Special days are never "today" in the normal sense
+    };
+  });
+
   // Navigation handlers
   const navigateMonth = (direction: "prev" | "next") => {
     if (direction === "prev") {
@@ -100,6 +121,17 @@ export default function Calendar({
     const dateStr = `${displayYear}-${displayMonth}-${day}`;
     setSelectedDate(dateStr);
     onDateSelect?.(dateStr);
+  };
+
+  const handleSpecialDayClick = (specialDay: CalendarDayData) => {
+    // Navigate to the special day's holiday page
+    const holidaySlug = specialDay.holidayName
+      ?.toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/[^a-z0-9-]/g, "");
+    if (holidaySlug) {
+      window.location.href = `/timekeeping/holidays/${holidaySlug}`;
+    }
   };
 
   // Keyboard navigation
@@ -221,11 +253,13 @@ export default function Calendar({
       {/* Calendar Grid */}
       <CalendarGrid
         calendarDays={calendarDays}
+        specialDays={specialDays}
         displayYear={displayYear}
         displayMonth={displayMonth}
         selectedDate={selectedDate}
         compact={compact}
         onDayClick={handleDayClick}
+        onSpecialDayClick={handleSpecialDayClick}
       />
     </div>
   );
