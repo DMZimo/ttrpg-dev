@@ -1,12 +1,16 @@
 ---
 name: "Midwinter"
-description: "Festival between Hammer 30 and Alturiak 1"
-date:
-  specialDay: "midwinter"
+aliases:
+  - "The Winter Festival"
+  - "Year's End"
 type: "seasonal"
 observance: "major"
+date:
+  specialDay: "midwinter"
 duration: 1
-isRecurring: true
+recurring: true
+description: "Festival between Hammer 30 and Alturiak 1"
+culturalSignificance: "Represents the symbolic death and rebirth of the year, bringing communities together to ward off darkness and celebrate renewal through shared warmth and generosity"
 origins: "Ancient celebration marking the turning of winter"
 traditions:
   - "Feasting and gift-giving"
@@ -21,8 +25,21 @@ mechanicalEffects:
   - "Merchants offer special goods"
   - "Temples provide free healing"
   - "Inn prices doubled due to festivities"
-tags: ["winter", "festival", "sacred", "community"]
-aliases: ["The Winter Festival", "Year's End"]
+associatedDeities:
+  - "Auril"
+  - "Chauntea"
+  - "Selûne"
+  - "Tyr"
+rituals:
+  - "Sacred fire lighting ceremony"
+  - "Year's end blessing ritual"
+  - "Community feast preparation"
+  - "Gift consecration ceremonies"
+tags:
+  - "winter"
+  - "festival"
+  - "sacred"
+  - "community"
 ---
 
 # Midwinter

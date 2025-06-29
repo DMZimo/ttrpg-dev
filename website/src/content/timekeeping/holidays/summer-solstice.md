@@ -1,18 +1,51 @@
 ---
 name: "Summer Solstice"
-type: "holiday"
+aliases:
+  - "Longest Day"
+  - "Festival of the Sun"
+  - "Solar Peak"
+type: "astronomical"
 observance: "major"
 date:
   month: 6
   day: 20
-isRecurring: true
+season: "summer"
+duration: 1
+recurring: true
+description: "The longest day of the year when the sun reaches its highest point, celebrating solar power and abundance"
+culturalSignificance: "Represents the triumph of light over darkness and the peak of natural abundance"
+origins: "Ancient solar worship traditions celebrating the peak of the sun's power"
 traditions:
-  - "Sun worship ceremonies"
-  - "Longest day celebrations"
-  - "Fire festivals"
+  - "Sun worship ceremonies at dawn and noon"
+  - "Longest day celebrations with all-night festivities"
+  - "Fire festivals with bonfires and torches"
+  - "Dawn vigils culminating in sunrise ceremonies"
+  - "Solar magic rituals to harness enhanced energy"
+  - "Harvest blessings for early summer crops"
 regions:
-  - "Faerûn"
-tags: ["summer", "solstice", "sun", "astronomical"]
+  - "All of Faerûn"
+  - "Desert regions"
+  - "Agricultural communities"
+mechanicalEffects:
+  - "Solar and fire magic enhanced for 24 hours"
+  - "Light-based spells gain +2 to spell attack rolls"
+  - "Undead creatures suffer disadvantage on attacks during daylight"
+  - "Plant growth spells have double effectiveness"
+associatedDeities:
+  - "Lathander"
+  - "Pelor"
+  - "Amaunator"
+rituals:
+  - "Dawn vigil ceremonies"
+  - "Solar magic enhancement rituals"
+  - "Fire festival lighting ceremonies"
+tags:
+  - "summer"
+  - "solstice"
+  - "sun"
+  - "astronomical"
+  - "fire"
+  - "solar"
 ---
 
 # Summer Solstice

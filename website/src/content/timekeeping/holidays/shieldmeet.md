@@ -1,10 +1,47 @@
 ---
 name: "Shieldmeet"
+aliases:
+  - "The Leap Day of Laws"
+  - "Day of Shields"
 type: "holiday"
-date: "Day after Midsummer (leap years only)"
-tags: ["summer", "leap-day", "politics", "law", "rare"]
-season: "summer"
-description: "The rare leap day celebration occurring every four years, dedicated to politics, law, and grand agreements."
+observance: "major"
+date:
+  specialDay: "shieldmeet"
+duration: 1
+recurring: true
+description: "The rare leap day celebration occurring every four years, dedicated to politics, law, and grand agreements"
+culturalSignificance: "Represents order, diplomacy, and the importance of laws and agreements in maintaining civilization"
+origins: "Ancient traditions where shields were ceremonially laid down to negotiate truces and peace treaties"
+traditions:
+  - "Treaty signings and diplomatic agreements"
+  - "Important court sessions and legal proceedings"
+  - "Guild meetings and trade negotiations"
+  - "Shield blessing ceremonies"
+  - "Oath-making and covenant ceremonies"
+  - "Grand tribunals and justice proceedings"
+regions:
+  - "All of Faerûn"
+  - "Particularly significant in major cities"
+mechanicalEffects:
+  - "Oaths sworn on Shieldmeet are magically binding"
+  - "Divination spells regarding legal matters gain advantage"
+  - "Zone of Truth effects last twice as long"
+associatedDeities:
+  - "Tyr"
+  - "Helm"
+  - "Waukeen"
+rituals:
+  - "The Great Tribunal ceremony"
+  - "Shield blessing by priests"
+  - "Diplomatic summit rituals"
+tags:
+  - "summer"
+  - "leap-day"
+  - "politics"
+  - "law"
+  - "rare"
+  - "diplomacy"
+  - "justice"
 ---
 
 # Shieldmeet

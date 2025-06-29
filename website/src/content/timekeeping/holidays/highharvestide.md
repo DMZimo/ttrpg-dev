@@ -1,10 +1,47 @@
 ---
 name: "Highharvestide"
-type: "holiday"
-date: "Between Eleint 30 and Marpenoth 1"
-tags: ["autumn", "harvest", "feast", "gratitude"]
-season: "autumn"
+aliases:
+  - "The Great Harvest"
+  - "Harvest Festival"
+type: "seasonal"
+observance: "major"
+date:
+  specialDay: "highharvestide"
+duration: 1
+recurring: true
 description: "The great harvest festival marking the end of the growing season and celebrating the year's bounty."
+culturalSignificance: "Represents gratitude for abundance and preparation for winter, strengthening community bonds through shared celebration and mutual aid"
+origins: "Ancient agricultural traditions celebrating the completion of harvest"
+traditions:
+  - "Great communal feasts featuring harvest bounty"
+  - "Harvest competitions for largest produce"
+  - "Charity drives for winter provisions"
+  - "Blessing of food stores"
+  - "Community seed ceremonies"
+regions:
+  - "Sword Coast"
+  - "Western Heartlands"
+  - "Dalelands"
+  - "Cormyr"
+mechanicalEffects:
+  - "Food prices drop by 25% in markets"
+  - "Merchants offer special harvest goods"
+  - "Temples provide blessings for food preservation"
+  - "Agricultural communities gain +1 to morale"
+tags:
+  - "autumn"
+  - "harvest"
+  - "feast"
+  - "gratitude"
+  - "community"
+associatedDeities:
+  - "Chauntea"
+  - "Silvanus"
+  - "Mielikki"
+rituals:
+  - "Blessing of the granaries"
+  - "Harvest crown ceremony"
+  - "First seed preservation ritual"
 ---
 
 # Highharvestide

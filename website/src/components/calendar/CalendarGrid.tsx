@@ -1,5 +1,5 @@
 import React from "react";
-import { HARPTOS_MONTHS } from "../../utils/fantasyCalendar";
+import { HARPTOS_MONTHS } from "../../utils/calendarUtils";
 import type { CalendarDayData, CalendarGridProps } from "./types";
 
 export default function CalendarGrid({

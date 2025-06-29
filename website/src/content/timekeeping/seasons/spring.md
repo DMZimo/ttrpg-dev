@@ -1,29 +1,13 @@
 ---
-name: "spring"
-displayName: "Spring"
+name: "Spring"
 type: "season"
-startMonth: 3
-endMonth: 5
-duration: 3
-weather:
-  temperature: "Mild and warming"
-  precipitation: "Frequent rain showers"
-  storms: "Occasional thunderstorms"
-  winds: "Gentle to moderate"
-daylight:
-  hours: "Increasing from 12 to 16 hours"
-  description: "Days steadily lengthen as spring progresses"
-activities:
-  - "Planting and sowing"
-  - "Spring cleaning"
-  - "Travel resumes"
-  - "Animal husbandry"
-festivals:
-  - "Spring Equinox"
-  - "Greengrass"
-agriculture: "Primary planting season for most crops"
-travel: "Roads become passable, travel increases"
-tags: ["season", "renewal", "growth"]
+months: ["Ches", "Tarsakh", "Mirtul"]
+description: "The season of renewal and growth when the natural world awakens from winter's dormancy."
+characteristics:
+  weather: "Mild and warming with frequent rain showers and occasional thunderstorms"
+  daylight: "Days steadily lengthen from 12 to 16 hours as spring progresses"
+  activity: "Primary planting season with increased travel and agricultural work"
+tags: ["season", "renewal", "growth", "spring", "planting", "awakening"]
 ---
 
 # Spring - The Season of Renewal

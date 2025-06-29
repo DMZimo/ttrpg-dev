@@ -2,8 +2,12 @@
 name: "Winter"
 type: "season"
 months: ["Hammer", "Alturiak", "Ches"]
-tags: ["winter", "season", "cold", "endurance", "community"]
 description: "The season of cold and endurance when communities rely on stored resources and mutual support."
+characteristics:
+  weather: "Cold temperatures with snow, ice, and harsh winter storms"
+  daylight: "Shortest days of the year, especially around the Winter Solstice"
+  activity: "Indoor crafts, community gatherings, and survival activities"
+tags: ["season", "winter", "cold", "endurance", "community"]
 ---
 
 # Winter

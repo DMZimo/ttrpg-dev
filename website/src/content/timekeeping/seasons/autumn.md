@@ -2,8 +2,12 @@
 name: "Autumn"
 type: "season"
 months: ["Eleint", "Marpenoth", "Uktar"]
-tags: ["autumn", "season", "harvest", "preparation", "transition"]
 description: "The season of harvest and preparation when communities gather resources for winter."
+characteristics:
+  weather: "Cooling temperatures with changing colors and variable precipitation"
+  daylight: "Rapidly shortening days after the Autumn Equinox"
+  activity: "Harvest season and winter preparation with community gatherings"
+tags: ["season", "autumn", "harvest", "preparation", "transition"]
 ---
 
 # Autumn

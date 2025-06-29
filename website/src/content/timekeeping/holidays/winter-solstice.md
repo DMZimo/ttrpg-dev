@@ -1,10 +1,51 @@
 ---
 name: "Winter Solstice"
+aliases:
+  - "The Longest Night"
+  - "The Turning Point"
 type: "holiday"
-date: "20th of Nightal"
-tags: ["winter", "solstice", "darkness", "light", "hope"]
-season: "winter"
-description: "The shortest day and longest night of the year, marking winter's deepest point and the promise of returning light."
+observance: "major"
+date:
+  month: 12
+  day: 20
+duration: 1
+recurring: true
+description: "The shortest day and longest night of the year, marking winter's deepest point and the promise of returning light"
+culturalSignificance: "Embodies endurance, hope, and the cyclical nature of light and darkness"
+origins: "Ancient astronomical observance dating back to the earliest civilizations of Faerûn"
+traditions:
+  - "Vigil of Lights throughout the longest night"
+  - "Gift exchanges to bring warmth and joy"
+  - "Feast of Warmth with preserved foods"
+  - "Dawn watches to witness the return of light"
+  - "Solstice markets despite the cold"
+  - "Storytelling marathons during long nights"
+regions:
+  - "Northern Kingdoms"
+  - "Temperate regions"
+  - "Mountainous areas"
+  - "All of Faerûn"
+mechanicalEffects:
+  - "Light and fire magic enhanced on this day"
+  - "Protection wards last until spring equinox"
+  - "Cold resistance spells gain extended duration"
+associatedDeities:
+  - "Lathander"
+  - "Pelor"
+  - "Chauntea"
+  - "Auril"
+rituals:
+  - "The Eternal Flame ceremony"
+  - "Blessing of homes against winter"
+  - "The Turning Ceremony at stone circles"
+tags:
+  - "winter"
+  - "solstice"
+  - "darkness"
+  - "light"
+  - "hope"
+  - "astronomical"
+  - "endurance"
 ---
 
 # Winter Solstice

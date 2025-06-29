@@ -1,12 +1,116 @@
 ---
+month_number: 3
 name: "Ches"
-type: "month"
-commonName: "Claw of Sunsets"
-number: 3
-days: 30
+pronunciation:
+  common: "CHESS"
+  ipa: "/tʃɛs/"
+elvish_name: "N'iarzu"
+elvish_pronunciation: "nuh-ee-AR-zu"
+alias: "The Claw of the Sunsets"
+Description: "The beginning of spring and the awakening of nature"
 season: "spring"
-tags: ["spring", "month", "calendar", "renewal"]
-description: "The third month of the year, marking the beginning of spring and the awakening of nature."
+tags:
+  - "spring"
+  - "renewal"
+  - "awakening"
+  - "transition"
+
+activities:
+  - "Early planting of hardy crops"
+  - "Winter damage assessment"
+  - "Road and equipment repairs"
+  - "Spring cleaning"
+  - social_activities:
+      outdoor_work: true
+      community_projects: true
+      religious_observances:
+        - "spring awakening ceremonies"
+        - "renewal rituals"
+
+agriculture:
+  growing_season: true
+  harvest_activities: []
+  planting_activities:
+    - "Hardy vegetables"
+    - "Early grains"
+    - "Tree saplings"
+
+economy:
+  trade_conditions: "fair" # poor/fair/good/excellent
+  typical_prices:
+    food_modifier: 1.1 # 10% more expensive
+    fuel_modifier: 1.2 # 20% more expensive
+    travel_modifier: 1.5 # 50% more expensive
+
+cultural_significance:
+  themes:
+    - "renewal"
+    - "hope"
+    - "preparation"
+    - "dramatic_beauty"
+  common_sayings:
+    - "Ches paints the sky with promise"
+    - "When sunsets burn, spring returns"
+
+weather:
+  - description: "Transitional weather with melting snow"
+  - temperature: "Cool to mild"
+  - precipitation: "Mixed rain and snow"
+  - schema:
+      - temperature_range_celsius:
+          min: 0
+          max: 12
+      - precipitation_chance_percent:
+          min: 50
+          max: 80
+      - storm_chance_percent:
+          min: 15
+          max: 45
+      - wind_speed_kph:
+          min: 8
+          max: 30
+  - events:
+      - name: "Spring Thaw"
+        probability: 25
+        mechanics:
+          - "Rivers and streams swell with meltwater."
+          - "Roads become muddy; travel speed reduced by 25%."
+          - "Bridges may be washed out; DC 15 Investigation to find safe crossings."
+      - name: "Late Snow"
+        probability: 15
+        mechanics:
+          - "Unexpected snowfall threatens early plantings."
+          - "Survival DC 12 for crops without protection."
+          - "Travel difficulty increases temporarily."
+      - name: "Dramatic Sunsets"
+        probability: 30
+        mechanics:
+          - "Beautiful atmospheric effects provide inspiration."
+          - "Artists and bards gain advantage on relevant ability checks."
+          - "Navigation by sunset becomes more reliable."
+  - regional_variations:
+      - region: "Sword Coast"
+        temperature_modifier: +4 # degrees warmer
+      - region: "The North"
+        temperature_modifier: -3 # degrees colder
+      - region: "Anauroch Desert"
+        precipitation_modifier: -30 # percent less precipitation
+  - daylight:
+      sunrise_hour: 7
+      sunset_hour: 18
+      daylight_hours: 11
+      long_night_effects: false
+
+travel:
+  difficulty: "hard" # easy/moderate/hard/extreme
+  speed_modifier: 0.75 # 75% of normal speed
+  random_encounter_modifier: 1.1 # 10% more likely
+
+adventure_hooks:
+  - "Early spring storms threatening settlements"
+  - "Bandits taking advantage of muddy roads"
+  - "Ancient sites revealed by melting snow"
+  - "Merchants eager to resume trade routes"
 ---
 
 # Ches

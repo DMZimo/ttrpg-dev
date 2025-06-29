@@ -1,10 +1,49 @@
 ---
 name: "Feast of the Moon"
-type: "holiday"
-date: "Between Uktar 30 and Nightal 1"
-tags: ["autumn", "winter", "death", "ancestors", "memory"]
-season: "autumn"
+aliases:
+  - "Festival of the Dead"
+  - "Night of Remembrance"
+type: "religious"
+observance: "major"
+date:
+  specialDay: "feast-of-the-moon"
+duration: 1
+recurring: true
 description: "The solemn festival of the dead, honoring ancestors and those who have passed beyond the veil."
+culturalSignificance: "Maintains the connection between living and dead, preserving ancestral memory and providing comfort to the grieving through community support"
+origins: "Ancient traditions honoring the dead and maintaining connection with ancestors"
+traditions:
+  - "Candlelit vigils for the deceased"
+  - "Ancestor shrine creation"
+  - "Story circles sharing legends of the dead"
+  - "Silent processions through graveyards"
+  - "Communion rituals with departed spirits"
+regions:
+  - "Sword Coast"
+  - "Western Heartlands"
+  - "Dalelands"
+  - "The North"
+mechanicalEffects:
+  - "Undead activity reduced in blessed areas"
+  - "Divination spells gain +2 bonus"
+  - "Speak with Dead spells cost no components"
+  - "Temples offer free funeral rites"
+associatedDeities:
+  - "Kelemvor"
+  - "Myrkul"
+  - "Jergal"
+  - "The Raven Queen"
+rituals:
+  - "The lighting of names ceremony"
+  - "Feast of memory with empty place settings"
+  - "Midnight communion with spirits"
+tags:
+  - "autumn"
+  - "winter"
+  - "death"
+  - "ancestors"
+  - "memory"
+  - "spiritual"
 ---
 
 # Feast of the Moon

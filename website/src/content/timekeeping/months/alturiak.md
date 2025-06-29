@@ -1,12 +1,114 @@
 ---
+month_number: 2
 name: "Alturiak"
-type: "month"
-commonName: "The Claw of Winter"
-number: 2
-days: 30
+pronunciation:
+  common: "al-TOO-ree-ak"
+  ipa: "/ælˈtuːriæk/"
+elvish_name: "N'iaughlath"
+elvish_pronunciation: "nuh-ee-AUG-lath"
+alias: "The Claw of Winter"
+Description: "The second month representing winter's strongest grip on the land"
 season: "winter"
-tags: ["winter", "cold", "month", "calendar"]
-description: "The second month of the year, known as The Claw of Winter, representing winter's strongest grip on the land."
+tags:
+  - "winter"
+  - "cold"
+  - "harsh"
+  - "endurance"
+
+activities:
+  - "Equipment maintenance"
+  - "Food preservation monitoring"
+  - "Community support activities"
+  - "Indoor crafting"
+  - social_activities:
+      indoor_crafts: true
+      storytelling: true
+      religious_observances:
+        - "prayers for survival"
+        - "community bonding rituals"
+
+agriculture:
+  growing_season: false
+  harvest_activities: []
+  planting_activities: []
+
+economy:
+  trade_conditions: "poor" # poor/fair/good/excellent
+  typical_prices:
+    food_modifier: 1.3 # 30% more expensive
+    fuel_modifier: 1.6 # 60% more expensive
+    travel_modifier: 2.2 # 120% more expensive
+
+cultural_significance:
+  themes:
+    - "survival"
+    - "community_bonds"
+    - "winter_endurance"
+  common_sayings:
+    - "Alturiak's claw cuts deepest"
+    - "When the Claw bites, wise folk hide"
+
+weather:
+  - description: "Coldest month with fierce storms and blizzards"
+  - temperature: "Severely cold"
+  - precipitation: "Heavy snows and ice"
+  - schema:
+      - temperature_range_celsius:
+          min: -20
+          max: -2
+      - precipitation_chance_percent:
+          min: 70
+          max: 95
+      - storm_chance_percent:
+          min: 40
+          max: 80
+      - wind_speed_kph:
+          min: 20
+          max: 60
+  - events:
+      - name: "Ice Storm"
+        probability: 15
+        mechanics:
+          - "Creatures must succeed on a DC 15 Constitution saving throw every hour or gain one level of exhaustion."
+          - "Area becomes difficult terrain."
+          - "Dexterity saving throw DC 15 to avoid falling prone when moving."
+          - "Ranged attacks are made with disadvantage."
+      - name: "Whiteout Blizzard"
+        probability: 12
+        mechanics:
+          - "Visibility reduced to 5 feet."
+          - "Travel speed reduced to quarter."
+          - "Creatures must succeed on a DC 15 Constitution saving throw every hour or gain one level of exhaustion."
+          - "All attacks made with disadvantage."
+      - name: "Bone-chilling Cold"
+        probability: 20
+        mechanics:
+          - "Creatures without cold weather gear must succeed on a DC 13 Constitution saving throw every 2 hours or take 1d6 cold damage."
+          - "Water freezes in 1 hour."
+          - "Metal weapons and armor impose disadvantage on attack rolls without proper insulation."
+  - regional_variations:
+      - region: "Sword Coast"
+        temperature_modifier: +3 # degrees warmer
+      - region: "The North"
+        temperature_modifier: -8 # degrees colder
+      - region: "Anauroch Desert"
+        precipitation_modifier: -50 # percent less precipitation
+  - daylight:
+      sunrise_hour: 8
+      sunset_hour: 16
+      daylight_hours: 8
+      long_night_effects: true
+
+travel:
+  difficulty: "extreme" # easy/moderate/hard/extreme
+  speed_modifier: 0.4 # 40% of normal speed
+  random_encounter_modifier: 1.4 # 40% more likely
+
+adventure_hooks:
+  - "Desperate communities facing starvation"
+  - "Creatures seeking shelter in civilized areas"
+  - "Frozen waterways revealing hidden passages"
+  - "Ice-locked ships and stranded travelers"
 ---
 
 # Alturiak

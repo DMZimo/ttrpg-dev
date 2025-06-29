@@ -1,10 +1,49 @@
 ---
 name: "Autumn Equinox"
-type: "holiday"
-date: "21st of Eleint"
-tags: ["autumn", "equinox", "harvest", "balance"]
-season: "autumn"
-description: "The autumn equinox celebration marking the balance between day and night as harvest season reaches its peak."
+aliases:
+  - "The Balance of the Falling Leaves"
+  - "Harvest Equinox"
+type: "astronomical"
+date:
+  month: 9
+  day: 21
+observance: "major"
+duration: 1
+recurring: true
+description: "The autumn equinox celebration marking the balance between day and night as harvest season reaches its peak"
+culturalSignificance: "Represents balance, transition, and the gathering of nature's bounty before winter's approach"
+origins: "Ancient astronomical observance celebrating the balance between light and dark during harvest season"
+traditions:
+  - "Balance ceremonies by druids and nature priests"
+  - "Harvest feasts with seasonal bounty"
+  - "Twilight vigils at the moment of equinox"
+  - "Market fairs featuring autumn goods"
+  - "Sacred rituals at stone circles and groves"
+  - "Community preparation for winter months"
+regions:
+  - "Sword Coast"
+  - "Heartlands"
+  - "The North"
+  - "All of Faerûn"
+mechanicalEffects:
+  - "Druidic magic gains enhanced potency during twilight hours"
+  - "Balance-related spells have extended duration"
+  - "Harvest yields are magically preserved for winter"
+associatedDeities:
+  - "Chauntea"
+  - "Silvanus"
+  - "Eldath"
+rituals:
+  - "Balance ceremonies at sacred groves"
+  - "Twilight vigil observations"
+  - "Harvest blessing rituals"
+tags:
+  - "autumn"
+  - "equinox"
+  - "harvest"
+  - "balance"
+  - "astronomical"
+  - "druids"
 ---
 
 # Autumn Equinox

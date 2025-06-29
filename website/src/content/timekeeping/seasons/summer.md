@@ -2,8 +2,12 @@
 name: "Summer"
 type: "season"
 months: ["Kythorn", "Flamerule", "Eleasis"]
-tags: ["summer", "season", "heat", "growth", "abundance"]
 description: "The season of warmth, growth, and abundance when life flourishes across Faerûn."
+characteristics:
+  weather: "Warm to hot temperatures with abundant sunshine and favorable conditions"
+  daylight: "Longest days of the year, especially around the Summer Solstice"
+  activity: "Peak growing season with festivals, travel, and outdoor activities"
+tags: ["season", "summer", "heat", "growth", "abundance"]
 ---
 
 # Summer

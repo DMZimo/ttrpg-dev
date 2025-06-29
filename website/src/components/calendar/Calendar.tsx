@@ -4,15 +4,13 @@ import {
   getMoonPhase,
   getWeatherForDate,
   getSpecialEvents,
-  getDayDetails,
   getSpecialDaysForMonth,
-  HARPTOS_MONTHS,
   type HarptosDate,
-} from "../../utils/fantasyCalendar";
+} from "../../utils/calendarUtils";
 import CalendarGrid from "./CalendarGrid";
-import type { CalendarDayData } from "./types";
+import type { CalendarDayData, CalendarDataProps } from "./types";
 
-interface CalendarProps {
+interface CalendarProps extends CalendarDataProps {
   year: number;
   month: number;
   currentDate: HarptosDate;
@@ -24,6 +22,11 @@ export default function Calendar({
   year,
   month,
   currentDate,
+  months,
+  holidays,
+  seasons,
+  celestial,
+  events = [],
   compact = false,
   onDateSelect,
 }: CalendarProps) {
@@ -33,50 +36,116 @@ export default function Calendar({
   const [showQuickJump, setShowQuickJump] = useState(false);
   const [showMonthInfo, setShowMonthInfo] = useState(false);
 
-  const monthData = HARPTOS_MONTHS[displayMonth - 1];
+  // Get month data from collections
+  const monthData = months.find((m) => m.data.monthNumber === displayMonth);
 
-  // Generate calendar data with enhanced information
+  if (!monthData) {
+    return <div>Error: Month data not found for month {displayMonth}</div>;
+  }
+
+  // Generate calendar data with enhanced information from collections
   const calendarDays: CalendarDayData[] = Array.from(
-    { length: monthData.days },
+    { length: monthData.data.days },
     (_, i) => {
       const day = i + 1;
       const dateObj = createHarptosDate(displayYear, displayMonth, day);
       const weather = getWeatherForDate(dateObj);
       const events = getSpecialEvents(dateObj);
-      const details = getDayDetails(dateObj);
       const moon = getMoonPhase(dateObj);
+
+      // Enhanced details using collection data
+      const details = {
+        monthInfo: monthData,
+        holidayInfo: holidays.find((h) => {
+          if ("month" in h.data.date && "day" in h.data.date) {
+            return (
+              h.data.date.month === displayMonth && h.data.date.day === day
+            );
+          }
+          return false;
+        }),
+        seasonInfo: seasons.find((s) =>
+          s.data.months.includes(monthData.data.name)
+        ),
+        celestialInfo: celestial.find((c) => c.data.celestialType === "moon"), // Primary moon
+      };
+
+      // Get holiday details if this day has a holiday
+      const holidayDetails = details.holidayInfo
+        ? {
+            name: details.holidayInfo.data.name,
+            traditions: details.holidayInfo.data.traditions || [],
+            culturalSignificance: details.holidayInfo.data.culturalSignificance,
+            mechanicalEffects: details.holidayInfo.data.mechanicalEffects || [],
+            associatedDeities: details.holidayInfo.data.associatedDeities || [],
+          }
+        : undefined;
 
       return {
         ...dateObj,
         weather,
         events,
         details,
-        moon,
+        moon: {
+          ...moon,
+          phase: moon.phase,
+        },
         isToday:
           dateObj.year === currentDate.year &&
           dateObj.month === currentDate.month &&
           dateObj.day === currentDate.day,
+        holidayDetails,
       };
     }
   );
 
-  // Generate special days for this month
+  // Generate special days for this month using collection data
   const specialDays: CalendarDayData[] = getSpecialDaysForMonth(
     displayYear,
     displayMonth
   ).map((specialDay) => {
     const weather = getWeatherForDate(specialDay);
     const events = getSpecialEvents(specialDay);
-    const details = getDayDetails(specialDay);
     const moon = getMoonPhase(specialDay);
+
+    // Find holiday info for special days
+    const holidayInfo = holidays.find((h) => {
+      if ("specialDay" in h.data.date) {
+        return h.data.date.specialDay === specialDay.specialDayType;
+      }
+      return false;
+    });
+
+    const details = {
+      monthInfo: monthData,
+      holidayInfo,
+      seasonInfo: seasons.find((s) =>
+        s.data.months.includes(monthData.data.name)
+      ),
+      celestialInfo: celestial.find((c) => c.data.celestialType === "moon"),
+    };
+
+    const holidayDetails = holidayInfo
+      ? {
+          name: holidayInfo.data.name,
+          traditions: holidayInfo.data.traditions || [],
+          culturalSignificance: holidayInfo.data.culturalSignificance,
+          mechanicalEffects: holidayInfo.data.mechanicalEffects || [],
+          associatedDeities: holidayInfo.data.associatedDeities || [],
+        }
+      : undefined;
 
     return {
       ...specialDay,
       weather,
       events,
       details,
-      moon,
-      isToday: false, // Special days are never "today" in the normal sense
+      moon: {
+        ...moon,
+        phase: moon.phase,
+      },
+      isToday: false,
+      holidayDetails,
     };
   });
 
@@ -176,8 +245,10 @@ export default function Calendar({
   useEffect(() => {
     const handleClickOutside = (e: Event) => {
       const target = e.target as HTMLElement;
-      if (!target.closest(".quick-jump") && !target.closest(".month-info")) {
+      if (!target?.closest(".quick-jump-container")) {
         setShowQuickJump(false);
+      }
+      if (!target?.closest(".month-info-container")) {
         setShowMonthInfo(false);
       }
     };
@@ -190,65 +261,148 @@ export default function Calendar({
 
   return (
     <div className="calendar-container">
-      {/* Header with Month/Year Display and Info Toggle */}
-      <div className="calendar-bg flex gap-3 mb-6 p-4 rounded-t-lg shadow-lg border calendar-border border-b sm:flex-row sm:mb-0">
-        {/* Back to date */}
-        <button
-          onClick={goToCurrentDate}
-          className="px-3 py-2 calendar-success-bg hover:opacity-90 text-white text-sm rounded-lg transition-colors"
-          aria-label="Go to current date"
-        >
-          Today
-        </button>
+      {/* Calendar Header */}
+      <div className="calendar-header bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 rounded-t-lg shadow-md">
+        {/* Legend */}
+        <div className="font-medium text-gray-800 dark:text-gray-200 mb-2">
+          <span>Visual Indicators</span>
+          <div className="flex space-y-2">
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-hero-red border border-hero-red rounded"></div>
+              <span className="text-gray-600 dark:text-gray-400">
+                Current Day
+              </span>
+            </div>
 
-        {/* Year Navigation */}
-        <div className="flex items-center gap-1 px-2 w-full sm:w-auto rounded-lg shadow-lg border calendar-border">
-          <button
-            onClick={() => navigateYear("prev")}
-            className="calendar-text-secondary hover:calendar-accent transition-colors"
-            aria-label="Previous year"
-          >
-            ⬅️
-          </button>
-          <h2 className="text-xl sm:text-2xl font-bold calendar-text-primary group-hover:calendar-accent transition-colors">
-            {displayYear}
-          </h2>
-          <span className="calendar-text-tertiary ml-2 text-lg">DR</span>
-          <button
-            onClick={() => navigateYear("next")}
-            className="p-1 calendar-text-secondary hover:calendar-accent transition-colors"
-            aria-label="Next year"
-          >
-            ➡️
-          </button>
-        </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-300 rounded"></div>
+              <span className="text-gray-600 dark:text-gray-400">
+                Holiday/Festival
+              </span>
+            </div>
 
-        {/* Month Navigation */}
-        <div className="flex items-center justify-around gap-1 w-64">
-          <button
-            onClick={() => navigateMonth("prev")}
-            className="p-2 calendar-hover-bg hover:calendar-accent-bg calendar-text-primary hover:calendar-accent rounded-lg transition-all"
-            aria-label="Previous month"
-          >
-            ⬅️
-          </button>
-          <div className="text-sm calendar-text-secondary w-48">
-            <h2 className="flex gap-1 text-xl sm:text-2xl font-bold calendar-text-primary group-hover:calendar-accent transition-colors">
-              {monthData.name}
-            </h2>
-            {monthData.commonName} • {monthData.season}
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-green-50 dark:bg-green-900/20 border-2 border-green-300 dark:border-green-600 rounded"></div>
+              <span className="text-gray-600 dark:text-gray-400">
+                Selected Date
+              </span>
+            </div>
           </div>
+        </div>
+        <div className="flex justify-between items-center">
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={() => navigateYear("prev")}
+              className="hover:bg-white/20 p-2 rounded-lg transition-colors"
+              title="Previous Year"
+            >
+              ⟪
+            </button>
+            <button
+              onClick={() => navigateMonth("prev")}
+              className="hover:bg-white/20 p-2 rounded-lg transition-colors"
+              title="Previous Month"
+            >
+              ⟨
+            </button>
+          </div>
+
+          <div className="text-center">
+            <h2 className="text-2xl font-bold">
+              {monthData.data.name} {displayYear}
+            </h2>
+            <p className="text-sm opacity-90">
+              {monthData.data.commonName} • {monthData.data.season}
+            </p>
+          </div>
+
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={() => navigateMonth("next")}
+              className="hover:bg-white/20 p-2 rounded-lg transition-colors"
+              title="Next Month"
+            >
+              ⟩
+            </button>
+            <button
+              onClick={() => navigateYear("next")}
+              className="hover:bg-white/20 p-2 rounded-lg transition-colors"
+              title="Next Year"
+            >
+              ⟫
+            </button>
+          </div>
+        </div>
+
+        <div className="flex justify-center space-x-4 mt-4">
           <button
-            onClick={() => navigateMonth("next")}
-            className="p-2 calendar-hover-bg hover:calendar-accent-bg calendar-text-primary hover:calendar-accent rounded-lg transition-all"
-            aria-label="Next month"
+            onClick={goToCurrentDate}
+            className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg transition-colors text-sm"
           >
-            ➡️
+            Today ({currentDate.month}/{currentDate.day}/{currentDate.year})
+          </button>
+          <button
+            onClick={() => setShowQuickJump(!showQuickJump)}
+            className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg transition-colors text-sm"
+          >
+            Quick Jump
+          </button>
+          <button
+            onClick={toggleMonthInfo}
+            className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg transition-colors text-sm"
+          >
+            Month Info
           </button>
         </div>
+
+        {/* Quick Jump Menu */}
+        {showQuickJump && (
+          <div className="quick-jump-container absolute z-10 bg-white rounded-lg shadow-lg p-4 mt-2 grid grid-cols-3 gap-2">
+            {months.map((m) => (
+              <button
+                key={m.data.monthNumber}
+                onClick={() => jumpToMonth(m.data.monthNumber)}
+                className={`p-2 rounded text-sm transition-colors ${
+                  m.data.monthNumber === displayMonth
+                    ? "bg-blue-500 text-white"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                {m.data.name}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Month Info Panel */}
+        {showMonthInfo && (
+          <div className="month-info-container absolute z-10 bg-white rounded-lg shadow-lg p-4 mt-2 text-gray-800 max-w-md">
+            <h4 className="font-bold text-lg mb-2">{monthData.data.name}</h4>
+            <p className="text-sm mb-2">{monthData.data.significance}</p>
+            <div className="text-xs space-y-1">
+              <p>
+                <strong>Weather:</strong> {monthData.data.weather.typical}
+              </p>
+              <p>
+                <strong>Temperature:</strong>{" "}
+                {monthData.data.weather.temperature}
+              </p>
+              {monthData.data.activities.length > 0 && (
+                <div>
+                  <strong>Activities:</strong>
+                  <ul className="ml-4 list-disc">
+                    {monthData.data.activities
+                      .slice(0, 3)
+                      .map((activity, idx) => (
+                        <li key={idx}>{activity}</li>
+                      ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
-      {/* Current Month Information */}
-      <div className=""></div>
 
       {/* Calendar Grid */}
       <CalendarGrid

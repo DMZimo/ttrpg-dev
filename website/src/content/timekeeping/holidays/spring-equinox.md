@@ -1,18 +1,51 @@
 ---
 name: "Spring Equinox"
-type: "holiday"
+aliases:
+  - "Vernal Equinox"
+  - "Day of Balance"
+type: "astronomical"
 observance: "major"
 date:
   month: 3
   day: 19
-isRecurring: true
+duration: 1
+recurring: true
+description: "Astronomical celebration marking the equal balance of day and night, heralding spring's arrival and new beginnings."
+culturalSignificance: "Represents perfect balance and new beginnings, marking the transition from winter's end to spring's promise and the start of the growing season"
+origins: "Ancient astronomical observations combined with agricultural traditions marking the start of planting season"
 traditions:
-  - "Balance ceremonies"
-  - "Planting blessings"
-  - "Light and shadow rituals"
+  - "Balance ceremonies with light and shadow"
+  - "Planting blessings and seed consecration"
+  - "Field blessing rituals"
+  - "Community garden dedications"
+  - "Equinox feasts celebrating renewal"
 regions:
   - "Faerûn"
-tags: ["spring", "equinox", "balance", "astronomical"]
+  - "Sword Coast"
+  - "Western Heartlands"
+  - "Dalelands"
+mechanicalEffects:
+  - "Druid spells gain +1 caster level"
+  - "Plant growth spells have double effect"
+  - "Agricultural yields increase by 10%"
+  - "Balance-themed spells cost -1 spell slot"
+associatedDeities:
+  - "Chauntea"
+  - "Silvanus"
+  - "Selûne"
+  - "Amaunator"
+rituals:
+  - "Light and shadow balance ceremonies"
+  - "Seed blessing and consecration"
+  - "First furrow plowing ritual"
+  - "Walking the line processions"
+tags:
+  - "spring"
+  - "equinox"
+  - "balance"
+  - "astronomical"
+  - "agriculture"
+  - "renewal"
 ---
 
 # Spring Equinox
