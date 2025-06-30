@@ -6,8 +6,9 @@ import {
   getSpecialEvents,
   getSpecialDaysForMonth,
   type HarptosDate,
-} from "../../utils/calendarUtils";
+} from "../../utils/gameCalendarUtils";
 import CalendarGrid from "./CalendarGrid";
+import WeatherWidget from "./WeatherWidget";
 import type { CalendarDayData, CalendarDataProps } from "./types";
 
 interface CalendarProps extends CalendarDataProps {
@@ -37,7 +38,7 @@ export default function Calendar({
   const [showMonthInfo, setShowMonthInfo] = useState(false);
 
   // Get month data from collections
-  const monthData = months.find((m) => m.data.monthNumber === displayMonth);
+  const monthData = months.find((m) => m.data.month_number === displayMonth);
 
   if (!monthData) {
     return <div>Error: Month data not found for month {displayMonth}</div>;
@@ -45,13 +46,19 @@ export default function Calendar({
 
   // Generate calendar data with enhanced information from collections
   const calendarDays: CalendarDayData[] = Array.from(
-    { length: monthData.data.days },
+    { length: 30 }, // Standard Harptos month length
     (_, i) => {
       const day = i + 1;
-      const dateObj = createHarptosDate(displayYear, displayMonth, day);
-      const weather = getWeatherForDate(dateObj);
-      const events = getSpecialEvents(dateObj);
-      const moon = getMoonPhase(dateObj);
+      const dateObj = createHarptosDate(
+        displayYear,
+        displayMonth,
+        day,
+        months,
+        holidays
+      );
+      const weather = getWeatherForDate(dateObj, months);
+      const specialEvents = getSpecialEvents(dateObj, holidays, events || []);
+      const moon = getMoonPhase(dateObj, celestial);
 
       // Enhanced details using collection data
       const details = {
@@ -67,7 +74,7 @@ export default function Calendar({
         seasonInfo: seasons.find((s) =>
           s.data.months.includes(monthData.data.name)
         ),
-        celestialInfo: celestial.find((c) => c.data.celestialType === "moon"), // Primary moon
+        celestialInfo: celestial.find((c) => c.data.type === "moon"), // Primary moon
       };
 
       // Get holiday details if this day has a holiday
@@ -84,7 +91,7 @@ export default function Calendar({
       return {
         ...dateObj,
         weather,
-        events,
+        events: specialEvents,
         details,
         moon: {
           ...moon,
@@ -102,11 +109,12 @@ export default function Calendar({
   // Generate special days for this month using collection data
   const specialDays: CalendarDayData[] = getSpecialDaysForMonth(
     displayYear,
-    displayMonth
+    displayMonth,
+    holidays
   ).map((specialDay) => {
-    const weather = getWeatherForDate(specialDay);
-    const events = getSpecialEvents(specialDay);
-    const moon = getMoonPhase(specialDay);
+    const weather = getWeatherForDate(specialDay, months);
+    const specialEvents = getSpecialEvents(specialDay, holidays, events || []);
+    const moon = getMoonPhase(specialDay, celestial);
 
     // Find holiday info for special days
     const holidayInfo = holidays.find((h) => {
@@ -122,7 +130,7 @@ export default function Calendar({
       seasonInfo: seasons.find((s) =>
         s.data.months.includes(monthData.data.name)
       ),
-      celestialInfo: celestial.find((c) => c.data.celestialType === "moon"),
+      celestialInfo: celestial.find((c) => c.data.type === "moon"),
     };
 
     const holidayDetails = holidayInfo
@@ -138,7 +146,7 @@ export default function Calendar({
     return {
       ...specialDay,
       weather,
-      events,
+      events: specialEvents,
       details,
       moon: {
         ...moon,
@@ -312,7 +320,7 @@ export default function Calendar({
               {monthData.data.name} {displayYear}
             </h2>
             <p className="text-sm opacity-90">
-              {monthData.data.commonName} • {monthData.data.season}
+              {monthData.data.alias} • {monthData.data.season}
             </p>
           </div>
 
@@ -360,10 +368,10 @@ export default function Calendar({
           <div className="quick-jump-container absolute z-10 bg-white rounded-lg shadow-lg p-4 mt-2 grid grid-cols-3 gap-2">
             {months.map((m) => (
               <button
-                key={m.data.monthNumber}
-                onClick={() => jumpToMonth(m.data.monthNumber)}
+                key={m.data.month_number}
+                onClick={() => jumpToMonth(m.data.month_number)}
                 className={`p-2 rounded text-sm transition-colors ${
-                  m.data.monthNumber === displayMonth
+                  m.data.month_number === displayMonth
                     ? "bg-blue-500 text-white"
                     : "text-gray-700 hover:bg-gray-100"
                 }`}
@@ -378,14 +386,13 @@ export default function Calendar({
         {showMonthInfo && (
           <div className="month-info-container absolute z-10 bg-white rounded-lg shadow-lg p-4 mt-2 text-gray-800 max-w-md">
             <h4 className="font-bold text-lg mb-2">{monthData.data.name}</h4>
-            <p className="text-sm mb-2">{monthData.data.significance}</p>
+            <p className="text-sm mb-2">{monthData.data.Description}</p>
             <div className="text-xs space-y-1">
               <p>
-                <strong>Weather:</strong> {monthData.data.weather.typical}
+                <strong>Season:</strong> {monthData.data.season}
               </p>
               <p>
-                <strong>Temperature:</strong>{" "}
-                {monthData.data.weather.temperature}
+                <strong>Alias:</strong> {monthData.data.alias}
               </p>
               {monthData.data.activities.length > 0 && (
                 <div>
@@ -394,7 +401,11 @@ export default function Calendar({
                     {monthData.data.activities
                       .slice(0, 3)
                       .map((activity, idx) => (
-                        <li key={idx}>{activity}</li>
+                        <li key={idx}>
+                          {typeof activity === "string"
+                            ? activity
+                            : "Complex Activity"}
+                        </li>
                       ))}
                   </ul>
                 </div>
@@ -414,7 +425,27 @@ export default function Calendar({
         compact={compact}
         onDayClick={handleDayClick}
         onSpecialDayClick={handleSpecialDayClick}
+        months={months}
       />
+
+      {/* Weather Widget - shows when a day is selected */}
+      {selectedDate && (
+        <div className="mt-4">
+          <WeatherWidget
+            selectedDay={
+              calendarDays.find(
+                (day) =>
+                  `${displayYear}-${displayMonth}-${day.day}` === selectedDate
+              ) || null
+            }
+            currentDate={currentDate}
+            months={months}
+            compact={compact}
+            showExtendedForecast={true}
+            showHistoricalWeather={false}
+          />
+        </div>
+      )}
     </div>
   );
 }

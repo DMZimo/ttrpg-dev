@@ -15,7 +15,7 @@ export const TIMEZONE = "Asia/Jerusalem";
 // Campaign Date and Time Configuration
 // Update these values after each session to reflect the current campaign date/time
 export const CAMPAIGN_DATE = {
-  year: 1491,
+  year: 1492,
   month: 4, // 1-12 (Hammer to Nightal)
   day: 17, // 1-30
   hour: 6, // 0-23 (24-hour format)

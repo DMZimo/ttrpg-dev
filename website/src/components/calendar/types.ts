@@ -1,4 +1,4 @@
-import type { HarptosDate } from "../../utils/calendarUtils";
+import type { HarptosDate } from "../../utils/gameCalendarUtils";
 import type { CollectionEntry } from "astro:content";
 
 // Extended calendar day data with collection-based information
@@ -45,6 +45,7 @@ export interface CalendarGridProps {
   compact: boolean;
   onDayClick: (day: number) => void;
   onSpecialDayClick: (specialDay: CalendarDayData) => void;
+  months: CollectionEntry<"months">[];
 }
 
 // Props for calendar components that need collection data
@@ -54,4 +55,50 @@ export interface CalendarDataProps {
   seasons: CollectionEntry<"seasons">[];
   celestial: CollectionEntry<"celestial">[];
   events?: CollectionEntry<"events">[];
+}
+
+// Weather widget props interface
+export interface WeatherWidgetProps {
+  selectedDay: CalendarDayData | null;
+  currentDate: HarptosDate;
+  months: CollectionEntry<"months">[];
+  compact?: boolean;
+  showExtendedForecast?: boolean;
+  showHistoricalWeather?: boolean;
+}
+
+// Extended weather forecast data
+export interface WeatherForecastData {
+  date: HarptosDate;
+  weather: {
+    condition: string;
+    temperature: string;
+    description: string;
+    emoji: string;
+    temperatureRange?: {
+      min: number;
+      max: number;
+    };
+    precipitation?: {
+      chance: number;
+      type: string;
+    };
+    wind?: {
+      speed: string;
+      direction: string;
+    };
+    humidity?: number;
+    visibility?: string;
+  };
+  moon: {
+    description: string;
+    emoji: string;
+    phase: string;
+  };
+  alerts?: Array<{
+    type: "weather" | "astronomical" | "magical";
+    severity: "low" | "moderate" | "high" | "extreme";
+    message: string;
+    emoji: string;
+  }>;
 }

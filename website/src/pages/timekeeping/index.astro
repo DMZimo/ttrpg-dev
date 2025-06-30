@@ -2,30 +2,15 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import Calendar from "../../components/calendar/Calendar.tsx";
 import CurrentDateWidget from "../../components/calendar/CurrentDateWidget.astro";
-import CalendarLegend from "../../components/calendar/CalendarLegend.astro";
 
-// Import campaign configuration
-import { CAMPAIGN_DATE, CAMPAIGN_SETTINGS } from "../../consts";
+// Import campaign configuration (optional if using utility defaults)
+// import { CAMPAIGN_DATE, CAMPAIGN_SETTINGS } from "../../consts";
 import { getCollection } from "astro:content";
 
 import {
-  createHarptosDate,
-  createHarptosTime,
-  formatHarptosDate,
-  getSeasonEmoji,
-  getSeasonTextColor,
-  getMoonPhase,
-  getCalendarViewModes,
-  generateCalendarData,
-} from "../../utils/calendarUtils.ts";
-
-// Import collection data utilities
-import {
-  transformMonthData,
-  transformHolidayData,
-  getHolidayDetails,
-  getMonthDetails,
-} from "../../utils/calendarData.ts";
+  getCurrentCampaignDate,
+  getCurrentCampaignTime,
+} from "../../utils/gameCalendarUtils";
 
 // Get URL parameters for navigation and view options
 const url = new URL(Astro.request.url);
@@ -37,305 +22,190 @@ const filterParam = url.searchParams.get("filter");
 const compactParam = url.searchParams.get("compact");
 const showResourcesParam = url.searchParams.get("resources");
 
-// Use campaign date as the current date
-const currentDate = createHarptosDate(
-  CAMPAIGN_DATE.year,
-  CAMPAIGN_DATE.month,
-  CAMPAIGN_DATE.day
-);
-const currentTime = createHarptosTime(CAMPAIGN_DATE.hour, CAMPAIGN_DATE.minute);
+// Get all timekeeping collections (with error handling for missing collections)
+const months = await getCollection("months");
+const holidays = await getCollection("holidays");
+
+let seasons: any[] = [];
+let celestial: any[] = [];
+let events: any[] = [];
+let calendarSystems: any[] = [];
+
+try {
+  seasons = await getCollection("seasons");
+} catch {
+  seasons = [];
+}
+try {
+  celestial = await getCollection("celestial");
+} catch {
+  celestial = [];
+}
+try {
+  events = await getCollection("events");
+} catch {
+  events = [];
+}
+try {
+  calendarSystems = await getCollection("calendarSystems");
+} catch {
+  calendarSystems = [];
+}
+
+// Use campaign date as the current date or fallback to utility function
+const currentDate = getCurrentCampaignDate();
+const currentTime = getCurrentCampaignTime();
 
 // Display parameters with fallbacks to campaign date or current date
 const displayYear = yearParam ? parseInt(yearParam) : currentDate.year;
 const displayMonth = monthParam ? parseInt(monthParam) : currentDate.month;
-const viewMode = viewModeParam || CAMPAIGN_SETTINGS.defaultViewMode;
 const validMonth = Math.max(1, Math.min(12, displayMonth));
 const validYear = Math.max(1, displayYear);
-const displayDate = createHarptosDate(validYear, validMonth, 1);
-
-const currentMoonPhase = getMoonPhase(currentDate);
-const currentSeasonEmoji = getSeasonEmoji(currentDate.season);
-const currentSeasonText = getSeasonTextColor(currentDate.season);
-
-const isCompactView = compactParam === "true";
-const showResources = showResourcesParam === "true";
-const holidaySeasonFilter =
-  (holidaySeasonParam as
-    | "winter"
-    | "spring"
-    | "summer"
-    | "autumn"
-    | undefined) || "all";
-
-// Get all timekeeping collections
-const months = await getCollection("months");
-const holidays = await getCollection("holidays");
-const seasons = await getCollection("seasons");
-const celestial = await getCollection("celestial");
-const events = await getCollection("events");
-const calendarSystems = await getCollection("calendarSystems");
-
-// Transform collection data to calendar-compatible format
-const HARPTOS_MONTHS = transformMonthData(months);
-const HARPTOS_HOLIDAYS = transformHolidayData(holidays);
-
-// Generate view-specific data (this function may need updating to work with collection data)
-const availableViewModes = getCalendarViewModes();
-const calendarData = generateCalendarData(
-  validYear,
-  viewMode === "year" ? undefined : validMonth
-);
 ---
 
 <BaseLayout
   title="Calendar of Harptos - Timekeeping Portal"
   description="Central timekeeping portal for the Faerûnian calendar - explore months, holidays, celestial events, and seasons"
 >
-  <!-- Account for fixed header height (64px + announcement height) -->
-  <div class="calendar-page w-full min-h-screen">
-    <!-- Main Calendar Layout -->
-    <div
-      class={`calendar-layout px-2 ${isCompactView ? "compact-layout" : "full-layout"}`}
-    >
-      <!-- Left Sidebar (Calendar Info) -->
-      <div class="calendar-sidebar">
-        <CurrentDateWidget
-          currentDate={currentDate}
-          currentTime={currentTime}
-        />
-      </div>
+  <div class="flex w-full min-h-screen">
+    <!-- Left Sidebar (Calendar Info) -->
+    <div class="p-4 shadow-lg">
+      <CurrentDateWidget currentDate={currentDate} currentTime={currentTime} />
+    </div>
 
-      <!-- Main Calendar Content -->
-      <div class="calendar-main">
-        <Calendar
-          year={validYear}
-          month={validMonth}
-          currentDate={currentDate}
-          months={months}
-          holidays={holidays}
-          seasons={seasons}
-          celestial={celestial}
-          events={events}
-          client:load
-        />
-      </div>
-
-      <!-- Right Sidebar (Holidays & Events) -->
-      <div class="calendar-events space-y-6">
-        <CalendarLegend />
-      </div>
+    <!-- Main Calendar Content -->
+    <div class="calendar-main">
+      <Calendar
+        year={validYear}
+        month={validMonth}
+        currentDate={currentDate}
+        months={months}
+        holidays={holidays}
+        seasons={seasons}
+        celestial={celestial}
+        events={events}
+        client:load
+      />
     </div>
   </div>
-  <style>
-    .calendar-layout {
-      display: grid;
-      gap: 1rem;
-      margin-top: 1rem;
-      width: 100%;
-      max-width: 100vw;
-    }
-
-    .full-layout {
-      grid-template-columns: 280px 1fr 280px;
-      grid-template-areas: "sidebar main events";
-    }
-
-    .compact-layout {
-      grid-template-columns: 240px 1fr 240px;
-      grid-template-areas: "sidebar main events";
-    }
-
-    .calendar-sidebar {
-      grid-area: sidebar;
-    }
-
-    .calendar-main {
-      grid-area: main;
-      min-width: 0; /* Prevent grid blowout */
-    }
-
-    .calendar-events {
-      grid-area: events;
-    }
-
-    /* Ensure full width on larger screens */
-    .calendar-page {
-      max-width: 100vw;
-      width: 100%;
-      padding-top: 64px; /* Account for fixed header */
-    }
-
-    @media (max-width: 1024px) {
-      .full-layout {
-        grid-template-columns: 1fr;
-        grid-template-areas:
-          "main"
-          "sidebar"
-          "events";
-      }
-
-      .compact-layout {
-        grid-template-columns: 1fr 280px;
-        grid-template-areas:
-          "main events"
-          "sidebar sidebar";
-      }
-    }
-
-    @media (max-width: 768px) {
-      .calendar-layout {
-        grid-template-columns: 1fr;
-        grid-template-areas:
-          "main"
-          "sidebar"
-          "events";
-        gap: 0.5rem;
-      }
-
-      .calendar-page {
-        padding-top: 64px; /* Maintain header clearance on mobile */
-      }
-    }
-
-    .calendar-page {
-      animation: fadeIn 0.3s ease-in-out;
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    /* Ensure content doesn't get cut off by fixed header */
-    .page-header {
-      padding-top: 1rem;
-    }
-  </style>
-
-  <script>
-    // Global calendar state for filtering and display
-    let activeFilters = new Set<string>();
-    let viewMode =
-      new URLSearchParams(window.location.search).get("view") || "month";
-
-    function changeViewMode(mode: string) {
-      const url = new URL(window.location.href);
-      url.searchParams.set("view", mode);
-      window.location.href = url.toString();
-    }
-
-    function toggleResources() {
-      const url = new URL(window.location.href);
-      const current = url.searchParams.get("resources") === "true";
-
-      if (current) {
-        url.searchParams.delete("resources");
-      } else {
-        url.searchParams.set("resources", "true");
-      }
-
-      window.location.href = url.toString();
-    }
-
-    function toggleCompactMode() {
-      const url = new URL(window.location.href);
-      const current = url.searchParams.get("compact") === "true";
-
-      if (current) {
-        url.searchParams.delete("compact");
-      } else {
-        url.searchParams.set("compact", "true");
-      }
-
-      window.location.href = url.toString();
-    }
-
-    // Filter functionality (read-only display filtering)
-    function toggleFilter(filterType: string) {
-      if (activeFilters.has(filterType)) {
-        activeFilters.delete(filterType);
-      } else {
-        activeFilters.add(filterType);
-      }
-      applyDisplayFilters();
-    }
-
-    function applyDisplayFilters() {
-      const elements = document.querySelectorAll("[data-filter]");
-      elements.forEach((element) => {
-        const filters =
-          (element as HTMLElement).dataset.filter?.split(",") || [];
-        const isVisible =
-          activeFilters.size === 0 ||
-          filters.some((filter) => activeFilters.has(filter));
-
-        if (isVisible) {
-          element.classList.remove("filtered-out");
-        } else {
-          element.classList.add("filtered-out");
-        }
-      });
-    }
-
-    // Enhanced navigation handlers
-    document.addEventListener("DOMContentLoaded", function () {
-      // Keyboard shortcuts
-      document.addEventListener("keydown", function (e) {
-        if (
-          e.target &&
-          ["INPUT", "TEXTAREA"].includes((e.target as HTMLElement).tagName)
-        )
-          return;
-
-        switch (e.key) {
-          case "r":
-          case "R":
-            toggleResources();
-            break;
-          case "c":
-          case "C":
-            toggleCompactMode();
-            break;
-          case "ArrowLeft":
-            // Navigate to previous month
-            const prevBtn = document.querySelector(
-              'a[aria-label="Previous month"]'
-            ) as HTMLAnchorElement;
-            if (prevBtn) prevBtn.click();
-            break;
-          case "ArrowRight":
-            // Navigate to next month
-            const nextBtn = document.querySelector(
-              'a[aria-label="Next month"]'
-            ) as HTMLAnchorElement;
-            if (nextBtn) nextBtn.click();
-            break;
-          case "Home":
-            // Go to current month
-            const todayBtn = document.querySelector(
-              'button[aria-label="Go to current month"]'
-            ) as HTMLButtonElement;
-            if (todayBtn) todayBtn.click();
-            break;
-        }
-      });
-    });
-
-    function showDateInformation(dateStr: string) {
-      // Enhanced date information display
-      console.log("Date selected:", dateStr);
-    }
-
-    // Make functions globally available
-    (window as any).changeViewMode = changeViewMode;
-    (window as any).toggleResources = toggleResources;
-    (window as any).toggleCompactMode = toggleCompactMode;
-    (window as any).toggleFilter = toggleFilter;
-  </script>
 </BaseLayout>
+
+<script>
+  // Global calendar state for filtering and display
+  let activeFilters = new Set<string>();
+  let viewMode =
+    new URLSearchParams(window.location.search).get("view") || "month";
+
+  function changeViewMode(mode: string) {
+    const url = new URL(window.location.href);
+    url.searchParams.set("view", mode);
+    window.location.href = url.toString();
+  }
+
+  function toggleResources() {
+    const url = new URL(window.location.href);
+    const current = url.searchParams.get("resources") === "true";
+
+    if (current) {
+      url.searchParams.delete("resources");
+    } else {
+      url.searchParams.set("resources", "true");
+    }
+
+    window.location.href = url.toString();
+  }
+
+  function toggleCompactMode() {
+    const url = new URL(window.location.href);
+    const current = url.searchParams.get("compact") === "true";
+
+    if (current) {
+      url.searchParams.delete("compact");
+    } else {
+      url.searchParams.set("compact", "true");
+    }
+
+    window.location.href = url.toString();
+  }
+
+  // Filter functionality (read-only display filtering)
+  function toggleFilter(filterType: string) {
+    if (activeFilters.has(filterType)) {
+      activeFilters.delete(filterType);
+    } else {
+      activeFilters.add(filterType);
+    }
+    applyDisplayFilters();
+  }
+
+  function applyDisplayFilters() {
+    const elements = document.querySelectorAll("[data-filter]");
+    elements.forEach((element) => {
+      const filters = (element as HTMLElement).dataset.filter?.split(",") || [];
+      const isVisible =
+        activeFilters.size === 0 ||
+        filters.some((filter) => activeFilters.has(filter));
+
+      if (isVisible) {
+        element.classList.remove("filtered-out");
+      } else {
+        element.classList.add("filtered-out");
+      }
+    });
+  }
+
+  // Enhanced navigation handlers
+  document.addEventListener("DOMContentLoaded", function () {
+    // Keyboard shortcuts
+    document.addEventListener("keydown", function (e) {
+      if (
+        e.target &&
+        ["INPUT", "TEXTAREA"].includes((e.target as HTMLElement).tagName)
+      )
+        return;
+
+      switch (e.key) {
+        case "r":
+        case "R":
+          toggleResources();
+          break;
+        case "c":
+        case "C":
+          toggleCompactMode();
+          break;
+        case "ArrowLeft":
+          // Navigate to previous month
+          const prevBtn = document.querySelector(
+            'a[aria-label="Previous month"]'
+          ) as HTMLAnchorElement;
+          if (prevBtn) prevBtn.click();
+          break;
+        case "ArrowRight":
+          // Navigate to next month
+          const nextBtn = document.querySelector(
+            'a[aria-label="Next month"]'
+          ) as HTMLAnchorElement;
+          if (nextBtn) nextBtn.click();
+          break;
+        case "Home":
+          // Go to current month
+          const todayBtn = document.querySelector(
+            'button[aria-label="Go to current month"]'
+          ) as HTMLButtonElement;
+          if (todayBtn) todayBtn.click();
+          break;
+      }
+    });
+  });
+
+  function showDateInformation(dateStr: string) {
+    // Enhanced date information display
+    console.log("Date selected:", dateStr);
+  }
+
+  // Make functions globally available
+  (window as any).changeViewMode = changeViewMode;
+  (window as any).toggleResources = toggleResources;
+  (window as any).toggleCompactMode = toggleCompactMode;
+  (window as any).toggleFilter = toggleFilter;
+</script>

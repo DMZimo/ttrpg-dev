@@ -1,5 +1,5 @@
 import React from "react";
-import { HARPTOS_MONTHS } from "../../utils/calendarUtils";
+import { transformMonthData } from "../../utils/gameCalendarUtils";
 import type { CalendarDayData, CalendarGridProps } from "./types";
 
 export default function CalendarGrid({
@@ -11,8 +11,13 @@ export default function CalendarGrid({
   compact,
   onDayClick,
   onSpecialDayClick,
+  months,
 }: CalendarGridProps) {
-  const monthData = HARPTOS_MONTHS[displayMonth - 1];
+  const monthData = months.find((m) => m.data.month_number === displayMonth);
+
+  if (!monthData) {
+    return <div>Error: Month data not found</div>;
+  }
 
   return (
     <div className="calendar-bg rounded-b-lg shadow-lg border calendar-border overflow-visible">
@@ -38,7 +43,8 @@ export default function CalendarGrid({
             >
               {Array.from({ length: 10 }).map((_, dayIdx) => {
                 const day = tendayIdx * 10 + dayIdx + 1;
-                if (day > monthData.days) {
+                if (day > 30) {
+                  // Standard Harptos month length
                   return <td key={dayIdx} className="p-2" />;
                 }
 
@@ -57,71 +63,73 @@ export default function CalendarGrid({
                       isToday
                         ? "calendar-accent-bg ring-2 calendar-accent-border"
                         : ""
-                    } ${isSelected ? "ring-2 ring-success" : ""} ${
-                      hasEvents ? "calendar-warning-bg" : ""
-                    }`.trim()}
-                    title={`${dayData.day} ${monthData.name} ${displayYear} - ${dayData.weather.condition}, ${dayData.weather.temperature}`}
+                    } ${
+                      isSelected
+                        ? "ring-2 ring-blue-500 bg-blue-100 dark:bg-blue-900/30"
+                        : ""
+                    } ${hasEvents ? "calendar-warning-bg" : ""}`.trim()}
+                    title={`${dayData.day} ${monthData.data.name} ${displayYear} - ${dayData.weather.condition}, ${dayData.weather.temperature}`}
                     onClick={() => onDayClick(day)}
                   >
                     <div
-                      className={`flex flex-col items-center justify-start p-1 h-full overflow-hidden ${
+                      className={`flex flex-col items-center justify-between p-1 h-full overflow-hidden ${
                         compact ? "space-y-0" : "space-y-1"
                       }`}
                     >
                       {/* Day Number */}
                       <span
                         className={`font-semibold ${
-                          isToday ? "calendar-accent" : "calendar-text-primary"
+                          isToday
+                            ? "calendar-accent"
+                            : isSelected
+                            ? "text-blue-600 dark:text-blue-400"
+                            : "calendar-text-primary"
                         } ${compact ? "text-sm" : "text-base"}`}
                       >
                         {dayData.day}
                       </span>
 
                       {/* Events Row */}
-                      {dayData.events.length > 0 && (
-                        <div className="flex flex-wrap gap-1 justify-center items-center min-h-0 flex-shrink">
-                          {dayData.events
-                            .slice(0, compact ? 1 : 2)
-                            .map((event, idx) => (
-                              <a
-                                key={idx}
-                                href={`/timekeeping/holidays/${event.name
-                                  .toLowerCase()
-                                  .replace(/\s+/g, "-")
-                                  .replace(/[^a-z0-9-]/g, "")}`}
-                                className={`event-indicator hover:scale-110 transition-transform duration-200 flex-shrink-0 ${
-                                  compact ? "text-xs" : "text-sm"
-                                }`}
-                                title={`${event.name}: ${event.description} (Click to learn more)`}
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                {event.emoji}
-                              </a>
-                            ))}
-                          {dayData.events.length > (compact ? 1 : 2) && (
-                            <span className="text-xs calendar-text-tertiary flex-shrink-0">
-                              +{dayData.events.length - (compact ? 1 : 2)}
-                            </span>
-                          )}
-                        </div>
-                      )}
+                      <div className="flex flex-wrap gap-1 justify-center items-center min-h-0 flex-shrink-0">
+                        {dayData.events.length > 0 ? (
+                          <>
+                            {dayData.events
+                              .slice(0, compact ? 1 : 2)
+                              .map((event, idx) => (
+                                <span
+                                  key={idx}
+                                  className={`event-indicator transition-transform duration-200 flex-shrink-0 ${
+                                    compact ? "text-xs" : "text-sm"
+                                  }`}
+                                  title={`${event.name}: ${event.description}`}
+                                >
+                                  {event.emoji}
+                                </span>
+                              ))}
+                            {dayData.events.length > (compact ? 1 : 2) && (
+                              <span className="text-xs calendar-text-tertiary flex-shrink-0">
+                                +{dayData.events.length - (compact ? 1 : 2)}
+                              </span>
+                            )}
+                          </>
+                        ) : (
+                          <span className="text-xs opacity-0">•</span>
+                        )}
+                      </div>
 
-                      {/* Moon Phase & Weather */}
-                      <div className="flex items-center space-x-1 flex-shrink-0">
-                        <a
-                          href="/timekeeping/celestial/selune"
-                          className={`hover:scale-110 transition-transform duration-200 ${
+                      {/* Moon Phase & Weather - Always Visible */}
+                      <div className="flex items-center justify-center space-x-1 flex-shrink-0">
+                        <span
+                          className={`transition-transform duration-200 ${
                             compact ? "text-xs" : "text-sm"
                           }`}
-                          title={`${dayData.moon.description} (Click to learn about Selûne)`}
-                          onClick={(e) => e.stopPropagation()}
+                          title={`${dayData.moon.description}`}
                         >
                           {dayData.moon.emoji}
-                        </a>
+                        </span>
 
-                        {/* Weather icon on hover */}
                         <span
-                          className={`weather-icon opacity-0 group-hover:opacity-100 transition-opacity ${
+                          className={`weather-icon transition-opacity ${
                             compact ? "text-xs" : "text-sm"
                           }`}
                           title={`${dayData.weather.condition} - ${dayData.weather.description}`}
@@ -140,7 +148,7 @@ export default function CalendarGrid({
                       }}
                     >
                       <div className="font-bold mb-1">
-                        {dayData.day} {monthData.name} {displayYear} DR
+                        {dayData.day} {monthData.data.name} {displayYear} DR
                       </div>
                       <div className="space-y-1">
                         <div>
@@ -182,9 +190,14 @@ export default function CalendarGrid({
               <div className="text-sm calendar-text-secondary max-w-2xl mx-auto">
                 {specialDay.specialDayType === "shieldmeet"
                   ? "The rare leap day celebration occurring every four years"
-                  : `Special festival day between ${monthData.name} 30 and ${
-                      HARPTOS_MONTHS[displayMonth === 12 ? 0 : displayMonth]
-                        .name
+                  : `Special festival day between ${
+                      monthData.data.name
+                    } 30 and ${
+                      months.find(
+                        (m) =>
+                          m.data.month_number ===
+                          (displayMonth === 12 ? 1 : displayMonth + 1)
+                      )?.data.name || "Next Month"
                     } 1`}
               </div>
               <div className="flex flex-wrap justify-center gap-4 text-xs calendar-text-secondary">
