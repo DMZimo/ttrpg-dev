@@ -22,15 +22,15 @@ interface Character {
     type: "pc" | "npc" | "sidekick";
     description?: string;
     status: string;
-    active: boolean;
-    hp: number;
-    ac: number;
+    active?: boolean;
+    hp?: number;
+    ac?: number;
     roles?: Array<{
       name: string;
     }>;
     tags?: string[];
     birthplace?: string;
-    lastUpdated?: Date;
+    lastUpdated?: Date | string;
     color?: string;
     enclave?: {
       name: string;
@@ -41,12 +41,12 @@ interface Character {
       disposition: number;
     };
     ability_scores?: {
-      str: number;
-      dex: number;
-      con: number;
-      int: number;
-      wis: number;
-      cha: number;
+      str?: number;
+      dex?: number;
+      con?: number;
+      int?: number;
+      wis?: number;
+      cha?: number;
     };
   };
 }
@@ -292,93 +292,109 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
           : {}
       }
     >
-      {/* Portrait Section - Now Much Larger */}
       <div className="relative">
-        <div className="aspect-[4/3] w-full relative overflow-hidden">
-          <img
-            src={getPortraitPath()}
-            alt={`${data.name} portrait`}
-            className="w-full h-full object-cover"
-            onError={(e) => {
-              // Fallback to placeholder if image fails to load
-              (e.target as HTMLImageElement).src =
-                "/src/assets/portraits/placeholder-portrait.png";
-            }}
-          />
+        <div className="flex items-center p-6 pb-4">
+          <div className="flex-shrink-0 relative">
+            <img
+              src={getPortraitPath()}
+              alt={`${data.name} portrait`}
+              className="w-16 h-16 rounded-full object-cover border-2 border-gray-200 dark:border-gray-600"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src =
+                  "/src/assets/portraits/placeholder-portrait.png";
+              }}
+            />
 
-          {/* Character Status Overlay */}
-          <div className="absolute top-3 left-3 flex gap-2">
-            <div className="bg-black/70 text-white px-2 py-1 rounded-full text-xs flex items-center gap-1">
-              <span>{getTypeIcon()}</span>
-              <span className="font-medium">{data.type.toUpperCase()}</span>
-            </div>
-            <div className="bg-black/70 text-white px-2 py-1 rounded-full text-xs flex items-center gap-1">
-              <span>{getStatusIcon()}</span>
-              <span className="font-medium">{data.status.toUpperCase()}</span>
-            </div>
+            {/* Cult Icon Overlay */}
+            {getCultIcon() && (
+              <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-white dark:bg-gray-700 p-1 shadow-md">
+                <img
+                  src={getCultIcon()!}
+                  alt="Cult affiliation"
+                  className="w-full h-full object-contain"
+                  title={`${data.tags
+                    ?.find((tag) => tag.includes("cult"))
+                    ?.replace("-cult", "")
+                    .replace("-", " ")
+                    .toUpperCase()} Cult`}
+                />
+              </div>
+            )}
+
+            {/* Status Icon - Only show if not alive */}
+            {data.status !== "alive" && (
+              <div className="absolute -top-1 -left-1 text-lg bg-white dark:bg-gray-700 rounded-full p-1 shadow-md">
+                <span title={`Status: ${data.status}`}>{getStatusIcon()}</span>
+              </div>
+            )}
           </div>
 
-          {/* Level Badge */}
-          {getCurrentLevel() && (
-            <div className="absolute top-3 right-3">
-              <div className="relative">
-                <img
-                  src="/src/assets/ui/level-badge.webp"
-                  alt="Level Badge"
-                  className="w-12 h-12"
-                />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">
-                    {getCurrentLevel()}
+          {/* Character Basic Info */}
+          <div className="ml-4 flex-1 min-w-0">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
+              <a
+                href={`/characters/${character.id}`}
+                className={`${styling.accent} hover:underline transition-colors`}
+                style={
+                  styling.customColor ? { color: styling.customColor } : {}
+                }
+              >
+                {data.name}
+              </a>
+            </h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+              {data.subrace ? `${data.subrace} ${data.race}` : data.race}
+            </p>
+            {((data.classes && data.classes.length > 0) ||
+              (data.class && data.class.length > 0)) && (
+              <p className="text-sm text-gray-700 dark:text-gray-300">
+                {(data.classes?.[0] || data.class?.[0])?.name}
+                {getCurrentLevel() && (
+                  <span className="ml-2 inline-flex items-center relative">
+                    <img
+                      src="/src/assets/ui/level-badge.webp"
+                      alt="Level Badge"
+                      className="w-8 h-8"
+                    />
+                    <span className="absolute inset-0 flex items-center justify-center text-white font-bold text-xs">
+                      {getCurrentLevel()}
+                    </span>
                   </span>
-                </div>
-              </div>
-            </div>
-          )}
+                )}
+              </p>
+            )}
+          </div>
 
-          {/* AC Badge */}
-          {data.ac && (
-            <div className="absolute bottom-3 right-3">
-              <div className="relative">
+          {/* Character Stats */}
+          <div className="text-right flex items-center gap-2">
+            {data.hp && (
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                HP: {data.hp}
+              </div>
+            )}
+            {data.ac && (
+              <div className="relative inline-flex items-center">
                 <img
                   src="/src/assets/ui/ac-badge.webp"
                   alt="AC Badge"
                   className="w-10 h-10"
                 />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-white font-bold text-xs">
-                    {data.ac}
-                  </span>
-                </div>
+                <span className="absolute inset-0 flex items-center justify-center text-white font-bold text-xs">
+                  {data.ac}
+                </span>
               </div>
-            </div>
-          )}
-
-          {/* Cult Icon Overlay */}
-          {getCultIcon() && (
-            <div className="absolute bottom-3 left-3 w-8 h-8 rounded-full bg-black/70 p-1.5 shadow-md">
-              <img
-                src={getCultIcon()!}
-                alt="Cult affiliation"
-                className="w-full h-full object-contain"
-                title={`${data.tags
-                  ?.find((tag) => tag.includes("cult"))
-                  ?.replace("-cult", "")
-                  .replace("-", " ")
-                  .toUpperCase()} Cult`}
-              />
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
-        {/* Enclave Banner - Hanging from Portrait */}
+        {/* Enclave Banner */}
         {getEnclaveBanner() && (
           <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 z-10">
             <div className="relative">
               <img
                 src={getEnclaveBanner()!}
                 alt="Enclave affiliation"
-                className="h-12 w-auto drop-shadow-lg"
+                className="h-8 w-auto drop-shadow-lg"
                 title={`${
                   data.enclave?.name || data.organization?.name || "Faction"
                 } Affiliation`}
@@ -389,90 +405,17 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
       </div>
 
       {/* Content Section */}
-      <div className="px-6 pb-6 pt-4">
-        {/* Character Name and Basic Info */}
-        <div className="text-center mb-4">
-          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
-            <a
-              href={`/characters/${character.id}`}
-              className={`${styling.accent} hover:underline transition-colors`}
-              style={styling.customColor ? { color: styling.customColor } : {}}
-            >
-              {data.name}
-            </a>
-          </h3>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-            {data.subrace ? `${data.subrace} ${data.race}` : data.race}
-          </p>
-          {((data.classes && data.classes.length > 0) ||
-            (data.class && data.class.length > 0)) && (
-            <p className="text-sm text-gray-700 dark:text-gray-300">
-              {(data.classes?.[0] || data.class?.[0])?.name}
-              {(data.classes?.[0]?.subclass || data.class?.[0]?.subclass) && (
-                <span className="text-xs text-gray-500 dark:text-gray-400 block">
-                  ({data.classes?.[0]?.subclass || data.class?.[0]?.subclass})
-                </span>
-              )}
-            </p>
-          )}
-          {data.background && (
-            <p className="text-xs text-gray-500 dark:text-gray-500">
-              {data.background}
-            </p>
-          )}
-        </div>
-
-        {/* Ability Scores */}
-        {data.ability_scores && (
-          <div className="mb-4">
-            <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 text-center">
-              Ability Scores
-            </h4>
-            <div className="grid grid-cols-6 gap-1">
-              {Object.entries(data.ability_scores).map(([ability, score]) => (
-                <div key={ability} className="text-center">
-                  <div className="relative">
-                    <img
-                      src="/src/assets/ui/ability-score-tab.svg"
-                      alt={`${ability.toUpperCase()} Score`}
-                      className="w-full h-auto"
-                    />
-                    <div className="absolute inset-0 flex flex-col items-center justify-center text-xs">
-                      <div className="font-bold text-gray-800">
-                        {ability.toUpperCase()}
-                      </div>
-                      <div className="font-bold text-gray-900">{score}</div>
-                      <div className="text-gray-600 text-[10px]">
-                        {getAbilityModifier(score) >= 0 ? "+" : ""}
-                        {getAbilityModifier(score)}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Character Stats */}
-        {data.hp && (
-          <div className="mb-3 text-center">
-            <div className="text-sm text-gray-700 dark:text-gray-300">
-              <span className="font-medium">Hit Points:</span> {data.hp}
-            </div>
-          </div>
-        )}
-
+      <div className="px-6 pb-6 pt-2">
         {/* Location */}
         {data.birthplace && (
-          <div className="text-xs text-gray-500 dark:text-gray-500 mb-2 text-center">
+          <div className="text-xs text-gray-500 dark:text-gray-500 mb-2 flex items-center">
             <span>📍 {data.birthplace}</span>
           </div>
         )}
 
         {/* Description */}
         {data.description && variant !== "compact" && (
-          <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-3 mb-3 text-center">
+          <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-2 mb-3">
             {data.description}
           </p>
         )}
@@ -480,7 +423,7 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
         {/* Roles & Tags */}
         <div className="space-y-2">
           {data.roles && data.roles.length > 0 && (
-            <div className="flex flex-wrap gap-1 justify-center">
+            <div className="flex flex-wrap gap-1">
               {data.roles.slice(0, 3).map((role, index) => (
                 <span
                   key={index}
@@ -498,7 +441,7 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
           )}
 
           {data.tags && data.tags.length > 0 && (
-            <div className="flex flex-wrap gap-1 justify-center">
+            <div className="flex flex-wrap gap-1">
               {data.tags.slice(0, 4).map((tag, index) => (
                 <span
                   key={index}
