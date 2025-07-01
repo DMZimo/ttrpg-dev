@@ -1,68 +1,277 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { SITE_TITLE } from "@/consts";
+import { getCollection } from "astro:content";
+
+// Get all atlas collections
+const celestialBodies = await getCollection("celestial");
+const continents = await getCollection("continents");
+const regions = await getCollection("regions");
+const settlements = await getCollection("settlements");
+
+// Sort by atlas_order if available
+const sortByOrder = (a: any, b: any) => {
+  const orderA = a.data.atlas_order || 999;
+  const orderB = b.data.atlas_order || 999;
+  return orderA - orderB;
+};
+
+const sortedContinents = continents.sort(sortByOrder);
+const sortedRegions = regions.sort(sortByOrder);
+const sortedSettlements = settlements.sort(sortByOrder);
 ---
 
 <BaseLayout
   title={`World Atlas - ${SITE_TITLE}`}
-  description="Explore the interactive map of our D&D campaign world, featuring locations, points of interest, and the journey of our adventurers."
-  class="w-full"
+  description="Explore the interactive atlas of our D&D campaign world, from the cosmic to the local scale."
+  class="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100 dark:from-slate-900 dark:to-slate-800"
 >
-  <section class="bg-surface min-h-screen py-16">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-12">
-        <h1 class="text-4xl lg:text-5xl font-bold text-primary mb-6">
-          World Atlas
-        </h1>
-        <p class="text-xl text-secondary max-w-3xl mx-auto">
-          Explore the Dessarin Valley and beyond. Discover the locations we've
-          visited, the paths we've traveled, and the mysteries yet to unfold.
-        </p>
-      </div>
-
-      <!-- Interactive Map Placeholder -->
-      <div class="hero-card p-8 mb-12">
+  <section class="container mx-auto px-4 py-8">
+    <!-- Atlas Cover -->
+    <div class="max-w-4xl mx-auto">
+      <!-- Book Cover -->
+      <div
+        class="bg-gradient-to-br from-amber-900 to-orange-800 p-8 rounded-lg shadow-2xl mb-8 text-center relative overflow-hidden"
+      >
         <div
-          class="aspect-video bg-surface-tertiary border-2 border-dashed border-primary flex items-center justify-center"
+          class="absolute inset-0 bg-[url('/patterns/paper-texture.png')] opacity-20"
         >
-          <div class="text-center">
-            <div
-              class="w-16 h-16 bg-gold-600 mx-auto mb-4 flex items-center justify-center"
-            >
-              <span class="text-white text-2xl">🗺️</span>
-            </div>
-            <h3 class="text-xl font-bold text-primary mb-2">
-              Interactive Map Coming Soon
-            </h3>
-            <p class="text-secondary">
-              Our interactive campaign map is under construction. Check back
-              soon for a fully explorable world!
-            </p>
+        </div>
+        <div class="relative z-10">
+          <h1
+            class="text-5xl lg:text-6xl font-bold text-amber-100 mb-4 font-serif"
+          >
+            Atlas of the Realms
+          </h1>
+          <p class="text-xl text-amber-200 mb-6 font-serif italic">
+            A Complete Compendium of Worlds, Lands, and Places
+          </p>
+          <div class="text-amber-300 text-sm">
+            Campaign Year 1491 DR • Compiled by the Adventuring Company
           </div>
+        </div>
+        <!-- Decorative elements -->
+        <div class="absolute top-4 left-4 text-6xl text-amber-700 opacity-30">
+          🗺️
+        </div>
+        <div
+          class="absolute bottom-4 right-4 text-6xl text-amber-700 opacity-30"
+        >
+          🌟
         </div>
       </div>
 
-      <!-- Quick Stats -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="hero-card p-6 text-center">
-          <div class="text-3xl font-bold text-hero-red mb-2">5</div>
-          <div class="text-sm uppercase tracking-wider text-muted">
-            Major Locations
-          </div>
+      <!-- Table of Contents -->
+      <div
+        class="bg-white dark:bg-slate-800 rounded-lg shadow-xl p-8 border-4 border-amber-600"
+      >
+        <div class="text-center mb-8">
+          <h2
+            class="text-3xl font-bold text-slate-800 dark:text-slate-200 font-serif"
+          >
+            Table of Contents
+          </h2>
+          <div class="w-24 h-1 bg-amber-600 mx-auto mt-2"></div>
         </div>
-        <div class="hero-card p-6 text-center">
-          <div class="text-3xl font-bold text-accent-500 mb-2">12</div>
-          <div class="text-sm uppercase tracking-wider text-muted">
-            Points of Interest
+
+        <!-- Atlas Sections -->
+        <div class="space-y-6">
+          <!-- Celestial Bodies -->
+          <div class="atlas-section">
+            <h3
+              class="text-xl font-bold text-slate-700 dark:text-slate-300 mb-3 flex items-center"
+            >
+              <span class="text-2xl mr-3">🌌</span>
+              Chapter I: The Crystal Sphere
+            </h3>
+            <p class="text-slate-600 dark:text-slate-400 mb-4 italic">
+              Celestial bodies, stars, planets, and moons of Realmspace
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {
+                celestialBodies.map((body) => (
+                  <a
+                    href={`/atlas/celestial/${body.id}`}
+                    class="flex items-center p-3 rounded-lg hover:bg-amber-50 dark:hover:bg-slate-700 transition-colors border border-amber-200 dark:border-slate-600"
+                  >
+                    <span class="text-lg mr-3">
+                      {body.data.type === "star"
+                        ? "⭐"
+                        : body.data.type === "planet"
+                          ? "🪐"
+                          : body.data.type === "moon"
+                            ? "🌙"
+                            : "☄️"}
+                    </span>
+                    <div>
+                      <div class="font-medium text-slate-800 dark:text-slate-200">
+                        {body.data.name}
+                      </div>
+                      <div class="text-sm text-slate-500 dark:text-slate-400 capitalize">
+                        {body.data.subtype?.replace("-", " ")}
+                      </div>
+                    </div>
+                  </a>
+                ))
+              }
+            </div>
           </div>
+
+          <!-- Continents -->
+          {
+            sortedContinents.length > 0 && (
+              <div class="atlas-section">
+                <h3 class="text-xl font-bold text-slate-700 dark:text-slate-300 mb-3 flex items-center">
+                  <span class="text-2xl mr-3">🗺️</span>
+                  Chapter II: Continents of Toril
+                </h3>
+                <p class="text-slate-600 dark:text-slate-400 mb-4 italic">
+                  Major landmasses and their defining characteristics
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {sortedContinents.map((continent) => (
+                    <a
+                      href={`/atlas/continents/${continent.id}`}
+                      class="flex items-center p-3 rounded-lg hover:bg-amber-50 dark:hover:bg-slate-700 transition-colors border border-amber-200 dark:border-slate-600"
+                    >
+                      <span class="text-lg mr-3">🏔️</span>
+                      <div>
+                        <div class="font-medium text-slate-800 dark:text-slate-200">
+                          {continent.data.name}
+                        </div>
+                        <div class="text-sm text-slate-500 dark:text-slate-400">
+                          {continent.data.geographic?.area_sq_miles
+                            ? `${continent.data.geographic.area_sq_miles.toLocaleString()} sq mi`
+                            : "Continental landmass"}
+                        </div>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )
+          }
+
+          <!-- Regions -->
+          {
+            sortedRegions.length > 0 && (
+              <div class="atlas-section">
+                <h3 class="text-xl font-bold text-slate-700 dark:text-slate-300 mb-3 flex items-center">
+                  <span class="text-2xl mr-3">🏞️</span>
+                  Chapter III: Regions and Territories
+                </h3>
+                <p class="text-slate-600 dark:text-slate-400 mb-4 italic">
+                  Political and geographic regions of importance
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {sortedRegions.map((region) => (
+                    <a
+                      href={`/atlas/regions/${region.id}`}
+                      class="flex items-center p-3 rounded-lg hover:bg-amber-50 dark:hover:bg-slate-700 transition-colors border border-amber-200 dark:border-slate-600"
+                    >
+                      <span class="text-lg mr-3">
+                        {region.data.type === "sea"
+                          ? "🏖️"
+                          : region.data.type === "forest"
+                            ? "🌲"
+                            : region.data.type === "valley"
+                              ? "🏔️"
+                              : region.data.type === "kingdom"
+                                ? "👑"
+                                : "🗺️"}
+                      </span>
+                      <div>
+                        <div class="font-medium text-slate-800 dark:text-slate-200">
+                          {region.data.name}
+                        </div>
+                        <div class="text-sm text-slate-500 dark:text-slate-400 capitalize">
+                          {region.data.type?.replace("-", " ")}
+                        </div>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )
+          }
+
+          <!-- Settlements -->
+          {
+            sortedSettlements.length > 0 && (
+              <div class="atlas-section">
+                <h3 class="text-xl font-bold text-slate-700 dark:text-slate-300 mb-3 flex items-center">
+                  <span class="text-2xl mr-3">🏘️</span>
+                  Chapter IV: Cities, Towns, and Settlements
+                </h3>
+                <p class="text-slate-600 dark:text-slate-400 mb-4 italic">
+                  Places of civilization throughout the known world
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {sortedSettlements.map((settlement) => (
+                    <a
+                      href={`/atlas/settlements/${settlement.id}`}
+                      class="flex items-center p-3 rounded-lg hover:bg-amber-50 dark:hover:bg-slate-700 transition-colors border border-amber-200 dark:border-slate-600"
+                    >
+                      <span class="text-lg mr-3">
+                        {settlement.data.type === "metropolis"
+                          ? "🏙️"
+                          : settlement.data.type === "city"
+                            ? "🌆"
+                            : settlement.data.type === "town"
+                              ? "🏘️"
+                              : settlement.data.type === "village"
+                                ? "🏠"
+                                : "🏛️"}
+                      </span>
+                      <div>
+                        <div class="font-medium text-slate-800 dark:text-slate-200">
+                          {settlement.data.name}
+                        </div>
+                        <div class="text-sm text-slate-500 dark:text-slate-400">
+                          {settlement.data.demographics?.population
+                            ? `Pop. ${settlement.data.demographics.population.toLocaleString()}`
+                            : settlement.data.type}
+                        </div>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )
+          }
         </div>
-        <div class="hero-card p-6 text-center">
-          <div class="text-3xl font-bold text-gold-600 mb-2">∞</div>
-          <div class="text-sm uppercase tracking-wider text-muted">
-            Adventures Ahead
-          </div>
+
+        <!-- Interactive Maps Notice -->
+        <div
+          class="mt-8 p-4 bg-amber-50 dark:bg-slate-700 rounded-lg border border-amber-200 dark:border-slate-600"
+        >
+          <h4
+            class="font-semibold text-slate-800 dark:text-slate-200 mb-2 flex items-center"
+          >
+            <span class="text-lg mr-2">🗺️</span>
+            Interactive Maps
+          </h4>
+          <p class="text-sm text-slate-600 dark:text-slate-400">
+            Select any location above to view detailed information and
+            interactive maps where available. The celestial map features a 3D
+            visualization of Realmspace with clickable celestial bodies.
+          </p>
         </div>
       </div>
     </div>
   </section>
 </BaseLayout>
+
+<style>
+  .atlas-section {
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid rgb(251 191 36 / 0.2);
+    border-bottom-color: rgb(251 191 36 / 0.2);
+  }
+  .dark .atlas-section {
+    border-bottom-color: rgb(71 85 105 / 0.6);
+  }
+  .atlas-section:last-child {
+    border-bottom: none;
+  }
+</style>

@@ -2,14 +2,20 @@ import React, { useState, useEffect } from "react";
 import {
   createHarptosDate,
   getMoonPhase,
-  getWeatherForDate,
   getSpecialEvents,
   getSpecialDaysForMonth,
   type HarptosDate,
 } from "../../utils/gameCalendarUtils";
+import {
+  generateEnhancedWeather,
+  type EnhancedWeatherData,
+} from "../../utils/weatherUtils";
 import CalendarGrid from "./CalendarGrid";
 import WeatherWidget from "./WeatherWidget";
-import type { CalendarDayData, CalendarDataProps } from "./types";
+import type {
+  CalendarDayData,
+  CalendarDataProps,
+} from "../../types/calendarTypes";
 
 interface CalendarProps extends CalendarDataProps {
   year: number;
@@ -56,7 +62,32 @@ export default function Calendar({
         months,
         holidays
       );
-      const weather = getWeatherForDate(dateObj, months);
+
+      // Generate enhanced weather for this day
+      let enhancedWeather: EnhancedWeatherData | null = null;
+      try {
+        enhancedWeather = generateEnhancedWeather(dateObj, monthData);
+      } catch (error) {
+        console.error("Error generating enhanced weather for day", day, error);
+      }
+
+      // Convert enhanced weather to legacy format for compatibility
+      const weather = enhancedWeather
+        ? {
+            condition: enhancedWeather.conditions.primary,
+            temperature: `${enhancedWeather.temperature.current}°${
+              enhancedWeather.temperature.unit === "fahrenheit" ? "F" : "C"
+            }`,
+            description: enhancedWeather.conditions.description,
+            emoji: enhancedWeather.conditions.emoji,
+          }
+        : {
+            condition: "Clear",
+            temperature: "65°F",
+            description: "Clear skies with mild temperatures",
+            emoji: "☀️",
+          };
+
       const specialEvents = getSpecialEvents(dateObj, holidays, events || []);
       const moon = getMoonPhase(dateObj, celestial);
 
@@ -112,7 +143,31 @@ export default function Calendar({
     displayMonth,
     holidays
   ).map((specialDay) => {
-    const weather = getWeatherForDate(specialDay, months);
+    // Generate enhanced weather for special days
+    let enhancedWeather: EnhancedWeatherData | null = null;
+    try {
+      enhancedWeather = generateEnhancedWeather(specialDay, monthData);
+    } catch (error) {
+      console.error("Error generating enhanced weather for special day", error);
+    }
+
+    // Convert enhanced weather to legacy format for compatibility
+    const weather = enhancedWeather
+      ? {
+          condition: enhancedWeather.conditions.primary,
+          temperature: `${enhancedWeather.temperature.current}°${
+            enhancedWeather.temperature.unit === "fahrenheit" ? "F" : "C"
+          }`,
+          description: enhancedWeather.conditions.description,
+          emoji: enhancedWeather.conditions.emoji,
+        }
+      : {
+          condition: "Clear",
+          temperature: "65°F",
+          description: "Clear skies with mild temperatures",
+          emoji: "☀️",
+        };
+
     const specialEvents = getSpecialEvents(specialDay, holidays, events || []);
     const moon = getMoonPhase(specialDay, celestial);
 
@@ -271,32 +326,6 @@ export default function Calendar({
     <div className="calendar-container">
       {/* Calendar Header */}
       <div className="calendar-header bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 rounded-t-lg shadow-md">
-        {/* Legend */}
-        <div className="font-medium text-gray-800 dark:text-gray-200 mb-2">
-          <span>Visual Indicators</span>
-          <div className="flex space-y-2">
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-hero-red border border-hero-red rounded"></div>
-              <span className="text-gray-600 dark:text-gray-400">
-                Current Day
-              </span>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-300 rounded"></div>
-              <span className="text-gray-600 dark:text-gray-400">
-                Holiday/Festival
-              </span>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-green-50 dark:bg-green-900/20 border-2 border-green-300 dark:border-green-600 rounded"></div>
-              <span className="text-gray-600 dark:text-gray-400">
-                Selected Date
-              </span>
-            </div>
-          </div>
-        </div>
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-4">
             <button
@@ -442,7 +471,12 @@ export default function Calendar({
             months={months}
             compact={compact}
             showExtendedForecast={true}
-            showHistoricalWeather={false}
+            showHistoricalWeather={true}
+            showRegionalVariations={true}
+            showWeatherTrends={true}
+            showGameplayEffects={true}
+            regionName="Sword Coast"
+            forecastDays={7}
           />
         </div>
       )}

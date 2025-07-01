@@ -170,28 +170,15 @@ const journal = defineCollection({
 const characters = defineCollection({
   loader: glob({ base: "./src/content/characters", pattern: "**/*.{md,mdx}" }),
   schema: z.object({
+    // Character Metadata
     owner: z.string().default("DM"),
-    isPublic: z.boolean().default(false),
-    publishDate: z.coerce.date().optional(),
-    lastUpdated: z.coerce.date().optional(),
+    is_public: z.boolean().default(false),
+    publish_date_iso: z.coerce.date().optional(),
+    last_updated_iso: z.coerce.date().optional(),
     tags: z.array(z.string()).optional(),
-    name: z.string(),
-    race: z.string(),
-    subrace: z.string(),
-    background: z.string().optional(),
-    class: z
-      .array(
-        z.object({
-          name: z.string(),
-          level: z.number().min(1).max(20).default(1),
-          subclass: z.string().optional(),
-        })
-      )
-      .default([]),
+
+    // Character Details
     type: z.enum(["pc", "sidekick", "npc"]).default("pc"),
-    description: z.string().optional(),
-    birthdate: z.coerce.date().optional(),
-    birthplace: z.string().optional(),
     status: z
       .enum([
         "alive",
@@ -206,16 +193,140 @@ const characters = defineCollection({
         "inactive",
       ])
       .default("alive"),
-    hp: z.number(),
-    ac: z.number(),
-    gradient: z.string().optional(),
-    roles: z
+    active: z.boolean().default(false),
+    portrait: z.string().optional(),
+    token: z.string().optional(),
+    color: z.string().optional(),
+
+    // Character Attributes
+    name: z.string(),
+    race: z.string(),
+    subrace: z.string(),
+    background: z.string().optional(),
+    birthplace: z.string().optional(),
+    description: z.string().optional(),
+    birthdate: z.coerce.date().optional(),
+    size: z.string().optional(),
+    languages: z
       .array(
         z.object({
           name: z.string(),
         })
       )
       .optional(),
+
+    // Character Roles
+    roles: z.array(z.string()).optional(),
+
+    // Character Stats
+    ability_scores: z
+      .object({
+        str: z.number(),
+        dex: z.number(),
+        con: z.number(),
+        int: z.number(),
+        wis: z.number(),
+        cha: z.number(),
+      })
+      .optional(),
+
+    // Derived stats
+    proficiency_bonus: z.number().optional(),
+    saving_throws: z
+      .object({
+        str: z.number().optional(),
+        dex: z.number().optional(),
+        con: z.number().optional(),
+        int: z.number().optional(),
+        wis: z.number().optional(),
+        cha: z.number().optional(),
+      })
+      .optional(),
+
+    // Classes and levels
+    classes: z
+      .array(
+        z.object({
+          name: z.string(),
+          level: z.number().min(1).max(20).default(1),
+          subclass: z.string().nullable().optional(),
+        })
+      )
+      .optional(),
+    hp: z.number().optional(),
+    ac: z.number().optional(),
+
+    // Skills
+    skills: z
+      .array(
+        z.object({
+          name: z.string(),
+          modifier: z.number(),
+        })
+      )
+      .optional(),
+    other_skills: z
+      .array(
+        z.object({
+          name: z.string(),
+        })
+      )
+      .optional(),
+
+    // Spellcasting
+    spellcasting: z
+      .object({
+        ability: z.string(),
+        spell_attack_bonus: z.number(),
+        spell_save_dc: z.number(),
+      })
+      .nullable()
+      .optional(),
+
+    // Character Relationships
+    organization: z
+      .object({
+        name: z.string(),
+        disposition: z.number(),
+      })
+      .optional(),
+    enclave: z
+      .object({
+        name: z.string(),
+        disposition: z.number(),
+      })
+      .optional(),
+    affiliations: z
+      .array(
+        z.object({
+          name: z.string(),
+          disposition: z.number(),
+        })
+      )
+      .nullable()
+      .optional(),
+    allies: z.array(z.string()).nullable().optional(),
+    enemies: z.array(z.string()).nullable().optional(),
+
+    // Character motivations and traits
+    personality_traits: z.array(z.string()).nullable().optional(),
+    ideals: z.array(z.string()).nullable().optional(),
+    bonds: z.array(z.string()).nullable().optional(),
+    flaws: z.array(z.string()).nullable().optional(),
+
+    // Legacy fields (keeping for backward compatibility)
+    publishDate: z.coerce.date().optional(),
+    lastUpdated: z.coerce.date().optional(),
+    isPublic: z.boolean().default(false),
+    class: z
+      .array(
+        z.object({
+          name: z.string(),
+          level: z.number().min(1).max(20).default(1),
+          subclass: z.string().optional(),
+        })
+      )
+      .default([]),
   }),
 });
 
@@ -350,24 +461,89 @@ const months = defineCollection({
                 temperature_range_celsius: z.object({
                   min: z.number(),
                   max: z.number(),
+                  variance: z.number().optional(),
+                  feels_like_modifier: z.number().optional(),
                 }),
               }),
               z.object({
                 precipitation_chance_percent: z.object({
                   min: z.number(),
                   max: z.number(),
+                  intensity: z.enum(["light", "moderate", "heavy"]).optional(),
+                  type: z
+                    .enum(["rain", "snow", "sleet", "hail", "mixed"])
+                    .optional(),
+                  duration_hours: z
+                    .object({
+                      min: z.number(),
+                      max: z.number(),
+                    })
+                    .optional(),
                 }),
               }),
               z.object({
                 storm_chance_percent: z.object({
                   min: z.number(),
                   max: z.number(),
+                  severity: z
+                    .enum(["light", "moderate", "severe", "extreme"])
+                    .optional(),
+                  type: z
+                    .enum([
+                      "thunderstorm",
+                      "blizzard",
+                      "ice_storm",
+                      "windstorm",
+                      "magical",
+                    ])
+                    .optional(),
                 }),
               }),
               z.object({
                 wind_speed_kph: z.object({
                   min: z.number(),
                   max: z.number(),
+                  direction: z
+                    .enum([
+                      "N",
+                      "NE",
+                      "E",
+                      "SE",
+                      "S",
+                      "SW",
+                      "W",
+                      "NW",
+                      "variable",
+                    ])
+                    .optional(),
+                  gusts: z.boolean().optional(),
+                }),
+              }),
+              z.object({
+                atmosphere: z.object({
+                  humidity_percent: z.object({
+                    min: z.number(),
+                    max: z.number(),
+                  }),
+                  pressure: z.enum(["low", "normal", "high"]).optional(),
+                  visibility_miles: z.object({
+                    min: z.number(),
+                    max: z.number(),
+                  }),
+                }),
+              }),
+              z.object({
+                magical_influences: z.object({
+                  wild_magic_surge_chance: z
+                    .number()
+                    .min(0)
+                    .max(100)
+                    .optional(),
+                  elemental_affinities: z
+                    .array(z.enum(["fire", "water", "air", "earth"]))
+                    .optional(),
+                  planar_weather: z.boolean().optional(),
+                  divine_influences: z.array(z.string()).optional(),
                 }),
               }),
             ])
@@ -379,6 +555,24 @@ const months = defineCollection({
               name: z.string(),
               probability: z.number(),
               mechanics: z.array(z.string()).optional(),
+              duration: z
+                .object({
+                  min_hours: z.number(),
+                  max_hours: z.number(),
+                })
+                .optional(),
+              severity: z
+                .enum(["minor", "moderate", "major", "catastrophic"])
+                .optional(),
+              triggers: z.array(z.string()).optional(),
+              effects: z
+                .object({
+                  travel: z.array(z.string()).optional(),
+                  combat: z.array(z.string()).optional(),
+                  spellcasting: z.array(z.string()).optional(),
+                  social: z.array(z.string()).optional(),
+                })
+                .optional(),
             })
           ),
         }),
@@ -389,6 +583,24 @@ const months = defineCollection({
               temperature_modifier: z.number().optional(),
               precipitation_modifier: z.number().optional(),
               storm_modifier: z.number().optional(),
+              wind_modifier: z.number().optional(),
+              humidity_modifier: z.number().optional(),
+              special_conditions: z.array(z.string()).optional(),
+              coastal_effects: z.boolean().optional(),
+              elevation_effects: z
+                .object({
+                  high_altitude: z.boolean().optional(),
+                  mountain_effects: z.boolean().optional(),
+                })
+                .optional(),
+              magical_zones: z
+                .array(
+                  z.object({
+                    name: z.string(),
+                    effect: z.string(),
+                  })
+                )
+                .optional(),
             })
           ),
         }),
@@ -398,6 +610,18 @@ const months = defineCollection({
             sunset_hour: z.number().optional(),
             daylight_hours: z.number(),
             long_night_effects: z.boolean(),
+            twilight_duration: z.number().optional(),
+            seasonal_variation: z.boolean().optional(),
+          }),
+        }),
+        z.object({
+          weather_patterns: z.object({
+            persistence_factor: z.number().min(0).max(1).optional(),
+            trend_probability: z.number().min(0).max(100).optional(),
+            seasonal_progression: z.boolean().optional(),
+            climate_stability: z
+              .enum(["stable", "variable", "chaotic"])
+              .optional(),
           }),
         }),
       ])
@@ -550,6 +774,230 @@ const celestial = defineCollection({
   }),
 });
 
+// Continents collection for major landmasses
+const continents = defineCollection({
+  loader: glob({
+    base: "./src/content/atlas/continents",
+    pattern: "**/*.{md,mdx}",
+  }),
+  schema: z.object({
+    // === IDENTITY ===
+    name: z.string(),
+    type: z.literal("continent"),
+    aliases: z.array(z.string()).optional(),
+
+    // === GEOGRAPHIC ===
+    geographic: z.object({
+      area_sq_miles: z.number().positive().optional(),
+      climate_zones: z.array(z.string()).optional(),
+      major_features: z.array(z.string()).optional(),
+      coastline_miles: z.number().positive().optional(),
+    }),
+
+    // === POLITICAL ===
+    political: z.object({
+      major_nations: z.array(z.string()).optional(),
+      languages: z.array(z.string()).optional(),
+      currencies: z.array(z.string()).optional(),
+    }),
+
+    // === REGIONS ===
+    regions: z.array(z.string()).optional(),
+    major_cities: z.array(z.string()).optional(),
+
+    // === CULTURAL ===
+    cultural: z.object({
+      dominant_races: z.array(z.string()).optional(),
+      major_religions: z.array(z.string()).optional(),
+      historical_periods: z.array(z.string()).optional(),
+    }),
+
+    // === ATLAS META ===
+    atlas_order: z.number().optional(),
+    parent_region: z.string().optional(),
+    map_available: z.boolean().default(false),
+
+    // === META ===
+    tags: z.array(z.string()).optional(),
+    sources: z.array(z.string()).optional(),
+    updated: z.string().optional(),
+  }),
+});
+
+// Regions collection for geographic/political regions
+const regions = defineCollection({
+  loader: glob({
+    base: "./src/content/atlas/regions",
+    pattern: "**/*.{md,mdx}",
+  }),
+  schema: z.object({
+    // === IDENTITY ===
+    name: z.string(),
+    type: z.enum([
+      "region",
+      "kingdom",
+      "duchy",
+      "county",
+      "valley",
+      "forest",
+      "mountain-range",
+      "desert",
+      "sea",
+    ]),
+    aliases: z.array(z.string()).optional(),
+
+    // === HIERARCHY ===
+    parent_continent: z.string().optional(),
+    parent_region: z.string().optional(),
+    sub_regions: z.array(z.string()).optional(),
+
+    // === GEOGRAPHIC ===
+    geographic: z.object({
+      area_sq_miles: z.number().positive().optional(),
+      terrain_type: z
+        .enum([
+          "plains",
+          "hills",
+          "mountains",
+          "forest",
+          "desert",
+          "swamp",
+          "coast",
+          "tundra",
+          "jungle",
+        ])
+        .optional(),
+      elevation_feet: z.number().optional(),
+      climate: z
+        .enum(["tropical", "temperate", "arctic", "arid", "mediterranean"])
+        .optional(),
+      major_rivers: z.array(z.string()).optional(),
+      major_roads: z.array(z.string()).optional(),
+    }),
+
+    // === POLITICAL ===
+    political: z.object({
+      government_type: z.string().optional(),
+      ruler: z.string().optional(),
+      capital: z.string().nullable().optional(),
+      population: z.number().optional(),
+      allegiances: z.array(z.string()).optional(),
+    }),
+
+    // === SETTLEMENTS ===
+    major_settlements: z.array(z.string()).optional(),
+    points_of_interest: z.array(z.string()).optional(),
+
+    // === ATLAS META ===
+    atlas_order: z.number().optional(),
+    map_available: z.boolean().default(false),
+
+    // === META ===
+    tags: z.array(z.string()).optional(),
+    sources: z.array(z.string()).optional(),
+    updated: z.string().optional(),
+  }),
+});
+
+// Settlements collection for cities, towns, villages
+const settlements = defineCollection({
+  loader: glob({
+    base: "./src/content/atlas/settlements",
+    pattern: "**/*.{md,mdx}",
+  }),
+  schema: z.object({
+    // === IDENTITY ===
+    name: z.string(),
+    type: z.enum([
+      "metropolis",
+      "city",
+      "town",
+      "village",
+      "hamlet",
+      "outpost",
+      "fort",
+      "ruin",
+    ]),
+    aliases: z.array(z.string()).optional(),
+
+    // === HIERARCHY ===
+    parent_region: z.string().nullable().optional(),
+    parent_continent: z.string().optional(),
+
+    // === DEMOGRAPHICS ===
+    demographics: z.object({
+      population: z.number().optional(),
+      size_category: z
+        .enum([
+          "thorp",
+          "hamlet",
+          "village",
+          "small-town",
+          "large-town",
+          "small-city",
+          "large-city",
+          "metropolis",
+        ])
+        .optional(),
+      dominant_race: z.string().optional(),
+      racial_mix: z
+        .array(
+          z.object({
+            race: z.string(),
+            percentage: z.number().min(0).max(100),
+          })
+        )
+        .optional(),
+    }),
+
+    // === GOVERNANCE ===
+    governance: z.object({
+      government_type: z.string().optional(),
+      ruler: z.string().optional(),
+      laws: z.string().optional(),
+      guards: z.string().optional(),
+    }),
+
+    // === ECONOMY ===
+    economy: z.object({
+      wealth_level: z
+        .enum([
+          "impoverished",
+          "poor",
+          "modest",
+          "comfortable",
+          "wealthy",
+          "rich",
+        ])
+        .optional(),
+      primary_trade: z.array(z.string()).optional(),
+      currency: z.string().optional(),
+      taxation: z.string().optional(),
+    }),
+
+    // === LOCATIONS ===
+    districts: z.array(z.string()).optional(),
+    notable_locations: z
+      .array(
+        z.object({
+          name: z.string(),
+          type: z.string(),
+          description: z.string().optional(),
+        })
+      )
+      .optional(),
+
+    // === ATLAS META ===
+    atlas_order: z.number().optional(),
+    map_available: z.boolean().default(false),
+
+    // === META ===
+    tags: z.array(z.string()).optional(),
+    sources: z.array(z.string()).optional(),
+    updated: z.string().optional(),
+  }),
+});
+
 // Timeline events collection for campaign events
 const events = defineCollection({
   loader: glob({
@@ -598,4 +1046,7 @@ export const collections = {
   celestial,
   events,
   calendarSystems,
+  continents,
+  regions,
+  settlements,
 };

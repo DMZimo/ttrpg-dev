@@ -8,6 +8,11 @@
 
 import type { CollectionEntry } from "astro:content";
 import { CAMPAIGN_DATE } from "../consts";
+import {
+  generateEnhancedWeather,
+  generateWeatherForecast,
+  type EnhancedWeatherData,
+} from "./weatherUtils";
 
 // === Type Definitions ===
 
@@ -450,6 +455,44 @@ export function getWeatherForDate(
     description,
     emoji: seasonEmojis[date.season],
   };
+}
+
+/**
+ * Get enhanced weather data for a specific date with regional support
+ */
+export function getEnhancedWeatherForDate(
+  date: HarptosDate,
+  monthsData: MonthEntry[],
+  regionName?: string,
+  previousWeather?: EnhancedWeatherData
+): EnhancedWeatherData {
+  const monthData = monthsData.find((m) => m.data.month_number === date.month);
+
+  if (!monthData) {
+    throw new Error(`Month data not found for month ${date.month}`);
+  }
+
+  return generateEnhancedWeather(date, monthData, previousWeather, regionName);
+}
+
+/**
+ * Get weather forecast for multiple days with trend analysis
+ */
+export function getWeatherForecast(
+  startDate: HarptosDate,
+  monthsData: MonthEntry[],
+  days: number = 5,
+  regionName?: string
+): EnhancedWeatherData[] {
+  const monthData = monthsData.find(
+    (m) => m.data.month_number === startDate.month
+  );
+
+  if (!monthData) {
+    throw new Error(`Month data not found for month ${startDate.month}`);
+  }
+
+  return generateWeatherForecast(startDate, monthData, days, regionName);
 }
 
 // === Event Functions ===

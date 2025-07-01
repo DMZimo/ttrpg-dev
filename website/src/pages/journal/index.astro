@@ -8,9 +8,9 @@ import SessionRoadmap from "@/components/journal/SessionRoadmap.astro";
 import { getCollection } from "astro:content";
 
 const entries = (await getCollection("journal")).sort((a, b) => {
-  // Use session_date if available, otherwise fall back to pubDate
-  const dateA = a.data.session_date || a.data.pubDate;
-  const dateB = b.data.session_date || b.data.pubDate;
+  // Use session_start as the primary date
+  const dateA = a.data.session_start;
+  const dateB = b.data.session_start;
 
   // Handle cases where dates might be undefined
   if (!dateA && !dateB) return 0;
@@ -26,21 +26,73 @@ const currentSession = Math.max(
   ...entries.map((entry) => entry.data.session_number || 0),
   0
 );
+const minSessionNumber = Math.min(
+  ...entries.map((entry) => entry.data.session_number || 1),
+  1
+);
 const allTags = new Set<string>();
+const allLocations = new Set<string>();
+const allCharacters = new Set<string>();
+const allNpcs = new Set<string>();
+
+// Calculate date range
+let earliestDate: Date | undefined;
+let latestDate: Date | undefined;
+
 entries.forEach((entry) => {
+  const entryDate = entry.data.session_start || entry.data.publish_date_iso;
+  if (entryDate) {
+    if (!earliestDate || entryDate < earliestDate) {
+      earliestDate = entryDate;
+    }
+    if (!latestDate || entryDate > latestDate) {
+      latestDate = entryDate;
+    }
+  }
+
   if (entry.data.tags) {
     entry.data.tags.forEach((tag: string) => allTags.add(tag));
+  }
+  if (entry.data.primary_location) {
+    allLocations.add(entry.data.primary_location);
+  }
+  if (entry.data.locations_visited) {
+    entry.data.locations_visited.forEach((location: any) => {
+      if (typeof location === "string") {
+        allLocations.add(location);
+      } else if (location.name) {
+        allLocations.add(location.name);
+      }
+    });
+  }
+  if (entry.data.characters_involved) {
+    entry.data.characters_involved.forEach((character: any) => {
+      if (typeof character === "string") {
+        allCharacters.add(character.replace(/\[\[|\]\]/g, ""));
+      } else if (character.name) {
+        allCharacters.add(character.name);
+      }
+    });
+  }
+  if (entry.data.npcs_encountered) {
+    entry.data.npcs_encountered.forEach((npc: any) => {
+      if (typeof npc === "string") {
+        allNpcs.add(npc.replace(/\[\[|\]\]/g, ""));
+      } else if (npc.name) {
+        allNpcs.add(npc.name);
+      }
+    });
   }
 });
 
 const latestSessionDate =
   entries.length > 0
-    ? entries[0].data.session_date || entries[0].data.pubDate
+    ? entries[0].data.session_start || entries[0].data.publish_date_iso
     : undefined;
 const oldestSessionDate =
   entries.length > 0
-    ? entries[entries.length - 1].data.session_date ||
-      entries[entries.length - 1].data.pubDate
+    ? entries[entries.length - 1].data.session_start ||
+      entries[entries.length - 1].data.publish_date_iso
     : undefined;
 ---
 
@@ -58,7 +110,17 @@ const oldestSessionDate =
       oldestSessionDate={oldestSessionDate}
     />
 
-    <JournalFilters />
+    <JournalFilters
+      allTags={Array.from(allTags)}
+      allLocations={Array.from(allLocations)}
+      allCharacters={Array.from(allCharacters)}
+      allNpcs={Array.from(allNpcs)}
+      dateRange={earliestDate && latestDate
+        ? { earliest: earliestDate, latest: latestDate }
+        : undefined}
+      maxSessionNumber={currentSession}
+      minSessionNumber={minSessionNumber}
+    />
 
     <SessionRoadmap currentSession={currentSession} />
 
@@ -113,13 +175,55 @@ const oldestSessionDate =
         >
           {entries.map((entry, index) => {
             // Add data attributes for filtering
-            const displayDate = entry.data.session_date || entry.data.pubDate;
+            const displayDate =
+              entry.data.session_start || entry.data.publish_date_iso;
             const dateString = displayDate ? displayDate.toISOString() : "";
+
+            // Calculate statistics for this entry
+            const combatCount = entry.data.combat_encounters?.length || 0;
+            const xpGained =
+              entry.data.characters_involved?.reduce((total, char) => {
+                return (
+                  total +
+                  (char.rewards?.reduce((sum, reward) => {
+                    return sum + ((reward as any).experience || 0);
+                  }, 0) || 0)
+                );
+              }, 0) || 0;
+            const hasLevelup =
+              entry.data.level_ups && entry.data.level_ups.length > 0;
+            const hasLoot =
+              entry.data.group_rewards && entry.data.group_rewards.length > 0;
+            const sessionDuration =
+              entry.data.session_end && entry.data.session_start
+                ? (entry.data.session_end.getTime() -
+                    entry.data.session_start.getTime()) /
+                  (1000 * 60 * 60)
+                : 0;
+
+            // Compile character and NPC lists
+            const characters =
+              entry.data.characters_involved
+                ?.map((char) => char.name)
+                .join(",") || "";
+            const npcs =
+              entry.data.npcs_encountered?.map((npc) => npc.name).join(",") ||
+              "";
 
             return (
               <div
                 data-date={dateString}
                 data-tags={entry.data.tags?.join(",") || ""}
+                data-session-number={entry.data.session_number}
+                data-location={entry.data.primary_location || ""}
+                data-characters={characters}
+                data-npcs={npcs}
+                data-combat-count={combatCount}
+                data-xp={xpGained}
+                data-duration={sessionDuration.toFixed(1)}
+                data-has-levelup={(hasLevelup || false).toString()}
+                data-has-loot={(hasLoot || false).toString()}
+                class={`${hasLevelup ? "has-levelup" : ""} ${combatCount > 0 ? "has-combat" : ""} ${hasLoot ? "has-loot" : ""}`}
               >
                 <SessionCard
                   entry={entry}

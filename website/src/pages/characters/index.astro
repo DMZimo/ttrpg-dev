@@ -1,98 +1,766 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+
+// Get all character entries
+const allCharacters = await getCollection("characters");
+
+// Filter only public characters or add all if none are public
+const publicCharacters = allCharacters.filter(
+  (char) => char.data.is_public || char.data.isPublic
+);
+const charactersToShow =
+  publicCharacters.length > 0 ? publicCharacters : allCharacters;
+
+// Convert the character data to match the React component interface
+const characterData = charactersToShow.map((char) => ({
+  id: char.id,
+  data: {
+    name: char.data.name,
+    race: char.data.race,
+    subrace: char.data.subrace,
+    background: char.data.background,
+    portrait: char.data.portrait,
+    token: char.data.token,
+    class: char.data.classes || char.data.class || [],
+    classes: char.data.classes || char.data.class || [],
+    type: char.data.type,
+    description: char.data.description,
+    status: char.data.status,
+    active: char.data.active,
+    hp: char.data.hp,
+    ac: char.data.ac,
+    roles: char.data.roles?.map((role) => ({ name: role })) || [],
+    tags: char.data.tags,
+    birthplace: char.data.birthplace,
+    lastUpdated: char.data.last_updated_iso || char.data.lastUpdated,
+    color: char.data.color,
+    enclave: char.data.enclave,
+    organization: char.data.organization,
+    ability_scores: char.data.ability_scores,
+  },
+}));
 ---
 
 <BaseLayout
-  title="NPCs & Locations - Dessarin Valley Chronicles"
-  description="Discover the people and places of the Dessarin Valley"
+  title="Characters - Dessarin Valley Chronicles"
+  description="Meet the adventurers, allies, and adversaries of the Dessarin Valley campaign"
 >
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <!-- Page Header -->
-    <div class="text-center mb-12">
-      <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-        🏘️ NPCs & Locations
-      </h1>
-      <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-        The Dessarin Valley is home to many interesting characters and
-        mysterious locations. Here you'll find the people you've met and places
-        you've discovered.
-      </p>
-    </div>
+  <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div class="mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Main Layout: Sidebar + Content -->
+      <div class="flex flex-col lg:flex-row gap-6">
+        <!-- Persistent Sidebar -->
+        <aside class="lg:w-80 flex-shrink-0">
+          <div id="character-filters-container" class="sticky top-8">
+            <!-- Character filters will be mounted here -->
+          </div>
+        </aside>
 
-    <!-- Coming Soon Message -->
-    <div class="text-center py-20">
-      <div class="text-8xl mb-6">🗺️</div>
-      <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-        Mapping the Valley
-      </h2>
-      <p
-        class="text-lg text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto"
-      >
-        As your adventures continue, this page will be populated with detailed
-        information about the NPCs you encounter and the locations you discover.
-        From the friendly merchants of Red Larch to the mysterious inhabitants
-        of ancient ruins.
-      </p>
-      <div
-        class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-6 max-w-lg mx-auto"
-      >
-        <h3 class="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-2">
-          What's Coming:
-        </h3>
-        <ul class="text-blue-700 dark:text-blue-300 text-left space-y-1">
-          <li>• Character profiles and relationships</li>
-          <li>• Location maps and descriptions</li>
-          <li>• Notable quotes and interactions</li>
-          <li>• Faction information and politics</li>
-        </ul>
-      </div>
-    </div>
+        <!-- Main Content -->
+        <main class="flex-1">
+          <div
+            id="character-grid"
+            class="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-6"
+          >
+            <!-- Character cards will be rendered here -->
+          </div>
 
-    <!-- Quick Reference -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-        <h3
-          class="text-2xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center"
-        >
-          👥 Notable NPCs
-        </h3>
-        <p class="text-gray-600 dark:text-gray-300 mb-4">
-          Key characters you've encountered in your adventures:
-        </p>
-        <ul class="space-y-2 text-gray-700 dark:text-gray-300">
-          <li>
-            • <strong>Kaylessa Irkell</strong> - Innkeeper of the Swinging Sword
-          </li>
-          <li>• <strong>Endrith Vallivoe</strong> - Merchant and shopkeeper</li>
-          <li>• <strong>Harburk Tuthmarillar</strong> - Town constable</li>
-          <li>• <strong>Imdarr Relvaunder</strong> - Retired adventurer</li>
-        </ul>
-      </div>
+          <!-- Loading state -->
+          <div id="loading-state" class="text-center py-12">
+            <div
+              class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"
+            >
+            </div>
+            <p class="text-gray-600 dark:text-gray-400">
+              Loading characters...
+            </p>
+          </div>
 
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-        <h3
-          class="text-2xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center"
-        >
-          🏰 Key Locations
-        </h3>
-        <p class="text-gray-600 dark:text-gray-300 mb-4">
-          Important places in your journey:
-        </p>
-        <ul class="space-y-2 text-gray-700 dark:text-gray-300">
-          <li>
-            • <strong>Red Larch</strong> - The starting town and safe haven
-          </li>
-          <li>
-            • <strong>Lance Rock</strong> - A mysterious hill with ancient secrets
-          </li>
-          <li>
-            • <strong>Sumber Hills</strong> - The wilderness surrounding Red Larch
-          </li>
-          <li>
-            • <strong>Swinging Sword Inn</strong> - Your home base and meeting place
-          </li>
-        </ul>
+          <!-- Empty state -->
+          <div id="empty-state" class="hidden text-center py-12">
+            <div class="text-6xl mb-4">🔍</div>
+            <h3
+              class="text-xl font-semibold text-gray-900 dark:text-white mb-2"
+            >
+              No characters found
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400">
+              Try adjusting your filters to see more characters.
+            </p>
+          </div>
+        </main>
       </div>
     </div>
   </div>
+
+  <!-- Character data and filters -->
+  <script define:vars={{ characterData }}>
+    // Store character data globally
+    window.characterData = characterData;
+
+    // Initialize when DOM is ready
+    document.addEventListener("DOMContentLoaded", function () {
+      // Character filtering and rendering state
+      let filteredCharacters = window.characterData || [];
+      let currentFilters = {
+        search: "",
+        type: "all",
+        status: "all",
+        location: "all",
+        tags: [],
+        sortBy: "name",
+        sortOrder: "asc",
+      };
+
+      // Helper function to apply filters
+      function applyFilters() {
+        let filtered = [...(window.characterData || [])];
+
+        // Apply search filter
+        if (currentFilters.search) {
+          const searchTerm = currentFilters.search.toLowerCase();
+          filtered = filtered.filter(
+            (char) =>
+              char.data.name.toLowerCase().includes(searchTerm) ||
+              char.data.description?.toLowerCase().includes(searchTerm) ||
+              char.data.background?.toLowerCase().includes(searchTerm) ||
+              char.data.race.toLowerCase().includes(searchTerm) ||
+              char.data.subrace?.toLowerCase().includes(searchTerm) ||
+              char.data.tags?.some((tag) =>
+                tag.toLowerCase().includes(searchTerm)
+              )
+          );
+        }
+
+        // Apply type filter
+        if (currentFilters.type !== "all") {
+          filtered = filtered.filter(
+            (char) => char.data.type === currentFilters.type
+          );
+        }
+
+        // Apply status filter
+        if (currentFilters.status !== "all") {
+          filtered = filtered.filter(
+            (char) => char.data.status === currentFilters.status
+          );
+        }
+
+        // Apply location filter
+        if (currentFilters.location !== "all") {
+          if (currentFilters.location === "red-larch") {
+            filtered = filtered.filter((char) =>
+              char.data.tags?.includes("red-larch")
+            );
+          } else if (currentFilters.location === "villain") {
+            filtered = filtered.filter(
+              (char) =>
+                char.data.tags?.includes("villain") ||
+                char.data.tags?.includes("antagonist")
+            );
+          }
+        }
+
+        // Apply sorting
+        filtered.sort((a, b) => {
+          let aValue, bValue;
+
+          switch (currentFilters.sortBy) {
+            case "name":
+              aValue = a.data.name.toLowerCase();
+              bValue = b.data.name.toLowerCase();
+              break;
+            case "level":
+              aValue =
+                a.data.classes?.[0]?.level || a.data.class?.[0]?.level || 0;
+              bValue =
+                b.data.classes?.[0]?.level || b.data.class?.[0]?.level || 0;
+              break;
+            case "recent":
+              aValue = new Date(a.data.lastUpdated || 0).getTime();
+              bValue = new Date(b.data.lastUpdated || 0).getTime();
+              break;
+            case "type":
+              aValue = a.data.type;
+              bValue = b.data.type;
+              break;
+            default:
+              aValue = a.data.name.toLowerCase();
+              bValue = b.data.name.toLowerCase();
+          }
+
+          if (currentFilters.sortOrder === "desc") {
+            return aValue < bValue ? 1 : -1;
+          }
+          return aValue > bValue ? 1 : -1;
+        });
+
+        filteredCharacters = filtered;
+        renderCharacterCards();
+      }
+
+      // Function to render character cards using HTML
+      function renderCharacterCards() {
+        const gridContainer = document.getElementById("character-grid");
+        const loadingState = document.getElementById("loading-state");
+        const emptyState = document.getElementById("empty-state");
+
+        if (!gridContainer) return;
+
+        // Hide loading state
+        if (loadingState) {
+          loadingState.style.display = "none";
+        }
+
+        if (filteredCharacters.length === 0) {
+          gridContainer.innerHTML = "";
+          if (emptyState) {
+            emptyState.classList.remove("hidden");
+          }
+          return;
+        }
+
+        if (emptyState) {
+          emptyState.classList.add("hidden");
+        }
+
+        // Render character cards as HTML
+        gridContainer.innerHTML = filteredCharacters
+          .map((character) => {
+            const styling = getCharacterCardStyling(character);
+            const cultIcon = getCultIcon(character);
+            const enclaveBanner = getEnclaveBanner(character);
+            const statusIcon = getStatusIcon(character.data.status);
+            const portraitPath = getPortraitPath(character);
+
+            return `
+            <div class="${styling.gradient} ${styling.border} border rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+              <!-- Header with Portrait -->
+              <div class="relative">
+                <!-- Portrait Section -->
+                <div class="flex items-center p-6 pb-4">
+                  <div class="flex-shrink-0 relative">
+                    <img
+                      src="${portraitPath}"
+                      alt="${character.data.name} portrait"
+                      class="w-20 h-20 rounded-full object-cover border-3 border-white dark:border-gray-600 shadow-lg"
+                      onerror="this.src='/src/assets/portraits/placeholder-portrait.png'"
+                    />
+                    
+                    ${
+                      cultIcon
+                        ? `
+                      <div class="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-white dark:bg-gray-700 p-1 shadow-md">
+                        <img
+                          src="${cultIcon}"
+                          alt="Cult affiliation"
+                          class="w-full h-full object-contain"
+                          title="${character.data.tags
+                            ?.find((tag) => tag.includes("cult"))
+                            ?.replace("-cult", "")
+                            .replace("-", " ")
+                            .toUpperCase()} Cult"
+                        />
+                      </div>
+                    `
+                        : ""
+                    }
+                    
+                    <!-- Status Icon -->
+                    <div class="absolute -top-1 -left-1 text-lg bg-white dark:bg-gray-700 rounded-full p-1 shadow-md">
+                      <span title="Status: ${character.data.status}">
+                        ${statusIcon}
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Character Basic Info -->
+                  <div class="ml-4 flex-1 min-w-0">
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-1">
+                      <a
+                        href="/characters/${character.id}"
+                        class="${styling.accent} hover:underline transition-colors"
+                      >
+                        ${character.data.name}
+                      </a>
+                    </h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                      ${character.data.subrace ? `${character.data.subrace} ${character.data.race}` : character.data.race}
+                    </p>
+                    ${
+                      (character.data.classes &&
+                        character.data.classes.length > 0) ||
+                      (character.data.class && character.data.class.length > 0)
+                        ? `
+                        <p class="text-sm text-gray-700 dark:text-gray-300">
+                          ${(character.data.classes?.[0] || character.data.class?.[0])?.name}
+                          ${character.data.classes?.[0]?.level || character.data.class?.[0]?.level ? `<span class="ml-1 font-medium text-gray-900 dark:text-white">Lv.${character.data.classes?.[0]?.level || character.data.class?.[0]?.level}</span>` : ""}
+                        </p>
+                      `
+                        : ""
+                    }
+                  </div>
+
+                  <!-- Character Stats -->
+                  ${
+                    character.data.hp || character.data.ac
+                      ? `
+                    <div class="text-right text-sm">
+                      <div class="text-gray-600 dark:text-gray-400">
+                        ${character.data.hp ? `HP: ${character.data.hp}` : ""}
+                        ${character.data.hp && character.data.ac ? " • " : ""}
+                        ${character.data.ac ? `AC: ${character.data.ac}` : ""}
+                      </div>
+                    </div>
+                  `
+                      : ""
+                  }
+                </div>
+
+                <!-- Enclave Banner -->
+                ${
+                  enclaveBanner
+                    ? `
+                  <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 z-10">
+                    <div class="relative">
+                      <img
+                        src="${enclaveBanner}"
+                        alt="Enclave affiliation"
+                        class="h-8 w-auto drop-shadow-lg"
+                        title="${character.data.enclave?.name || character.data.organization?.name || "Faction"} Affiliation"
+                      />
+                    </div>
+                  </div>
+                `
+                    : ""
+                }
+              </div>
+
+              <!-- Content Section -->
+              <div class="px-6 pb-6 pt-2">
+                <!-- Location -->
+                ${
+                  character.data.birthplace
+                    ? `
+                  <div class="text-xs text-gray-500 dark:text-gray-500 mb-2 flex items-center">
+                    <span>📍 ${character.data.birthplace}</span>
+                  </div>
+                `
+                    : ""
+                }
+
+                <!-- Background -->
+                ${
+                  character.data.background
+                    ? `
+                  <p class="text-sm text-gray-700 dark:text-gray-300 mb-2">
+                    <span class="font-medium">Background:</span> ${character.data.background}
+                  </p>
+                `
+                    : ""
+                }
+
+                <!-- Description -->
+                ${
+                  character.data.description
+                    ? `
+                  <p class="text-sm text-gray-700 dark:text-gray-300 line-clamp-3 mb-3">
+                    ${character.data.description}
+                  </p>
+                `
+                    : ""
+                }
+
+                <!-- Roles & Tags -->
+                <div class="space-y-2">
+                  ${
+                    character.data.roles && character.data.roles.length > 0
+                      ? `
+                    <div class="flex flex-wrap gap-1">
+                      ${character.data.roles
+                        .slice(0, 3)
+                        .map(
+                          (role) =>
+                            `<span class="text-xs ${styling.tagColor} px-2 py-1 rounded-full">${role.name}</span>`
+                        )
+                        .join("")}
+                      ${character.data.roles.length > 3 ? `<span class="text-xs text-gray-500 dark:text-gray-400">+${character.data.roles.length - 3} more</span>` : ""}
+                    </div>
+                  `
+                      : ""
+                  }
+
+                  ${
+                    character.data.tags && character.data.tags.length > 0
+                      ? `
+                    <div class="flex flex-wrap gap-1">
+                      ${character.data.tags
+                        .slice(0, 4)
+                        .map(
+                          (tag) =>
+                            `<span class="text-xs ${styling.tagColor} px-2 py-1 rounded">${tag}</span>`
+                        )
+                        .join("")}
+                      ${character.data.tags.length > 4 ? `<span class="text-xs text-gray-500 dark:text-gray-400">+${character.data.tags.length - 4} more</span>` : ""}
+                    </div>
+                  `
+                      : ""
+                  }
+                </div>
+              </div>
+            </div>
+          `;
+          })
+          .join("");
+      }
+
+      // Helper functions
+      function getCharacterCardStyling(character) {
+        // Use custom color if available
+        if (character.data.color) {
+          return {
+            border: "border-gray-200 dark:border-gray-700",
+            gradient: `bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900`,
+            accent: `text-gray-800 dark:text-gray-200`,
+            tagColor: `bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200`,
+            customColor: character.data.color,
+          };
+        }
+
+        // Fallback to type-based styling
+        switch (character.data.type) {
+          case "pc":
+            return {
+              border: "border-blue-200 dark:border-blue-800",
+              gradient:
+                "bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20",
+              accent: "text-blue-600 dark:text-blue-400",
+              tagColor:
+                "bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200",
+            };
+          case "npc":
+            if (
+              character.data.tags?.includes("villain") ||
+              character.data.tags?.includes("antagonist")
+            ) {
+              return {
+                border: "border-red-200 dark:border-red-800",
+                gradient:
+                  "bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20",
+                accent: "text-red-600 dark:text-red-400",
+                tagColor:
+                  "bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200",
+              };
+            } else if (character.data.tags?.includes("red-larch")) {
+              return {
+                border: "border-green-200 dark:border-green-800",
+                gradient:
+                  "bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20",
+                accent: "text-green-600 dark:text-green-400",
+                tagColor:
+                  "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200",
+              };
+            }
+            return {
+              border: "border-purple-200 dark:border-purple-800",
+              gradient:
+                "bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20",
+              accent: "text-purple-600 dark:text-purple-400",
+              tagColor:
+                "bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200",
+            };
+          case "sidekick":
+            return {
+              border: "border-orange-200 dark:border-orange-800",
+              gradient:
+                "bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20",
+              accent: "text-orange-600 dark:text-orange-400",
+              tagColor:
+                "bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200",
+            };
+          default:
+            return {
+              border: "border-gray-200 dark:border-gray-800",
+              gradient: "bg-white dark:bg-gray-800",
+              accent: "text-gray-600 dark:text-gray-400",
+              tagColor:
+                "bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200",
+            };
+        }
+      }
+
+      function getEnclaveBanner(character) {
+        // Check enclave field first
+        if (character.data.enclave) {
+          const enclaveName = character.data.enclave.name.toLowerCase();
+          switch (enclaveName) {
+            case "emerald enclave":
+              return "/src/assets/banners/emerald-enclave-banner.png";
+            case "harpers":
+              return "/src/assets/banners/harpers-banner.png";
+            case "lords' alliance":
+            case "lords alliance":
+              return "/src/assets/banners/lords-alliance-banner.png";
+            case "order of the gauntlet":
+              return "/src/assets/banners/order-of-the-gauntlet-banner.png";
+            case "zhentarim":
+              return "/src/assets/banners/zhentarim-banner.png";
+          }
+        }
+
+        // Check organization field as fallback
+        if (character.data.organization) {
+          const orgName = character.data.organization.name.toLowerCase();
+          switch (orgName) {
+            case "emerald enclave":
+              return "/src/assets/banners/emerald-enclave-banner.png";
+            case "harpers":
+              return "/src/assets/banners/harpers-banner.png";
+            case "lords' alliance":
+            case "lords alliance":
+              return "/src/assets/banners/lords-alliance-banner.png";
+            case "order of the gauntlet":
+              return "/src/assets/banners/order-of-the-gauntlet-banner.png";
+            case "zhentarim":
+              return "/src/assets/banners/zhentarim-banner.png";
+          }
+        }
+
+        // Check tags for enclave affiliation
+        if (character.data.tags) {
+          if (character.data.tags.includes("emerald-enclave")) {
+            return "/src/assets/banners/emerald-enclave-banner.png";
+          }
+          if (character.data.tags.includes("harpers")) {
+            return "/src/assets/banners/harpers-banner.png";
+          }
+          if (character.data.tags.includes("lords-alliance")) {
+            return "/src/assets/banners/lords-alliance-banner.png";
+          }
+          if (character.data.tags.includes("order-of-the-gauntlet")) {
+            return "/src/assets/banners/order-of-the-gauntlet-banner.png";
+          }
+          if (character.data.tags.includes("zhentarim")) {
+            return "/src/assets/banners/zhentarim-banner.png";
+          }
+        }
+
+        return null;
+      }
+
+      function getCultIcon(character) {
+        if (!character.data.tags) return null;
+
+        if (
+          character.data.tags.includes("fire-cult") ||
+          character.data.tags.includes("eternal-flame")
+        ) {
+          return "/src/assets/icons/eternal_flame.webp";
+        }
+        if (
+          character.data.tags.includes("water-cult") ||
+          character.data.tags.includes("crushing-wave")
+        ) {
+          return "/src/assets/icons/crushing_wave_icon.webp";
+        }
+        if (
+          character.data.tags.includes("air-cult") ||
+          character.data.tags.includes("howling-hatred")
+        ) {
+          return "/src/assets/icons/howling_hatred_icon.webp";
+        }
+        if (
+          character.data.tags.includes("earth-cult") ||
+          character.data.tags.includes("black-earth")
+        ) {
+          return "/src/assets/icons/black_earth_icon.webp";
+        }
+
+        return null;
+      }
+
+      function getStatusIcon(status) {
+        switch (status) {
+          case "alive":
+            return "💚";
+          case "dead":
+            return "💀";
+          case "missing":
+            return "❓";
+          case "retired":
+            return "🏠";
+          case "inactive":
+            return "💤";
+          default:
+            return "❔";
+        }
+      }
+
+      function getPortraitPath(character) {
+        if (character.data.portrait) {
+          return `/src/assets/portraits/${character.data.portrait}`;
+        }
+        return "/src/assets/portraits/placeholder-portrait.png";
+      }
+
+      // Create and mount filters component
+      function createFiltersHTML() {
+        const container = document.getElementById(
+          "character-filters-container"
+        );
+        if (!container) return;
+
+        container.innerHTML = `
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                🔍 Character Filters
+              </h3>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="mb-4">
+              <input
+                type="text"
+                id="search-input"
+                placeholder="Search characters by name..."
+                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg 
+                       bg-white dark:bg-gray-700 text-gray-900 dark:text-white 
+                       focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+
+            <!-- Quick Filters -->
+            <div class="space-y-3 mb-4">
+              <select
+                id="type-filter"
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded 
+                       bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
+              >
+                <option value="all">All Types</option>
+                <option value="pc">Player Characters</option>
+                <option value="npc">NPCs</option>
+                <option value="sidekick">Sidekicks</option>
+              </select>
+
+              <select
+                id="status-filter"
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded 
+                       bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
+              >
+                <option value="all">All Statuses</option>
+                <option value="alive">Alive</option>
+                <option value="dead">Dead</option>
+                <option value="missing">Missing</option>
+                <option value="retired">Retired</option>
+                <option value="inactive">Inactive</option>
+              </select>
+
+              <select
+                id="location-filter"
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded 
+                       bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
+              >
+                <option value="all">All Locations</option>
+                <option value="red-larch">Red Larch</option>
+                <option value="villain">Villains</option>
+              </select>
+
+              <div class="flex gap-2">
+                <select
+                  id="sort-filter"
+                  class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded 
+                         bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
+                >
+                  <option value="name">Sort by Name</option>
+                  <option value="level">Sort by Level</option>
+                  <option value="recent">Recently Updated</option>
+                  <option value="type">Sort by Type</option>
+                </select>
+                <button
+                  id="sort-order-btn"
+                  class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded 
+                         bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm
+                         hover:bg-gray-50 dark:hover:bg-gray-600"
+                >
+                  ↑
+                </button>
+              </div>
+            </div>
+
+            <!-- Clear Filters -->
+            <button
+              id="clear-filters-btn"
+              class="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+            >
+              Clear Filters
+            </button>
+
+            <!-- Results Count -->
+            <div id="filter-results" class="mt-4 text-sm text-gray-600 dark:text-gray-400">
+              Showing ${filteredCharacters.length} of ${window.characterData?.length || 0} characters
+            </div>
+          </div>
+        `;
+
+        // Add event listeners
+        const searchInput = document.getElementById("search-input");
+        const typeFilter = document.getElementById("type-filter");
+        const statusFilter = document.getElementById("status-filter");
+        const locationFilter = document.getElementById("location-filter");
+        const sortFilter = document.getElementById("sort-filter");
+        const sortOrderBtn = document.getElementById("sort-order-btn");
+        const clearBtn = document.getElementById("clear-filters-btn");
+
+        function updateFilters() {
+          currentFilters = {
+            search: searchInput.value,
+            type: typeFilter.value,
+            status: statusFilter.value,
+            location: locationFilter.value,
+            tags: [],
+            sortBy: sortFilter.value,
+            sortOrder: currentFilters.sortOrder,
+          };
+          applyFilters();
+
+          // Update results count
+          const resultsElement = document.getElementById("filter-results");
+          if (resultsElement) {
+            resultsElement.textContent = `Showing ${filteredCharacters.length} of ${window.characterData?.length || 0} characters`;
+          }
+        }
+
+        searchInput?.addEventListener("input", updateFilters);
+        typeFilter?.addEventListener("change", updateFilters);
+        statusFilter?.addEventListener("change", updateFilters);
+        locationFilter?.addEventListener("change", updateFilters);
+        sortFilter?.addEventListener("change", updateFilters);
+
+        sortOrderBtn?.addEventListener("click", () => {
+          currentFilters.sortOrder =
+            currentFilters.sortOrder === "asc" ? "desc" : "asc";
+          sortOrderBtn.textContent =
+            currentFilters.sortOrder === "asc" ? "↑" : "↓";
+          updateFilters();
+        });
+
+        clearBtn?.addEventListener("click", () => {
+          searchInput.value = "";
+          typeFilter.value = "all";
+          statusFilter.value = "all";
+          locationFilter.value = "all";
+          sortFilter.value = "name";
+          currentFilters.sortOrder = "asc";
+          sortOrderBtn.textContent = "↑";
+          updateFilters();
+        });
+      }
+
+      // Initialize the page
+      createFiltersHTML();
+      applyFilters();
+    });
+  </script>
 </BaseLayout>

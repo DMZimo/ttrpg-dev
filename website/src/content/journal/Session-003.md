@@ -2,7 +2,7 @@
 # Session Metadata
 session_number: 3
 session_title: Session 3 - Bears and Bows
-cover_image: "../../assets/session-3-cover.jpg"
+cover_image: "@/assets/sessions/session-3-cover.jpg"
 previous_session: "Session-2"
 next_session: "Session-4"
 is_public: true

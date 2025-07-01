@@ -1,6 +1,9 @@
 import React from "react";
 import { transformMonthData } from "../../utils/gameCalendarUtils";
-import type { CalendarDayData, CalendarGridProps } from "./types";
+import type {
+  CalendarDayData,
+  CalendarGridProps,
+} from "../../types/calendarTypes";
 
 export default function CalendarGrid({
   calendarDays,
