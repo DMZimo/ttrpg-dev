@@ -28,7 +28,8 @@ languages:
   - name: "Dwarvish"
 
 # Character Roles
-roles: ["merchant", "shopkeeper", "harper contact", "information broker"]
+# roles: ["merchant", "shopkeeper", "harper contact", "information broker"]
+roles: null
 
 # Character Stats
 ability_scores:

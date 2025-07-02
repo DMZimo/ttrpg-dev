@@ -1586,17 +1586,20 @@ html {
   border-width: 8px;
 }
 
-.maplibre-popup.map-location-popup.maplibre-popup-anchor-top .maplibre-popup-tip {
+.maplibre-popup.map-location-popup.maplibre-popup-anchor-top
+  .maplibre-popup-tip {
   border-bottom-color: var(--surface-elevated);
   border-top-color: transparent;
 }
 
-.maplibre-popup.map-location-popup.maplibre-popup-anchor-left .maplibre-popup-tip {
+.maplibre-popup.map-location-popup.maplibre-popup-anchor-left
+  .maplibre-popup-tip {
   border-right-color: var(--surface-elevated);
   border-top-color: transparent;
 }
 
-.maplibre-popup.map-location-popup.maplibre-popup-anchor-right .maplibre-popup-tip {
+.maplibre-popup.map-location-popup.maplibre-popup-anchor-right
+  .maplibre-popup-tip {
   border-left-color: var(--surface-elevated);
   border-top-color: transparent;
 }

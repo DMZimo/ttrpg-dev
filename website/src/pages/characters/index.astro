@@ -91,6 +91,7 @@ const characterData = charactersToShow.map((char) => ({
 <BaseLayout
   title="Characters - Dessarin Valley Chronicles"
   description="Meet the adventurers, allies, and adversaries of the Dessarin Valley campaign"
+  class="flex flex-col pt-16 h-screen"
 >
   <CharactersPage characters={characterData as any} client:load />
 </BaseLayout>

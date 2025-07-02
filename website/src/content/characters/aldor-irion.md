@@ -28,7 +28,7 @@ languages:
   - name: "Celestial"
 
 # Character Roles
-roles: ["tank", "healer", "damage", "melee", "ranged", "support"]
+roles: ["tank", "melee", "support", "ranged", "caster"]
 
 # Character Stats
 ability_scores:

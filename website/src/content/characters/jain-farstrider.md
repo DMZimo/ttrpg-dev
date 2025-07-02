@@ -7,7 +7,7 @@ last_updated_iso: 2025-06-28T00:00:00
 tags: []
 
 # Character Details
-type: "pc" # pc, npc, or sidekick
+type: "sidekick" # pc, npc, or sidekick
 status: "alive" # alive, dead, missing, unknown
 active: true
 portrait: "jain-farstrider-portrait.png"
@@ -28,7 +28,7 @@ languages:
   - name: "Dwarvish"
 
 # Character Roles
-roles: ["spellcaster", "healer", "ranged", "dps", "support"]
+roles: ["caster", "support", "ranged"]
 
 # Character Stats
 ability_scores:

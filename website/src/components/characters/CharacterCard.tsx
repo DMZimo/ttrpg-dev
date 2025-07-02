@@ -246,16 +246,19 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
       const enclaveName = data.enclave.name.toLowerCase();
       switch (enclaveName) {
         case "emerald enclave":
-          return "/src/assets/banners/emerald-enclave-banner.png";
+          return "/src/assets/banners/emerald-enclave-banner.svg";
         case "harpers":
-          return "/src/assets/banners/harpers-banner.png";
+          return "/src/assets/banners/harpers-banner.svg";
         case "lords' alliance":
         case "lords alliance":
-          return "/src/assets/banners/lords-alliance-banner.png";
+        case "lord's alliance": // Added this variant to catch common typo
+          return "/src/assets/banners/lords-alliance-banner.svg";
         case "order of the gauntlet":
-          return "/src/assets/banners/order-of-the-gauntlet-banner.png";
+          return "/src/assets/banners/order-of-the-gauntlet-banner.svg";
         case "zhentarim":
-          return "/src/assets/banners/zhentarim-banner.png";
+          return "/src/assets/banners/zhentarim-banner.svg";
+        default:
+          return "/src/assets/banners/unknown-banner.svg";
       }
     }
 
@@ -264,39 +267,43 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
       const orgName = data.organization.name.toLowerCase();
       switch (orgName) {
         case "emerald enclave":
-          return "/src/assets/banners/emerald-enclave-banner.png";
+          return "/src/assets/banners/emerald-enclave-banner.svg";
         case "harpers":
-          return "/src/assets/banners/harpers-banner.png";
+          return "/src/assets/banners/harpers-banner.svg";
         case "lords' alliance":
         case "lords alliance":
-          return "/src/assets/banners/lords-alliance-banner.png";
+        case "lord's alliance": // Added this variant to catch common typo
+          return "/src/assets/banners/lords-alliance-banner.svg";
         case "order of the gauntlet":
-          return "/src/assets/banners/order-of-the-gauntlet-banner.png";
+          return "/src/assets/banners/order-of-the-gauntlet-banner.svg";
         case "zhentarim":
-          return "/src/assets/banners/zhentarim-banner.png";
+          return "/src/assets/banners/zhentarim-banner.svg";
+        default:
+          return "/src/assets/banners/unknown-banner.svg";
       }
     }
 
     // Check tags for enclave affiliation
     if (data.tags) {
       if (data.tags.includes("emerald-enclave")) {
-        return "/src/assets/banners/emerald-enclave-banner.png";
+        return "/src/assets/banners/emerald-enclave-banner.svg";
       }
       if (data.tags.includes("harpers")) {
-        return "/src/assets/banners/harpers-banner.png";
+        return "/src/assets/banners/harpers-banner.svg";
       }
       if (data.tags.includes("lords-alliance")) {
-        return "/src/assets/banners/lords-alliance-banner.png";
+        return "/src/assets/banners/lords-alliance-banner.svg";
       }
       if (data.tags.includes("order-of-the-gauntlet")) {
-        return "/src/assets/banners/order-of-the-gauntlet-banner.png";
+        return "/src/assets/banners/order-of-the-gauntlet-banner.svg";
       }
       if (data.tags.includes("zhentarim")) {
-        return "/src/assets/banners/zhentarim-banner.png";
+        return "/src/assets/banners/zhentarim-banner.svg";
       }
     }
 
-    return null;
+    // Return the unknown banner as fallback when no enclave is specified
+    return "/src/assets/banners/unknown-banner.svg";
   };
 
   // Get cult icon for cult members
@@ -307,13 +314,13 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
 
     switch (cultName) {
       case "Fire":
-        return "/src/assets/icons/cult-icon-fire.webp";
+        return "/src/assets/icons/cult-icon-fire.svg";
       case "Water":
-        return "/src/assets/icons/cult-icon-water.webp";
+        return "/src/assets/icons/cult-icon-water.svg";
       case "Air":
-        return "/src/assets/icons/cult-icon-air.webp";
+        return "/src/assets/icons/cult-icon-air.svg";
       case "Earth":
-        return "/src/assets/icons/cult-icon-earth.webp";
+        return "/src/assets/icons/cult-icon-earth.svg";
       case "Eye":
         // No icon for Eye cult yet, could add one later
         return null;
@@ -330,6 +337,12 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
       return `/src/assets/icons/class-icon-fighter.svg`; // Use fighter as fallback
     }
     return `/src/assets/icons/class-icon-${classNameLower}.svg`;
+  };
+
+  // Get role icon for character roles
+  const getRoleIcon = (roleName: string) => {
+    const roleNameLower = roleName.toLowerCase();
+    return `/src/assets/icons/role-icon-${roleNameLower}.png`;
   };
 
   // Get current level for display (cumulative)
@@ -376,8 +389,9 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
 
   return (
     <div
-      className={`
-      ${styling.gradient} ${styling.border} border rounded-lg shadow-lg
+      className={`h-52 mb-18 mr-2 rounded-tl-4xl rounded-br-[2.5rem]
+      ${styling.gradient} ${styling.border} border rounded-lg 
+      ${data.type === "pc" ? "shadow-lg" : "shadow"}
       hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1
       relative flex flex-col
     `}
@@ -386,14 +400,42 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
           ? {
               borderColor: styling.customColor + "40",
               background: `linear-gradient(135deg, ${styling.customColor}10, ${styling.customColor}20)`,
+              ...(data.type === "pc" && {
+                boxShadow: `0 10px 15px -3px ${styling.customColor}40, 0 4px 6px -2px ${styling.customColor}20`,
+              }),
+            }
+          : data.type === "pc"
+          ? {
+              boxShadow:
+                "0 10px 15px -3px rgb(217 119 6 / 0.25), 0 4px 6px -2px rgb(217 119 6 / 0.125)",
             }
           : {}
       }
     >
-      <div className="flex gap-4 p-4 relative">
+      {/*Roles */}
+      <div className="absolute top-2 right-2 flex items-center gap-2">
+        {data.roles && data.roles.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {data.roles.map((role, index) => (
+              <div key={index} className="flex items-center group relative">
+                <img
+                  src={getRoleIcon(role)}
+                  alt={role}
+                  className="w-6 h-6 object-contain"
+                  title={role.charAt(0).toUpperCase() + role.slice(1)}
+                />
+                <span className="absolute bottom-full mb-1 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                  {role.charAt(0).toUpperCase() + role.slice(1)}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+      <div className="flex gap-4 pt-4 px-2 relative">
         {/* Avatar positioned at top left */}
         <div
-          className={`absolute -top-2 -left-2 rounded-full z-10 ${
+          className={`absolute -top-4 -left-6 rounded-full z-10 ${
             data.type === "pc" ? "shadow-lg" : ""
           }`}
           style={
@@ -410,27 +452,58 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
           }
         >
           <div className="relative">
+            <img
+              src="/src/assets/ui/portrait-background.png"
+              alt="portrait background"
+              className={"absolute inset-0 w-full h-full rounded-full"}
+            />
+
             <div className="relative w-32 h-32">
               <img
                 src={getPortraitPath()}
                 alt={`${data.name} portrait`}
-                className="w-full h-full rounded-full object-cover"
+                className={`w-full h-full rounded-full object-cover object-top ${
+                  data.type === "pc"
+                    ? "ring-2 ring-amber-500 ring-opacity-70"
+                    : ""
+                }`}
+                style={
+                  data.type === "pc" && data.color
+                    ? ({
+                        "--tw-ring-color": `${data.color}B3`, // Using B3 for 70% opacity
+                      } as React.CSSProperties)
+                    : {}
+                }
                 onError={(e) => {
                   (e.target as HTMLImageElement).src =
                     "/src/assets/portraits/placeholder-portrait.png";
                 }}
               />
-              {/* Portrait Frame Overlay */}
+              {/* Death Overlay - Only show if character is dead */}
+              {data.status === "dead" && (
+                <img
+                  src="/src/assets/ui/portrait-overlay-death.png"
+                  alt="Death overlay"
+                  className="absolute inset-0 w-full h-full object-cover rounded-full pointer-events-none"
+                />
+              )}
+              {/* Portrait Frame Overlay based on character type */}
               <img
-                src="/src/assets/ui/portrait-frame.webp"
-                alt="Portrait frame"
+                src={
+                  data.type === "pc"
+                    ? "/src/assets/ui/portrait-frame-pc.png"
+                    : data.type === "npc"
+                    ? "/src/assets/ui/portrait-frame-npc.png"
+                    : "/src/assets/ui/portrait-frame-sidekick.png"
+                }
+                alt={`${data.type.toUpperCase()} portrait frame`}
                 className="absolute inset-0 w-full h-full object-cover pointer-events-none"
               />
             </div>
 
             {/* Level Badge - Top Left */}
             {getCurrentLevel() && (
-              <div className="absolute -top-1 -left-3.5 flex items-center">
+              <div className="absolute -top-1 -right-2 flex items-center">
                 <div className="relative">
                   <img
                     src="/src/assets/ui/level-badge.webp"
@@ -446,7 +519,7 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
 
             {/* Status Icon - Only show if not alive - Top Right */}
             {data.status !== "alive" && (
-              <div className="absolute -top-1 -right-1 text-lg bg-surface-elevated rounded-full p-1 shadow-md">
+              <div className="absolute -top-1 -left-1 text-lg bg-surface-elevated rounded-full p-1 shadow-md">
                 <span title={`Status: ${data.status}`}>{getStatusIcon()}</span>
               </div>
             )}
@@ -473,7 +546,7 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
                   <img
                     src={getCultIcon()!}
                     alt="Cult affiliation"
-                    className="absolute inset-0 w-full h-full object-contain py-3.5 px-1"
+                    className="absolute inset-0 w-full h-full object-contain py-3 px-0.5"
                     title={
                       data.cult?.name
                         ? `${data.cult.name} Cult`
@@ -507,18 +580,25 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
 
           {/* Enclave Banner - Below Avatar */}
           {enclaveBanner && (
-            <div className="absolute top-[110px] left-6 -z-10">
+            <div className="absolute top-[70px] left-0 -z-10">
               <img
                 src={enclaveBanner}
                 alt="Enclave banner"
-                className="w-20 h-auto object-contain opacity-90 drop-shadow-sm"
+                className={`w-32 h-auto object-contain ${
+                  data.type === "pc" ? "drop-shadow-md" : "drop-shadow-sm"
+                }`}
+                style={
+                  data.type === "pc" && data.color
+                    ? { filter: `drop-shadow(0 4px 3px ${data.color}30)` }
+                    : {}
+                }
               />
             </div>
           )}
         </div>
         {/* Main Character Info Section */}
         <div className="flex-1">
-          <div className="relative">
+          <div className="relative flex min-h-32">
             <div className="pl-28 pr-1">
               {/* Character Basic Info */}
               <div className="min-w-0">
@@ -569,110 +649,50 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
                     ))}
                   </div>
                 )}
-                <div>
-                  {/* Location */}
-                  {data.birthplace && (
-                    <div className="text-xs text-muted mb-2 flex items-center">
-                      <span>Originally from {data.birthplace}</span>
-                    </div>
-                  )}
-                </div>
               </div>
             </div>
+            {/* Ability Scores Section - Left of Card */}
+            {data.ability_scores && (
+              <div className="absolute grid grid-cols-3 gap-1.5 right-0 top-6">
+                {Object.entries(data.ability_scores)
+                  .filter(([, score]) => score !== undefined)
+                  .map(([ability, score]) => {
+                    const modifier = getAbilityModifier(score!);
+                    const abilityShort = ability.toUpperCase();
+
+                    return (
+                      <div
+                        key={ability}
+                        className="w-12 h-10 flex flex-col items-center bg-surface-elevated shadow-amber-100 shadow-sm rounded-md"
+                      >
+                        {/* Ability Name */}
+                        <div className="text-xs text-tertiary mb-0.5">
+                          {abilityShort}
+                          {formatModifier(modifier)}
+                        </div>
+
+                        {/* Score */}
+                        <div className="text-xs font-bold text-primary leading-none">
+                          {score}
+                        </div>
+                      </div>
+                    );
+                  })}
+              </div>
+            )}
           </div>
 
           {/* Content Section */}
           <div className="pl-28 pr-1">
             {/* Description */}
             {data.description && variant !== "compact" && (
-              <p className="text-sm text-secondary line-clamp-2 mb-3">
+              <p className="text-sm text-secondary line-clamp-2">
                 {data.description}
               </p>
             )}
-
-            {/* Roles & Tags */}
-            <div className="space-y-2">
-              {data.roles && data.roles.length > 0 && (
-                <div className="flex flex-wrap gap-1">
-                  {data.roles.slice(0, 3).map((role, index) => (
-                    <span
-                      key={index}
-                      className={`text-xs px-2 py-1 rounded-full ${styling.tagColor}`}
-                    >
-                      {role}
-                    </span>
-                  ))}
-                  {data.roles.length > 3 && (
-                    <span className="text-xs text-muted">
-                      +{data.roles.length - 3} more
-                    </span>
-                  )}
-                </div>
-              )}
-
-              {data.tags && data.tags.length > 0 && (
-                <div className="flex flex-wrap gap-1">
-                  {data.tags.slice(0, 4).map((tag, index) => (
-                    <span
-                      key={index}
-                      className="text-xs px-2 py-1 rounded bg-surface-tertiary text-secondary"
-                    >
-                      #{tag}
-                    </span>
-                  ))}
-                  {data.tags.length > 4 && (
-                    <span className="text-xs text-muted">
-                      +{data.tags.length - 4} more
-                    </span>
-                  )}
-                </div>
-              )}
-            </div>
           </div>
         </div>
       </div>
-
-      {/* Ability Scores Section - Bottom of Card */}
-      {data.ability_scores && (
-        <div className="bg-surface-tertiary border-primary">
-          <div className="grid grid-cols-6">
-            {Object.entries(data.ability_scores)
-              .filter(([, score]) => score !== undefined)
-              .map(([ability, score]) => {
-                const modifier = getAbilityModifier(score!);
-                const abilityShort = ability.toUpperCase();
-
-                return (
-                  <div
-                    key={ability}
-                    className="flex flex-col items-center bg-surface-elevated border border-primary"
-                  >
-                    {/* Ability Name */}
-                    <div className="text-xs font-semibold text-tertiary mb-1">
-                      {abilityShort}
-                    </div>
-
-                    {/* Score */}
-                    <div className="text-lg font-bold text-primary leading-none">
-                      {score}
-                    </div>
-
-                    {/* Modifier */}
-                    <div
-                      className={`text-xs font-bold px-1.5 py-0.5 rounded mt-1 ${
-                        modifier >= 0
-                          ? "bg-success text-primary"
-                          : "bg-hero-red text-primary"
-                      }`}
-                    >
-                      {formatModifier(modifier)}
-                    </div>
-                  </div>
-                );
-              })}
-          </div>
-        </div>
-      )}
     </div>
   );
 };

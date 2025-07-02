@@ -19,12 +19,23 @@ interface MapContainerProps {
   selectedLocationId: string | null;
   onLocationSelect: (location: AtlasLocation) => void;
   onMapChange: (mapId: string) => void;
-  onLocationClick?: (location: AtlasLocation, relatedMap?: AtlasMap | null) => void;
+  onLocationClick?: (
+    location: AtlasLocation,
+    relatedMap?: AtlasMap | null
+  ) => void;
 }
 
 export const MapContainer = forwardRef<MapViewerRef, MapContainerProps>(
   (
-    { map, maps, locations, selectedLocationId, onLocationSelect, onMapChange, onLocationClick },
+    {
+      map,
+      maps,
+      locations,
+      selectedLocationId,
+      onLocationSelect,
+      onMapChange,
+      onLocationClick,
+    },
     ref
   ) => {
     const mapContainer = useRef<HTMLDivElement>(null);
@@ -83,11 +94,16 @@ export const MapContainer = forwardRef<MapViewerRef, MapContainerProps>(
           const location = locations.find((l) => l.id === locationId);
           if (location) {
             // Check if there's a related map for this location
-            const relatedMap = maps.find((m) => 
-              m.id === `${location.id}-map` || 
-              m.name.toLowerCase().includes(location.name.toLowerCase()) ||
-              (location.category === "continent" && m.type === "continent" && m.name.includes(location.name)) ||
-              (location.category === "region" && m.type === "region" && m.name.includes(location.name))
+            const relatedMap = maps.find(
+              (m) =>
+                m.id === `${location.id}-map` ||
+                m.name.toLowerCase().includes(location.name.toLowerCase()) ||
+                (location.category === "continent" &&
+                  m.type === "continent" &&
+                  m.name.includes(location.name)) ||
+                (location.category === "region" &&
+                  m.type === "region" &&
+                  m.name.includes(location.name))
             );
 
             // Call the location click handler if provided, otherwise use the regular select
@@ -114,15 +130,39 @@ export const MapContainer = forwardRef<MapViewerRef, MapContainerProps>(
             const popupContent = `
               <div class="map-tooltip">
                 <div class="flex items-center gap-2 mb-2">
-                  <span class="text-lg">${getTypeIcon(location.type, location.category)}</span>
+                  <span class="text-lg">${getTypeIcon(
+                    location.type,
+                    location.category
+                  )}</span>
                   <div>
                     <h3 class="font-bold text-primary">${location.name}</h3>
-                    <p class="text-xs text-secondary">${location.type} • ${location.category}</p>
+                    <p class="text-xs text-secondary">${location.type} • ${
+              location.category
+            }</p>
                   </div>
                 </div>
-                ${location.description ? `<p class="text-sm text-secondary mb-2">${location.description.slice(0, 100)}${location.description.length > 100 ? '...' : ''}</p>` : ''}
-                ${location.data.demographics?.population ? `<p class="text-xs text-muted">👥 Population: ${location.data.demographics.population.toLocaleString()}</p>` : ''}
-                ${location.data.governance?.ruler || location.data.political?.ruler ? `<p class="text-xs text-muted">👑 Ruler: ${location.data.governance?.ruler || location.data.political?.ruler}</p>` : ''}
+                ${
+                  location.description
+                    ? `<p class="text-sm text-secondary mb-2">${location.description.slice(
+                        0,
+                        100
+                      )}${location.description.length > 100 ? "..." : ""}</p>`
+                    : ""
+                }
+                ${
+                  location.data.demographics?.population
+                    ? `<p class="text-xs text-muted">👥 Population: ${location.data.demographics.population.toLocaleString()}</p>`
+                    : ""
+                }
+                ${
+                  location.data.governance?.ruler ||
+                  location.data.political?.ruler
+                    ? `<p class="text-xs text-muted">👑 Ruler: ${
+                        location.data.governance?.ruler ||
+                        location.data.political?.ruler
+                      }</p>`
+                    : ""
+                }
                 <p class="text-xs text-accent-500 mt-2">Click for more information</p>
               </div>
             `;
@@ -132,7 +172,7 @@ export const MapContainer = forwardRef<MapViewerRef, MapContainerProps>(
               closeButton: false,
               closeOnClick: false,
               offset: 15,
-              className: 'map-location-popup'
+              className: "map-location-popup",
             })
               .setLngLat([location.coordinates.lng, location.coordinates.lat])
               .setHTML(popupContent)
@@ -280,7 +320,8 @@ export const MapContainer = forwardRef<MapViewerRef, MapContainerProps>(
             "interpolate",
             ["linear"],
             ["zoom"],
-            0, [
+            0,
+            [
               "case",
               ["==", ["get", "id"], selectedLocationId || ""],
               8,
@@ -295,7 +336,8 @@ export const MapContainer = forwardRef<MapViewerRef, MapContainerProps>(
                 4,
               ],
             ],
-            10, [
+            10,
+            [
               "case",
               ["==", ["get", "id"], selectedLocationId || ""],
               20,
@@ -310,7 +352,8 @@ export const MapContainer = forwardRef<MapViewerRef, MapContainerProps>(
                 10,
               ],
             ],
-            20, [
+            20,
+            [
               "case",
               ["==", ["get", "id"], selectedLocationId || ""],
               28,
@@ -324,7 +367,7 @@ export const MapContainer = forwardRef<MapViewerRef, MapContainerProps>(
                 16,
                 14,
               ],
-            ]
+            ],
           ],
           "circle-color": [
             "case",
@@ -368,7 +411,8 @@ export const MapContainer = forwardRef<MapViewerRef, MapContainerProps>(
             "interpolate",
             ["linear"],
             ["zoom"],
-            0, [
+            0,
+            [
               "case",
               ["==", ["get", "id"], selectedLocationId || ""],
               2,
@@ -376,7 +420,8 @@ export const MapContainer = forwardRef<MapViewerRef, MapContainerProps>(
               2,
               1,
             ],
-            10, [
+            10,
+            [
               "case",
               ["==", ["get", "id"], selectedLocationId || ""],
               4,
@@ -384,14 +429,15 @@ export const MapContainer = forwardRef<MapViewerRef, MapContainerProps>(
               3,
               2,
             ],
-            20, [
+            20,
+            [
               "case",
               ["==", ["get", "id"], selectedLocationId || ""],
               6,
               ["==", ["get", "id"], hoveredLocationId || ""],
               4,
               3,
-            ]
+            ],
           ],
           "circle-opacity": [
             "case",
@@ -426,7 +472,8 @@ export const MapContainer = forwardRef<MapViewerRef, MapContainerProps>(
             "interpolate",
             ["linear"],
             ["zoom"],
-            0, [
+            0,
+            [
               "case",
               ["==", ["get", "id"], selectedLocationId || ""],
               10,
@@ -434,7 +481,8 @@ export const MapContainer = forwardRef<MapViewerRef, MapContainerProps>(
               9,
               8,
             ],
-            10, [
+            10,
+            [
               "case",
               ["==", ["get", "id"], selectedLocationId || ""],
               16,
@@ -442,14 +490,15 @@ export const MapContainer = forwardRef<MapViewerRef, MapContainerProps>(
               14,
               12,
             ],
-            20, [
+            20,
+            [
               "case",
               ["==", ["get", "id"], selectedLocationId || ""],
               20,
               ["==", ["get", "id"], hoveredLocationId || ""],
               18,
               16,
-            ]
+            ],
           ],
           "text-allow-overlap": false,
           "text-ignore-placement": false,
@@ -468,16 +517,21 @@ export const MapContainer = forwardRef<MapViewerRef, MapContainerProps>(
             "interpolate",
             ["linear"],
             ["zoom"],
-            0, 1,
-            10, 2,
-            20, 3
+            0,
+            1,
+            10,
+            2,
+            20,
+            3,
           ],
           "text-opacity": [
             "interpolate",
             ["linear"],
             ["zoom"],
-            0, 0,
-            3, [
+            0,
+            0,
+            3,
+            [
               "case",
               ["==", ["get", "id"], selectedLocationId || ""],
               1,
@@ -487,7 +541,8 @@ export const MapContainer = forwardRef<MapViewerRef, MapContainerProps>(
               1,
               0,
             ],
-            5, [
+            5,
+            [
               "case",
               ["==", ["get", "id"], selectedLocationId || ""],
               1,
@@ -499,14 +554,15 @@ export const MapContainer = forwardRef<MapViewerRef, MapContainerProps>(
               0.8,
               0,
             ],
-            8, [
+            8,
+            [
               "case",
               ["==", ["get", "id"], selectedLocationId || ""],
               1,
               ["==", ["get", "id"], hoveredLocationId || ""],
               1,
               0.9,
-            ]
+            ],
           ],
         },
       });

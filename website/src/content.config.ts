@@ -216,7 +216,10 @@ const characters = defineCollection({
       .optional(),
 
     // Character Roles
-    roles: z.array(z.string()).optional(),
+    roles: z
+      .array(z.enum(["tank", "support", "ranged", "melee", "caster"]))
+      .nullable()
+      .optional(),
 
     // Character Stats
     ability_scores: z
@@ -295,6 +298,7 @@ const characters = defineCollection({
         name: z.string(),
         disposition: z.number(),
       })
+      .nullable()
       .optional(),
     affiliations: z
       .array(

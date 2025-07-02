@@ -35,3 +35,61 @@ export const CAMPAIGN_SETTINGS = {
   // Whether to highlight special days
   highlightSpecialDays: true,
 };
+
+// Character Constants - extracted from content.config.ts schema
+export const CHARACTER_TYPES = ["pc", "sidekick", "npc"] as const;
+
+export const CHARACTER_STATUSES = [
+  "alive",
+  "injured",
+  "dead",
+  "missing",
+  "retired",
+  "absent",
+  "traveling",
+  "captured",
+  "incapacitated",
+  "inactive",
+] as const;
+
+export const CHARACTER_ROLES = [
+  "tank",
+  "support",
+  "ranged",
+  "melee",
+  "caster",
+] as const;
+
+export const CHARACTER_CLASSES = [
+  "artificer",
+  "barbarian",
+  "bard",
+  "cleric",
+  "druid",
+  "fighter",
+  "monk",
+  "paladin",
+  "ranger",
+  "rogue",
+  "sorcerer",
+  "warlock",
+  "wizard",
+] as const;
+
+export const CHARACTER_LOCATIONS = ["red-larch", "villain", "other"] as const;
+
+export const CHARACTER_CULTS = [
+  "Water",
+  "Earth",
+  "Air",
+  "Fire",
+  "Eye",
+] as const;
+
+export const CHARACTER_SORT_OPTIONS = [
+  { value: "name", label: "Name" },
+  { value: "level", label: "Level" },
+  { value: "recent", label: "Recent" },
+  { value: "type", label: "Type" },
+  { value: "race", label: "Race" },
+] as const;

@@ -27,7 +27,8 @@ export default function AtlasViewer({
   const [sidebarTab, setSidebarTab] = useState<"maps" | "locations" | "search">(
     "locations"
   );
-  const [readingPanelLocation, setReadingPanelLocation] = useState<AtlasLocation | null>(null);
+  const [readingPanelLocation, setReadingPanelLocation] =
+    useState<AtlasLocation | null>(null);
   const [readingPanelMap, setReadingPanelMap] = useState<AtlasMap | null>(null);
   const [isReadingPanelVisible, setIsReadingPanelVisible] = useState(false);
 
@@ -77,7 +78,10 @@ export default function AtlasViewer({
   };
 
   // Handle location click from map (opens reading panel)
-  const handleLocationClick = (location: AtlasLocation, relatedMap?: AtlasMap | null) => {
+  const handleLocationClick = (
+    location: AtlasLocation,
+    relatedMap?: AtlasMap | null
+  ) => {
     setReadingPanelLocation(location);
     setReadingPanelMap(relatedMap || null);
     setIsReadingPanelVisible(true);

@@ -27,7 +27,7 @@ export function ReadingPanel({
     }
 
     setLoading(true);
-    
+
     // Generate content from location data
     const generatedContent = generateContentFromLocation(location);
     setContent(generatedContent);
@@ -39,8 +39,12 @@ export function ReadingPanel({
     let content = `# ${location.name}\n\n`;
 
     // Add basic info with icons
-    content += `📍 **Type:** ${location.type.charAt(0).toUpperCase() + location.type.slice(1)}\n`;
-    content += `🗺️ **Category:** ${location.category.charAt(0).toUpperCase() + location.category.slice(1)}\n\n`;
+    content += `📍 **Type:** ${
+      location.type.charAt(0).toUpperCase() + location.type.slice(1)
+    }\n`;
+    content += `🗺️ **Category:** ${
+      location.category.charAt(0).toUpperCase() + location.category.slice(1)
+    }\n\n`;
 
     // Add description if available
     if (location.description) {
@@ -50,21 +54,25 @@ export function ReadingPanel({
     // Add demographic information
     if (data.demographics?.population || data.political?.population) {
       content += `## 👥 Demographics\n\n`;
-      
-      const population = data.demographics?.population || data.political?.population;
+
+      const population =
+        data.demographics?.population || data.political?.population;
       if (population) {
         content += `**Population:** ${population.toLocaleString()}\n`;
       }
-      
+
       if (data.demographics?.size_category) {
         content += `**Size Category:** ${data.demographics.size_category}\n`;
       }
-      
+
       if (data.demographics?.dominant_race) {
         content += `**Dominant Race:** ${data.demographics.dominant_race}\n`;
       }
-      
-      if (data.demographics?.racial_mix && data.demographics.racial_mix.length > 0) {
+
+      if (
+        data.demographics?.racial_mix &&
+        data.demographics.racial_mix.length > 0
+      ) {
         content += `**Racial Composition:**\n`;
         data.demographics.racial_mix.forEach((mix: any) => {
           content += `- ${mix.race}: ${mix.percentage}%\n`;
@@ -76,27 +84,33 @@ export function ReadingPanel({
     // Add governance information
     if (data.governance?.government_type || data.political?.government_type) {
       content += `## 👑 Governance\n\n`;
-      
-      const govType = data.governance?.government_type || data.political?.government_type;
+
+      const govType =
+        data.governance?.government_type || data.political?.government_type;
       if (govType) {
         content += `**Government Type:** ${govType}\n`;
       }
-      
+
       const ruler = data.governance?.ruler || data.political?.ruler;
       if (ruler) {
         content += `**Ruler:** ${ruler}\n`;
       }
-      
+
       if (data.governance?.laws) {
         content += `**Laws:** ${data.governance.laws}\n`;
       }
-      
+
       if (data.governance?.guards) {
         content += `**Guards:** ${data.governance.guards}\n`;
       }
-      
-      if (data.political?.allegiances && data.political.allegiances.length > 0) {
-        content += `**Allegiances:** ${data.political.allegiances.join(", ")}\n`;
+
+      if (
+        data.political?.allegiances &&
+        data.political.allegiances.length > 0
+      ) {
+        content += `**Allegiances:** ${data.political.allegiances.join(
+          ", "
+        )}\n`;
       }
       content += `\n`;
     }
@@ -104,29 +118,39 @@ export function ReadingPanel({
     // Add geographic information
     if (data.geographic) {
       content += `## 🏔️ Geography\n\n`;
-      
+
       if (data.geographic.area_sq_miles) {
         content += `**Area:** ${data.geographic.area_sq_miles.toLocaleString()} square miles\n`;
       }
-      
+
       if (data.geographic.terrain_type) {
         content += `**Terrain:** ${data.geographic.terrain_type}\n`;
       }
-      
+
       if (data.geographic.climate) {
         content += `**Climate:** ${data.geographic.climate}\n`;
       }
-      
+
       if (data.geographic.elevation_feet) {
         content += `**Elevation:** ${data.geographic.elevation_feet.toLocaleString()} feet\n`;
       }
-      
-      if (data.geographic.major_rivers && data.geographic.major_rivers.length > 0) {
-        content += `**Major Rivers:** ${data.geographic.major_rivers.join(", ")}\n`;
+
+      if (
+        data.geographic.major_rivers &&
+        data.geographic.major_rivers.length > 0
+      ) {
+        content += `**Major Rivers:** ${data.geographic.major_rivers.join(
+          ", "
+        )}\n`;
       }
-      
-      if (data.geographic.major_roads && data.geographic.major_roads.length > 0) {
-        content += `**Major Roads:** ${data.geographic.major_roads.join(", ")}\n`;
+
+      if (
+        data.geographic.major_roads &&
+        data.geographic.major_roads.length > 0
+      ) {
+        content += `**Major Roads:** ${data.geographic.major_roads.join(
+          ", "
+        )}\n`;
       }
       content += `\n`;
     }
@@ -134,19 +158,21 @@ export function ReadingPanel({
     // Add economy information
     if (data.economy) {
       content += `## 💰 Economy\n\n`;
-      
+
       if (data.economy.wealth_level) {
         content += `**Wealth Level:** ${data.economy.wealth_level}\n`;
       }
-      
+
       if (data.economy.primary_trade && data.economy.primary_trade.length > 0) {
-        content += `**Primary Trade:** ${data.economy.primary_trade.join(", ")}\n`;
+        content += `**Primary Trade:** ${data.economy.primary_trade.join(
+          ", "
+        )}\n`;
       }
-      
+
       if (data.economy.currency) {
         content += `**Currency:** ${data.economy.currency}\n`;
       }
-      
+
       if (data.economy.taxation) {
         content += `**Taxation:** ${data.economy.taxation}\n`;
       }
@@ -154,23 +180,30 @@ export function ReadingPanel({
     }
 
     // Add hierarchy information
-    if (data.parent_continent || data.parent_region || data.sub_regions || data.major_settlements) {
+    if (
+      data.parent_continent ||
+      data.parent_region ||
+      data.sub_regions ||
+      data.major_settlements
+    ) {
       content += `## 🏛️ Hierarchy\n\n`;
-      
+
       if (data.parent_continent) {
         content += `**Continent:** ${data.parent_continent}\n`;
       }
-      
+
       if (data.parent_region) {
         content += `**Region:** ${data.parent_region}\n`;
       }
-      
+
       if (data.sub_regions && data.sub_regions.length > 0) {
         content += `**Sub-regions:** ${data.sub_regions.join(", ")}\n`;
       }
-      
+
       if (data.major_settlements && data.major_settlements.length > 0) {
-        content += `**Major Settlements:** ${data.major_settlements.join(", ")}\n`;
+        content += `**Major Settlements:** ${data.major_settlements.join(
+          ", "
+        )}\n`;
       }
       content += `\n`;
     }
@@ -188,7 +221,7 @@ export function ReadingPanel({
     if (data.notable_locations && data.notable_locations.length > 0) {
       content += `## 🏰 Notable Locations\n\n`;
       data.notable_locations.forEach((location: any) => {
-        if (typeof location === 'string') {
+        if (typeof location === "string") {
           content += `- ${location}\n`;
         } else if (location.name) {
           content += `- **${location.name}**`;
@@ -223,15 +256,30 @@ export function ReadingPanel({
   const formatMarkdown = (markdown: string): string => {
     // Simple markdown to HTML conversion for basic formatting
     return markdown
-      .replace(/^# (.*$)/gim, '<h1 class="text-2xl font-bold text-primary mb-4">$1</h1>')
-      .replace(/^## (.*$)/gim, '<h2 class="text-xl font-semibold text-primary mb-3 mt-6">$1</h2>')
-      .replace(/^### (.*$)/gim, '<h3 class="text-lg font-medium text-primary mb-2 mt-4">$1</h3>')
-      .replace(/^\*\*(.*?)\*\*/gm, '<strong class="font-semibold text-primary">$1</strong>')
+      .replace(
+        /^# (.*$)/gim,
+        '<h1 class="text-2xl font-bold text-primary mb-4">$1</h1>'
+      )
+      .replace(
+        /^## (.*$)/gim,
+        '<h2 class="text-xl font-semibold text-primary mb-3 mt-6">$1</h2>'
+      )
+      .replace(
+        /^### (.*$)/gim,
+        '<h3 class="text-lg font-medium text-primary mb-2 mt-4">$1</h3>'
+      )
+      .replace(
+        /^\*\*(.*?)\*\*/gm,
+        '<strong class="font-semibold text-primary">$1</strong>'
+      )
       .replace(/^\*(.*?)\*/gm, '<em class="italic">$1</em>')
       .replace(/^- (.*$)/gim, '<li class="ml-4 mb-1">• $1</li>')
-      .replace(/`(.*?)`/g, '<code class="bg-surface-elevated px-1 py-0.5 text-sm border border-primary">$1</code>')
+      .replace(
+        /`(.*?)`/g,
+        '<code class="bg-surface-elevated px-1 py-0.5 text-sm border border-primary">$1</code>'
+      )
       .replace(/\n\n/g, '</p><p class="mb-4">')
-      .replace(/\n/g, '<br />');
+      .replace(/\n/g, "<br />");
   };
 
   if (!isVisible) return null;
