@@ -11,13 +11,18 @@ import type { AtlasMap, AtlasLocation, MapViewerRef } from "@/types";
 
 interface MapViewerProps {
   map: AtlasMap;
+  maps: AtlasMap[];
   locations: AtlasLocation[];
   selectedLocationId: string | null;
   onLocationSelect: (location: AtlasLocation) => void;
+  onMapChange: (mapId: string) => void;
 }
 
 export const MapViewer = forwardRef<MapViewerRef, MapViewerProps>(
-  ({ map, locations, selectedLocationId, onLocationSelect }, ref) => {
+  (
+    { map, maps, locations, selectedLocationId, onLocationSelect, onMapChange },
+    ref
+  ) => {
     const [scale, setScale] = useState(1);
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const [isDragging, setIsDragging] = useState(false);
@@ -28,6 +33,13 @@ export const MapViewer = forwardRef<MapViewerRef, MapViewerProps>(
 
     const containerRef = useRef<HTMLDivElement>(null);
     const imageRef = useRef<HTMLImageElement>(null);
+    const dragStartRef = useRef({ x: 0, y: 0 });
+    const positionRef = useRef({ x: 0, y: 0 });
+
+    // Keep position ref in sync with state
+    useEffect(() => {
+      positionRef.current = position;
+    }, [position]);
 
     // Expose methods via ref
     useImperativeHandle(ref, () => ({
@@ -116,21 +128,21 @@ export const MapViewer = forwardRef<MapViewerRef, MapViewerProps>(
       };
     }, [scale, position.x, position.y]);
 
-    // Handle drag with simplified logic
-    const handleMouseDown = useCallback(
-      (e: React.MouseEvent) => {
-        const target = e.target as HTMLElement;
-        if (target.closest(".location-marker")) return;
+    // Handle drag with immediate response using refs
+    const handleMouseDown = useCallback((e: React.MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.closest(".location-marker")) return;
 
-        e.preventDefault();
-        setIsDragging(true);
-        setDragStart({
-          x: e.clientX - position.x,
-          y: e.clientY - position.y,
-        });
-      },
-      [position.x, position.y]
-    );
+      e.preventDefault();
+      setIsDragging(true);
+
+      // Store drag start in ref for immediate access
+      dragStartRef.current = {
+        x: e.clientX - positionRef.current.x,
+        y: e.clientY - positionRef.current.y,
+      };
+      setDragStart(dragStartRef.current);
+    }, []);
 
     // Handle location click
     const handleLocationClick = useCallback(
@@ -172,13 +184,17 @@ export const MapViewer = forwardRef<MapViewerRef, MapViewerProps>(
       }, {} as Record<string, { x: number; y: number }>);
     }, [locations, getLocationPosition]);
 
-    // Global mouse event listeners with direct state updates
+    // Optimized mouse event listeners using refs to avoid re-renders
     useEffect(() => {
       if (!isDragging) return;
 
       const handleMouseMove = (e: MouseEvent) => {
-        const newX = e.clientX - dragStart.x;
-        const newY = e.clientY - dragStart.y;
+        // Use ref for immediate access without state dependencies
+        const newX = e.clientX - dragStartRef.current.x;
+        const newY = e.clientY - dragStartRef.current.y;
+
+        // Update both ref and state immediately
+        positionRef.current = { x: newX, y: newY };
         setPosition({ x: newX, y: newY });
       };
 
@@ -186,14 +202,21 @@ export const MapViewer = forwardRef<MapViewerRef, MapViewerProps>(
         setIsDragging(false);
       };
 
-      document.addEventListener("mousemove", handleMouseMove);
-      document.addEventListener("mouseup", handleMouseUp);
+      // Add event listeners with proper options for better performance
+      document.addEventListener("mousemove", handleMouseMove, {
+        passive: true,
+      });
+      document.addEventListener("mouseup", handleMouseUp, { passive: true });
+
+      // Prevent text selection during drag
+      document.body.style.userSelect = "none";
 
       return () => {
         document.removeEventListener("mousemove", handleMouseMove);
         document.removeEventListener("mouseup", handleMouseUp);
+        document.body.style.userSelect = "";
       };
-    }, [isDragging, dragStart.x, dragStart.y]);
+    }, [isDragging]); // Only depend on isDragging
 
     // Reset position when map changes
     useEffect(() => {
@@ -211,6 +234,7 @@ export const MapViewer = forwardRef<MapViewerRef, MapViewerProps>(
         style={{
           contain: "layout style paint",
           touchAction: "none",
+          transform: "translateZ(0)", // Force hardware acceleration
         }}
       >
         {/* Map Image */}
@@ -220,6 +244,8 @@ export const MapViewer = forwardRef<MapViewerRef, MapViewerProps>(
             transform: `translate3d(${position.x}px, ${position.y}px, 0) scale(${scale})`,
             transformOrigin: "0 0",
             willChange: isDragging ? "transform" : "auto",
+            backfaceVisibility: "hidden",
+            perspective: 1000,
           }}
         >
           <img
@@ -233,6 +259,7 @@ export const MapViewer = forwardRef<MapViewerRef, MapViewerProps>(
               height: "auto",
               maxHeight: "none",
               maxWidth: "none",
+              imageRendering: isDragging ? "auto" : "crisp-edges",
             }}
           />
 
@@ -311,6 +338,53 @@ export const MapViewer = forwardRef<MapViewerRef, MapViewerProps>(
         {/* Map Scale Indicator */}
         <div className="map-scale absolute bottom-4 left-4 bg-surface-elevated border border-primary px-3 py-2 text-sm text-secondary pointer-events-none">
           Scale: {map.scale} • Zoom: {Math.round(scale * 100)}%
+        </div>
+
+        {/* Map Controls - Top Right */}
+        <div className="map-controls absolute top-4 right-4 flex flex-col gap-2 z-40">
+          {/* Zoom Controls */}
+          <div className="flex flex-col gap-1 bg-surface-elevated border border-primary overflow-hidden">
+            <button
+              onClick={() => setScale((prev) => Math.min(5, prev * 1.5))}
+              className="btn-icon w-10 h-10 text-sm hover:bg-surface-secondary"
+              title="Zoom In"
+            >
+              +
+            </button>
+            <button
+              onClick={() => setScale((prev) => Math.max(0.5, prev / 1.5))}
+              className="btn-icon w-10 h-10 text-sm hover:bg-surface-secondary"
+              title="Zoom Out"
+            >
+              −
+            </button>
+          </div>
+
+          {/* Reset View Button */}
+          <button
+            onClick={() => {
+              setScale(1);
+              setPosition({ x: 0, y: 0 });
+            }}
+            className="btn-secondary px-3 py-2 text-sm bg-surface-elevated border border-primary hover:bg-surface-secondary"
+            title="Reset view"
+          >
+            🎯
+          </button>
+
+          {/* Breadcrumb Navigation */}
+          {map.parentMap && (
+            <button
+              onClick={() => {
+                const parentMap = maps.find((m) => m.id === map.parentMap);
+                if (parentMap) onMapChange(parentMap.id);
+              }}
+              className="btn-secondary px-3 py-2 text-sm bg-surface-elevated border border-primary hover:bg-surface-secondary max-w-[120px] truncate"
+              title={`Go to ${maps.find((m) => m.id === map.parentMap)?.name}`}
+            >
+              ↗️ {maps.find((m) => m.id === map.parentMap)?.name}
+            </button>
+          )}
         </div>
 
         {/* Map Legend */}

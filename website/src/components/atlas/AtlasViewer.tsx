@@ -23,7 +23,6 @@ export default function AtlasViewer({
   const [selectedLocationId, setSelectedLocationId] = useState<string | null>(
     null
   );
-  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [sidebarTab, setSidebarTab] = useState<"maps" | "locations" | "search">(
     "locations"
   );
@@ -85,32 +84,13 @@ export default function AtlasViewer({
     types: [...new Set(locations.map((l) => l.type))],
   };
 
-  // Responsive sidebar control
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth < 1024) {
-        setSidebarOpen(false);
-      } else {
-        setSidebarOpen(true);
-      }
-    };
-
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
   return (
     <div
-      className="atlas-viewer w-full flex relative bg-surface sharp-corners overflow-hidden"
+      className="atlas-viewer w-full pt-18 flex relative bg-surface sharp-corners overflow-hidden"
       style={{ height: "calc(100vh - 56px)" }}
     >
       {/* Sidebar */}
-      <div
-        className={`atlas-sidebar ${
-          sidebarOpen ? "w-80" : "w-0"
-        } transition-all duration-300 overflow-hidden bg-surface-secondary border-r border-primary flex flex-col lg:relative absolute inset-y-0 left-0 z-20`}
-      >
+      <div className="atlas-sidebar w-80 bg-surface-secondary border-r border-primary flex flex-col">
         {/* Sidebar Header */}
         <div className="sidebar-header p-4 pt-20 border-b border-primary bg-surface-elevated">
           {/* Tab Navigation */}
@@ -192,92 +172,19 @@ export default function AtlasViewer({
 
       {/* Main Map Area */}
       <div className="atlas-main flex-1 flex flex-col relative">
-        {/* Map Controls */}
-        <div className="map-controls p-4 bg-surface-secondary border-b border-primary flex items-center justify-between">
-          {/* Sidebar Toggle */}
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="btn-icon w-10 h-10 lg:hidden"
-            aria-label="Toggle sidebar"
-          >
-            {sidebarOpen ? "✕" : "☰"}
-          </button>
-
-          {/* Current Map Info */}
-          <div className="flex items-center gap-4">
-            <div>
-              <h2 className="text-xl font-bold text-primary">
-                {currentMap.name}
-              </h2>
-              <p className="text-sm text-secondary">{currentMap.description}</p>
-            </div>
-          </div>
-
-          {/* Map Controls */}
-          <div className="flex items-center gap-2">
-            {/* Zoom Controls */}
-            <div className="flex items-center gap-1 border border-primary overflow-hidden">
-              <button
-                onClick={() => mapViewerRef.current?.zoomIn()}
-                className="btn-icon w-8 h-8 text-sm"
-                title="Zoom In"
-              >
-                +
-              </button>
-              <button
-                onClick={() => mapViewerRef.current?.zoomOut()}
-                className="btn-icon w-8 h-8 text-sm"
-                title="Zoom Out"
-              >
-                −
-              </button>
-            </div>
-
-            <button
-              onClick={() => mapViewerRef.current?.resetView()}
-              className="btn-secondary px-3 py-2 text-sm"
-              title="Reset view"
-            >
-              🎯 Reset View
-            </button>
-
-            {/* Breadcrumb Navigation */}
-            {currentMap.parentMap && (
-              <button
-                onClick={() => {
-                  const parentMap = maps.find(
-                    (m) => m.id === currentMap.parentMap
-                  );
-                  if (parentMap) handleMapChange(parentMap.id);
-                }}
-                className="btn-secondary px-3 py-2 text-sm"
-                title="Go to parent map"
-              >
-                ↗️ {maps.find((m) => m.id === currentMap.parentMap)?.name}
-              </button>
-            )}
-          </div>
-        </div>
-
         {/* Map Viewer */}
         <div className="map-container flex-1 relative overflow-hidden">
           <MapViewer
             ref={mapViewerRef}
             map={currentMap}
+            maps={maps}
             locations={filteredLocations}
             selectedLocationId={selectedLocationId}
             onLocationSelect={handleLocationSelect}
+            onMapChange={handleMapChange}
           />
         </div>
       </div>
-
-      {/* Mobile Overlay */}
-      {sidebarOpen && (
-        <div
-          className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-10"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
     </div>
   );
 }
