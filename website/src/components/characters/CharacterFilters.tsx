@@ -9,7 +9,18 @@ interface CharacterFiltersProps {
 export interface CharacterFilters {
   search: string;
   type: "all" | "pc" | "npc" | "sidekick";
-  status: "all" | "alive" | "dead" | "missing" | "retired" | "inactive";
+  status:
+    | "all"
+    | "alive"
+    | "injured"
+    | "dead"
+    | "missing"
+    | "retired"
+    | "absent"
+    | "traveling"
+    | "captured"
+    | "incapacitated"
+    | "inactive";
   location: "all" | "red-larch" | "villain" | "other";
   tags: string[];
   sortBy: "name" | "level" | "recent" | "type";
@@ -136,9 +147,14 @@ const CharacterFilters: React.FC<CharacterFiltersProps> = ({
               >
                 <option value="all">All Statuses</option>
                 <option value="alive">Alive</option>
+                <option value="injured">Injured</option>
                 <option value="dead">Dead</option>
                 <option value="missing">Missing</option>
                 <option value="retired">Retired</option>
+                <option value="absent">Absent</option>
+                <option value="traveling">Traveling</option>
+                <option value="captured">Captured</option>
+                <option value="incapacitated">Incapacitated</option>
                 <option value="inactive">Inactive</option>
               </select>
             </div>

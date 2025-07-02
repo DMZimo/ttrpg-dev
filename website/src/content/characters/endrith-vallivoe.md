@@ -8,7 +8,7 @@ tags: [npc, human, merchant, shopkeeper, harper, red-larch, commoner, tethyrian]
 
 # Character Details
 type: "npc" # pc, npc, or sidekick
-status: "alive" # alive, dead, missing, unknown
+status: "dead" # alive, dead, missing, unknown
 active: true
 portrait: "endrith-vallivoe-portrait.png"
 token: "placeholder-portrait.png"
@@ -76,6 +76,9 @@ affiliations:
     disposition: 60
   - name: "Caravan Trade Networks"
     disposition: 50
+cult:
+  name: "Earth"
+  disposition: 20
 allies: ["Harper Agents", "Red Larch Citizens", "Traveling Merchants"]
 enemies: ["Elemental Cults", "Bandits"]
 

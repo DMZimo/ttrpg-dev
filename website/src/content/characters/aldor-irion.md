@@ -4,7 +4,7 @@ owner: "Wouter"
 is_public: true
 publish_date_iso: 2025-06-28T00:00:00
 last_updated_iso: 2025-06-28T00:00:00
-tags: []
+tags: [pc, aasimar, paladin, noble, conquest, waterdeep, tethyrian]
 
 # Character Details
 type: "pc" # pc, npc, or sidekick
@@ -20,7 +20,7 @@ race: "Aasimar"
 subrace: "Scourge"
 background: "Noble"
 birthplace: "Waterdeep"
-description: ""
+description: "A noble Aasimar Paladin, Aldor Irion is a scion of the once-great House Irion, now seeking to restore his family's honor through conquest and leadership. With a commanding presence and a heart of fire, he rides into the unknown to carve out a new destiny for his lineage."
 birthdate: 1471-01-20
 size: "Medium"
 languages:
@@ -28,7 +28,7 @@ languages:
   - name: "Celestial"
 
 # Character Roles
-roles: ["tank", "healer", "melee dps", "support"]
+roles: ["tank", "healer", "damage", "melee", "ranged", "support"]
 
 # Character Stats
 ability_scores:
@@ -50,6 +50,9 @@ classes:
   - name: "Paladin"
     level: 2
     subclass: "Oath of Conquest"
+  - name: "Rogue"
+    level: 2
+    subclass: "Mastermind"
 hp: 22
 ac: 18
 
@@ -78,12 +81,13 @@ organization:
   disposition: 50
 enclave:
   name: "Lord's Alliance"
-  disposition: 50 # Fixed typo: "dispostion" -> "disposition"
+  disposition: 50
 affiliations:
   - name: "Waterdeep Noble Houses"
     disposition: 50
   - name: "Waterdeep North Ward"
     disposition: 50
+cult: null
 allies: ["Daijo", "Finn Quickfoot", "Jain Farstrider", "House Irion Retainers"]
 enemies: []
 

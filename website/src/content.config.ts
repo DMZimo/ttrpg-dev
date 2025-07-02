@@ -305,6 +305,13 @@ const characters = defineCollection({
       )
       .nullable()
       .optional(),
+    cult: z
+      .object({
+        name: z.enum(["Water", "Earth", "Air", "Fire", "Eye"]),
+        disposition: z.number(),
+      })
+      .nullable()
+      .optional(),
     allies: z.array(z.string()).nullable().optional(),
     enemies: z.array(z.string()).nullable().optional(),
 

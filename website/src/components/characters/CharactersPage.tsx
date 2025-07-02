@@ -7,44 +7,60 @@ import CharacterFilters, {
 interface Character {
   id: string;
   data: {
-    name: string;
-    race: string;
-    subrace?: string;
-    background?: string;
+    // Character Metadata
+    owner: string;
+    is_public: boolean;
+    publish_date_iso?: Date;
+    last_updated_iso?: Date;
+    tags?: string[];
+
+    // Character Details
+    type: "pc" | "sidekick" | "npc";
+    status:
+      | "alive"
+      | "injured"
+      | "dead"
+      | "missing"
+      | "retired"
+      | "absent"
+      | "traveling"
+      | "captured"
+      | "incapacitated"
+      | "inactive";
+    active: boolean;
     portrait?: string;
     token?: string;
-    class?: Array<{
-      name: string;
-      level: number;
-      subclass?: string;
-    }>;
-    classes?: Array<{
-      name: string;
-      level: number;
-      subclass?: string;
-    }>;
-    type: "pc" | "npc" | "sidekick";
-    description?: string;
-    status: string;
-    active?: boolean;
-    hp?: number;
-    ac?: number;
-    roles?: Array<{
-      name: string;
-    }>;
-    tags?: string[];
-    birthplace?: string;
-    lastUpdated?: Date | string;
     color?: string;
-    enclave?: {
+
+    // Character Attributes
+    name: string;
+    race: string;
+    subrace: string;
+    background?: string;
+    birthplace?: string;
+    description?: string;
+    birthdate?: Date;
+    size?: string;
+    languages?: Array<{
       name: string;
-      disposition: number;
-    };
-    organization?: {
-      name: string;
-      disposition: number;
-    };
+    }>;
+
+    // Character Roles
+    roles?: string[];
+
+    // Character Stats
     ability_scores?: {
+      str: number;
+      dex: number;
+      con: number;
+      int: number;
+      wis: number;
+      cha: number;
+    };
+
+    // Derived stats
+    proficiency_bonus?: number;
+    saving_throws?: {
       str?: number;
       dex?: number;
       con?: number;
@@ -52,6 +68,67 @@ interface Character {
       wis?: number;
       cha?: number;
     };
+
+    // Classes and levels
+    classes?: Array<{
+      name: string;
+      level: number;
+      subclass?: string | null;
+    }>;
+    hp?: number;
+    ac?: number;
+
+    // Skills
+    skills?: Array<{
+      name: string;
+      modifier: number;
+    }>;
+    other_skills?: Array<{
+      name: string;
+    }>;
+
+    // Spellcasting
+    spellcasting?: {
+      ability: string;
+      spell_attack_bonus: number;
+      spell_save_dc: number;
+    } | null;
+
+    // Character Relationships
+    organization?: {
+      name: string;
+      disposition: number;
+    };
+    enclave?: {
+      name: string;
+      disposition: number;
+    };
+    affiliations?: Array<{
+      name: string;
+      disposition: number;
+    }> | null;
+    cult?: {
+      name: "Water" | "Earth" | "Air" | "Fire" | "Eye";
+      disposition: number;
+    } | null;
+    allies?: string[] | null;
+    enemies?: string[] | null;
+
+    // Character motivations and traits
+    personality_traits?: string[] | null;
+    ideals?: string[] | null;
+    bonds?: string[] | null;
+    flaws?: string[] | null;
+
+    // Legacy fields (keeping for backward compatibility)
+    publishDate?: Date;
+    lastUpdated?: Date;
+    isPublic: boolean;
+    class: Array<{
+      name: string;
+      level: number;
+      subclass?: string;
+    }>;
   };
 }
 

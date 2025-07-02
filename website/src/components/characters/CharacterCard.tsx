@@ -3,44 +3,60 @@ import React from "react";
 interface Character {
   id: string;
   data: {
-    name: string;
-    race: string;
-    subrace?: string;
-    background?: string;
+    // Character Metadata
+    owner: string;
+    is_public: boolean;
+    publish_date_iso?: Date;
+    last_updated_iso?: Date;
+    tags?: string[];
+
+    // Character Details
+    type: "pc" | "sidekick" | "npc";
+    status:
+      | "alive"
+      | "injured"
+      | "dead"
+      | "missing"
+      | "retired"
+      | "absent"
+      | "traveling"
+      | "captured"
+      | "incapacitated"
+      | "inactive";
+    active: boolean;
     portrait?: string;
     token?: string;
-    class?: Array<{
-      name: string;
-      level: number;
-      subclass?: string;
-    }>;
-    classes?: Array<{
-      name: string;
-      level: number;
-      subclass?: string;
-    }>;
-    type: "pc" | "npc" | "sidekick";
-    description?: string;
-    status: string;
-    active?: boolean;
-    hp?: number;
-    ac?: number;
-    roles?: Array<{
-      name: string;
-    }>;
-    tags?: string[];
-    birthplace?: string;
-    lastUpdated?: Date | string;
     color?: string;
-    enclave?: {
+
+    // Character Attributes
+    name: string;
+    race: string;
+    subrace: string;
+    background?: string;
+    birthplace?: string;
+    description?: string;
+    birthdate?: Date;
+    size?: string;
+    languages?: Array<{
       name: string;
-      disposition: number;
-    };
-    organization?: {
-      name: string;
-      disposition: number;
-    };
+    }>;
+
+    // Character Roles
+    roles?: string[];
+
+    // Character Stats
     ability_scores?: {
+      str: number;
+      dex: number;
+      con: number;
+      int: number;
+      wis: number;
+      cha: number;
+    };
+
+    // Derived stats
+    proficiency_bonus?: number;
+    saving_throws?: {
       str?: number;
       dex?: number;
       con?: number;
@@ -48,6 +64,67 @@ interface Character {
       wis?: number;
       cha?: number;
     };
+
+    // Classes and levels
+    classes?: Array<{
+      name: string;
+      level: number;
+      subclass?: string | null;
+    }>;
+    hp?: number;
+    ac?: number;
+
+    // Skills
+    skills?: Array<{
+      name: string;
+      modifier: number;
+    }>;
+    other_skills?: Array<{
+      name: string;
+    }>;
+
+    // Spellcasting
+    spellcasting?: {
+      ability: string;
+      spell_attack_bonus: number;
+      spell_save_dc: number;
+    } | null;
+
+    // Character Relationships
+    organization?: {
+      name: string;
+      disposition: number;
+    };
+    enclave?: {
+      name: string;
+      disposition: number;
+    };
+    affiliations?: Array<{
+      name: string;
+      disposition: number;
+    }> | null;
+    cult?: {
+      name: "Water" | "Earth" | "Air" | "Fire" | "Eye";
+      disposition: number;
+    } | null;
+    allies?: string[] | null;
+    enemies?: string[] | null;
+
+    // Character motivations and traits
+    personality_traits?: string[] | null;
+    ideals?: string[] | null;
+    bonds?: string[] | null;
+    flaws?: string[] | null;
+
+    // Legacy fields (keeping for backward compatibility)
+    publishDate?: Date;
+    lastUpdated?: Date;
+    isPublic: boolean;
+    class: Array<{
+      name: string;
+      level: number;
+      subclass?: string;
+    }>;
   };
 }
 
@@ -68,12 +145,10 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
     if (data.color) {
       // For custom colors, we'll use a neutral base and rely on CSS custom properties or inline styles
       return {
-        border: "border-gray-200 dark:border-gray-700",
-        gradient:
-          "bg-gradient-to-br from-gray-50/80 to-gray-100/80 dark:from-gray-800/80 dark:to-gray-900/80",
-        accent: "text-gray-800 dark:text-gray-200",
-        tagColor:
-          "bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200",
+        border: "border-primary",
+        gradient: "bg-surface-secondary",
+        accent: "text-primary",
+        tagColor: "bg-surface-tertiary text-secondary",
         customColor: data.color,
       };
     }
@@ -82,12 +157,10 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
     switch (data.type) {
       case "pc":
         return {
-          border: "border-blue-200 dark:border-blue-800",
-          gradient:
-            "bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20",
-          accent: "text-blue-600 dark:text-blue-400",
-          tagColor:
-            "bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200",
+          border: "border-primary",
+          gradient: "bg-surface-secondary",
+          accent: "text-primary",
+          tagColor: "bg-surface-tertiary text-secondary",
         };
       case "npc":
         if (
@@ -95,38 +168,31 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
           data.tags?.includes("antagonist")
         ) {
           return {
-            border: "border-red-200 dark:border-red-800",
-            gradient:
-              "bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20",
-            accent: "text-red-600 dark:text-red-400",
-            tagColor:
-              "bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200",
+            border: "border-primary",
+            gradient: "bg-surface-secondary",
+            accent: "text-primary",
+            tagColor: "bg-surface-tertiary text-secondary",
           };
         } else if (data.tags?.includes("red-larch")) {
           return {
-            border: "border-green-200 dark:border-green-800",
-            gradient:
-              "bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20",
-            accent: "text-green-600 dark:text-green-400",
-            tagColor:
-              "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200",
+            border: "border-primary",
+            gradient: "bg-surface-secondary",
+            accent: "text-primary",
+            tagColor: "bg-surface-tertiary text-secondary",
           };
         }
         return {
-          border: "border-purple-200 dark:border-purple-800",
-          gradient:
-            "bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20",
-          accent: "text-purple-600 dark:text-purple-400",
-          tagColor:
-            "bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200",
+          border: "border-primary",
+          gradient: "bg-surface-secondary",
+          accent: "text-primary",
+          tagColor: "bg-surface-tertiary text-secondary",
         };
       default:
         return {
-          border: "border-gray-200 dark:border-gray-800",
-          gradient: "bg-white dark:bg-gray-800",
-          accent: "text-gray-600 dark:text-gray-400",
-          tagColor:
-            "bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200",
+          border: "border-primary",
+          gradient: "bg-surface",
+          accent: "text-tertiary",
+          tagColor: "bg-surface-tertiary text-secondary",
         };
     }
   };
@@ -235,40 +301,65 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
 
   // Get cult icon for cult members
   const getCultIcon = () => {
-    if (!data.tags) return null;
+    if (!data.cult?.name) return null;
 
-    if (
-      data.tags.includes("fire-cult") ||
-      data.tags.includes("eternal-flame")
-    ) {
-      return "/src/assets/icons/eternal_flam-icon.webp";
-    }
-    if (
-      data.tags.includes("water-cult") ||
-      data.tags.includes("crushing-wave")
-    ) {
-      return "/src/assets/icons/crushing-wave-icon.webp";
-    }
-    if (
-      data.tags.includes("air-cult") ||
-      data.tags.includes("howling-hatred")
-    ) {
-      return "/src/assets/icons/howling-hatred-icon.webp";
-    }
-    if (data.tags.includes("earth-cult") || data.tags.includes("black-earth")) {
-      return "/src/assets/icons/black-earth-icon.webp";
-    }
+    const cultName = data.cult.name;
 
-    return null;
+    switch (cultName) {
+      case "Fire":
+        return "/src/assets/icons/cult-icon-fire.webp";
+      case "Water":
+        return "/src/assets/icons/cult-icon-water.webp";
+      case "Air":
+        return "/src/assets/icons/cult-icon-air.webp";
+      case "Earth":
+        return "/src/assets/icons/cult-icon-earth.webp";
+      case "Eye":
+        // No icon for Eye cult yet, could add one later
+        return null;
+      default:
+        return null;
+    }
   };
 
-  // Get current level for display
+  // Get class icon for character classes
+  const getClassIcon = (className: string) => {
+    const classNameLower = className.toLowerCase();
+    // Handle special case for "Commoner" which doesn't have a standard D&D class icon
+    if (classNameLower === "commoner") {
+      return `/src/assets/icons/class-icon-fighter.svg`; // Use fighter as fallback
+    }
+    return `/src/assets/icons/class-icon-${classNameLower}.svg`;
+  };
+
+  // Get current level for display (cumulative)
   const getCurrentLevel = () => {
     const classes = data.classes || data.class || [];
     if (classes.length > 0) {
-      return classes[0].level;
+      return classes.reduce((total, classInfo) => total + classInfo.level, 0);
     }
     return null;
+  };
+
+  // Get all classes with levels
+  const getAllClasses = () => {
+    return data.classes || data.class || [];
+  };
+
+  // Get ordinal suffix for numbers (1st, 2nd, 3rd, etc.)
+  const getOrdinalSuffix = (num: number): string => {
+    const j = num % 10;
+    const k = num % 100;
+    if (j === 1 && k !== 11) {
+      return num + "st";
+    }
+    if (j === 2 && k !== 12) {
+      return num + "nd";
+    }
+    if (j === 3 && k !== 13) {
+      return num + "rd";
+    }
+    return num + "th";
   };
 
   // Get ability score modifier
@@ -276,12 +367,19 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
     return Math.floor((score - 10) / 2);
   };
 
+  // Format ability modifier with + or - sign
+  const formatModifier = (modifier: number) => {
+    return modifier >= 0 ? `+${modifier}` : `${modifier}`;
+  };
+
+  const enclaveBanner = getEnclaveBanner();
+
   return (
     <div
       className={`
-      ${styling.gradient} ${styling.border} border rounded-lg shadow-lg overflow-hidden
+      ${styling.gradient} ${styling.border} border rounded-lg shadow-lg
       hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1
-      relative
+      relative flex flex-col
     `}
       style={
         styling.customColor
@@ -292,173 +390,289 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
           : {}
       }
     >
-      <div className="relative">
-        <div className="flex items-center p-6 pb-4">
-          <div className="flex-shrink-0 relative">
-            <img
-              src={getPortraitPath()}
-              alt={`${data.name} portrait`}
-              className="w-16 h-16 rounded-full object-cover border-2 border-gray-200 dark:border-gray-600"
-              onError={(e) => {
-                (e.target as HTMLImageElement).src =
-                  "/src/assets/portraits/placeholder-portrait.png";
-              }}
-            />
+      <div className="flex gap-4 p-4 relative">
+        {/* Avatar positioned at top left */}
+        <div
+          className={`absolute -top-2 -left-2 rounded-full z-10 ${
+            data.type === "pc" ? "shadow-lg" : ""
+          }`}
+          style={
+            data.type === "pc" && data.color
+              ? {
+                  boxShadow: `0 10px 15px -3px ${data.color}40, 0 4px 6px -2px ${data.color}20`,
+                }
+              : data.type === "pc"
+              ? {
+                  boxShadow:
+                    "0 10px 15px -3px rgb(217 119 6 / 0.25), 0 4px 6px -2px rgb(217 119 6 / 0.125)",
+                }
+              : {}
+          }
+        >
+          <div className="relative">
+            <div className="relative w-32 h-32">
+              <img
+                src={getPortraitPath()}
+                alt={`${data.name} portrait`}
+                className="w-full h-full rounded-full object-cover"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src =
+                    "/src/assets/portraits/placeholder-portrait.png";
+                }}
+              />
+              {/* Portrait Frame Overlay */}
+              <img
+                src="/src/assets/ui/portrait-frame.webp"
+                alt="Portrait frame"
+                className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+              />
+            </div>
 
-            {/* Cult Icon Overlay */}
-            {getCultIcon() && (
-              <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-white dark:bg-gray-700 p-1 shadow-md">
-                <img
-                  src={getCultIcon()!}
-                  alt="Cult affiliation"
-                  className="w-full h-full object-contain"
-                  title={`${data.tags
-                    ?.find((tag) => tag.includes("cult"))
-                    ?.replace("-cult", "")
-                    .replace("-", " ")
-                    .toUpperCase()} Cult`}
-                />
+            {/* Level Badge - Top Left */}
+            {getCurrentLevel() && (
+              <div className="absolute -top-1 -left-3.5 flex items-center">
+                <div className="relative">
+                  <img
+                    src="/src/assets/ui/level-badge.webp"
+                    alt="Level Badge"
+                    className="w-12 h-12 drop-shadow-md"
+                  />
+                  <span className="absolute inset-0 flex items-center justify-center text-white font-bold text-xs">
+                    {getCurrentLevel()}
+                  </span>
+                </div>
               </div>
             )}
 
-            {/* Status Icon - Only show if not alive */}
+            {/* Status Icon - Only show if not alive - Top Right */}
             {data.status !== "alive" && (
-              <div className="absolute -top-1 -left-1 text-lg bg-white dark:bg-gray-700 rounded-full p-1 shadow-md">
+              <div className="absolute -top-1 -right-1 text-lg bg-surface-elevated rounded-full p-1 shadow-md">
                 <span title={`Status: ${data.status}`}>{getStatusIcon()}</span>
               </div>
             )}
-          </div>
 
-          {/* Character Basic Info */}
-          <div className="ml-4 flex-1 min-w-0">
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
-              <a
-                href={`/characters/${character.id}`}
-                className={`${styling.accent} hover:underline transition-colors`}
-                style={
-                  styling.customColor ? { color: styling.customColor } : {}
-                }
-              >
-                {data.name}
-              </a>
-            </h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-              {data.subrace ? `${data.subrace} ${data.race}` : data.race}
-            </p>
-            {((data.classes && data.classes.length > 0) ||
-              (data.class && data.class.length > 0)) && (
-              <p className="text-sm text-gray-700 dark:text-gray-300">
-                {(data.classes?.[0] || data.class?.[0])?.name}
-                {getCurrentLevel() && (
-                  <span className="ml-2 inline-flex items-center relative">
-                    <img
-                      src="/src/assets/ui/level-badge.webp"
-                      alt="Level Badge"
-                      className="w-8 h-8"
-                    />
-                    <span className="absolute inset-0 flex items-center justify-center text-white font-bold text-xs">
-                      {getCurrentLevel()}
-                    </span>
-                  </span>
-                )}
-              </p>
-            )}
-          </div>
-
-          {/* Character Stats */}
-          <div className="text-right flex items-center gap-2">
-            {data.hp && (
-              <div className="text-sm text-gray-600 dark:text-gray-400">
-                HP: {data.hp}
-              </div>
-            )}
-            {data.ac && (
-              <div className="relative inline-flex items-center">
-                <img
-                  src="/src/assets/ui/ac-badge.webp"
-                  alt="AC Badge"
-                  className="w-10 h-10"
-                />
-                <span className="absolute inset-0 flex items-center justify-center text-white font-bold text-xs">
-                  {data.ac}
-                </span>
+            {/* Cult Icon - Bottom Center */}
+            {getCultIcon() && (
+              <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-12 h-12 shadow-md">
+                <div className="relative w-full h-full">
+                  {/* Background with cult-specific color */}
+                  <div
+                    className={`absolute inset-0 rounded-full ${
+                      data.cult?.name === "Fire"
+                        ? "bg-red-400"
+                        : data.cult?.name === "Water"
+                        ? "bg-blue-400"
+                        : data.cult?.name === "Air"
+                        ? "bg-sky-300"
+                        : data.cult?.name === "Earth"
+                        ? "bg-yellow-400"
+                        : "bg-gray-400"
+                    }`}
+                  />
+                  {/* Cult Icon */}
+                  <img
+                    src={getCultIcon()!}
+                    alt="Cult affiliation"
+                    className="absolute inset-0 w-full h-full object-contain py-3.5 px-1"
+                    title={
+                      data.cult?.name
+                        ? `${data.cult.name} Cult`
+                        : "Cult Affiliation"
+                    }
+                  />
+                  {/* Frame Overlay */}
+                  <img
+                    src="/src/assets/ui/cult-icon-frame.webp"
+                    alt="Cult icon frame"
+                    className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+                  />
+                  {/* Frame Color Overlay */}
+                  <div
+                    className={`absolute inset-0 rounded-full pointer-events-none mix-blend-multiply ${
+                      data.cult?.name === "Fire"
+                        ? "bg-red-400"
+                        : data.cult?.name === "Water"
+                        ? "bg-blue-400"
+                        : data.cult?.name === "Air"
+                        ? "bg-sky-300"
+                        : data.cult?.name === "Earth"
+                        ? "bg-yellow-400"
+                        : "bg-violet-400"
+                    }`}
+                  />
+                </div>
               </div>
             )}
           </div>
-        </div>
 
-        {/* Enclave Banner */}
-        {getEnclaveBanner() && (
-          <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 z-10">
-            <div className="relative">
+          {/* Enclave Banner - Below Avatar */}
+          {enclaveBanner && (
+            <div className="absolute top-[110px] left-6 -z-10">
               <img
-                src={getEnclaveBanner()!}
-                alt="Enclave affiliation"
-                className="h-8 w-auto drop-shadow-lg"
-                title={`${
-                  data.enclave?.name || data.organization?.name || "Faction"
-                } Affiliation`}
+                src={enclaveBanner}
+                alt="Enclave banner"
+                className="w-20 h-auto object-contain opacity-90 drop-shadow-sm"
               />
             </div>
-          </div>
-        )}
-      </div>
-
-      {/* Content Section */}
-      <div className="px-6 pb-6 pt-2">
-        {/* Location */}
-        {data.birthplace && (
-          <div className="text-xs text-gray-500 dark:text-gray-500 mb-2 flex items-center">
-            <span>📍 {data.birthplace}</span>
-          </div>
-        )}
-
-        {/* Description */}
-        {data.description && variant !== "compact" && (
-          <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-2 mb-3">
-            {data.description}
-          </p>
-        )}
-
-        {/* Roles & Tags */}
-        <div className="space-y-2">
-          {data.roles && data.roles.length > 0 && (
-            <div className="flex flex-wrap gap-1">
-              {data.roles.slice(0, 3).map((role, index) => (
-                <span
-                  key={index}
-                  className={`text-xs px-2 py-1 rounded-full ${styling.tagColor}`}
-                >
-                  {role.name}
-                </span>
-              ))}
-              {data.roles.length > 3 && (
-                <span className="text-xs text-gray-500 dark:text-gray-400">
-                  +{data.roles.length - 3} more
-                </span>
-              )}
-            </div>
-          )}
-
-          {data.tags && data.tags.length > 0 && (
-            <div className="flex flex-wrap gap-1">
-              {data.tags.slice(0, 4).map((tag, index) => (
-                <span
-                  key={index}
-                  className="text-xs px-2 py-1 rounded bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300"
-                >
-                  #{tag}
-                </span>
-              ))}
-              {data.tags.length > 4 && (
-                <span className="text-xs text-gray-500 dark:text-gray-400">
-                  +{data.tags.length - 4} more
-                </span>
-              )}
-            </div>
           )}
         </div>
+        {/* Main Character Info Section */}
+        <div className="flex-1">
+          <div className="relative">
+            <div className="pl-28 pr-1">
+              {/* Character Basic Info */}
+              <div className="min-w-0">
+                <h3 className="text-xl font-bold text-primary mb-1">
+                  <a
+                    href={`/characters/${character.id}`}
+                    className={`${styling.accent} hover:underline transition-colors`}
+                    style={
+                      styling.customColor ? { color: styling.customColor } : {}
+                    }
+                  >
+                    {data.name}
+                  </a>
+                </h3>
+                <p className="text-sm text-secondary mb-1">
+                  {data.subrace ? `${data.subrace} ${data.race}` : data.race}
+                </p>
+                {((data.classes && data.classes.length > 0) ||
+                  (data.class && data.class.length > 0)) && (
+                  <div className="space-y-1">
+                    {getAllClasses().map((classInfo, index) => (
+                      <div key={index} className="flex items-center gap-2">
+                        <div className="relative flex-shrink-0">
+                          <div className="w-6 h-6 rounded-md bg-gradient-to-br from-amber-400 to-amber-600 dark:from-amber-500 dark:to-amber-700 p-1 shadow-sm">
+                            <img
+                              src={getClassIcon(classInfo.name)}
+                              alt={`${classInfo.name} class icon`}
+                              className="w-full h-full object-contain filter brightness-0 invert"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).style.display =
+                                  "none";
+                              }}
+                            />
+                          </div>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm text-primary font-medium">
+                            {getOrdinalSuffix(classInfo.level)} level{" "}
+                            {classInfo.name}
+                          </p>
+                          {classInfo.subclass && (
+                            <p className="text-xs text-tertiary truncate">
+                              {classInfo.subclass}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <div>
+                  {/* Location */}
+                  {data.birthplace && (
+                    <div className="text-xs text-muted mb-2 flex items-center">
+                      <span>Originally from {data.birthplace}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Content Section */}
+          <div className="pl-28 pr-1">
+            {/* Description */}
+            {data.description && variant !== "compact" && (
+              <p className="text-sm text-secondary line-clamp-2 mb-3">
+                {data.description}
+              </p>
+            )}
+
+            {/* Roles & Tags */}
+            <div className="space-y-2">
+              {data.roles && data.roles.length > 0 && (
+                <div className="flex flex-wrap gap-1">
+                  {data.roles.slice(0, 3).map((role, index) => (
+                    <span
+                      key={index}
+                      className={`text-xs px-2 py-1 rounded-full ${styling.tagColor}`}
+                    >
+                      {role}
+                    </span>
+                  ))}
+                  {data.roles.length > 3 && (
+                    <span className="text-xs text-muted">
+                      +{data.roles.length - 3} more
+                    </span>
+                  )}
+                </div>
+              )}
+
+              {data.tags && data.tags.length > 0 && (
+                <div className="flex flex-wrap gap-1">
+                  {data.tags.slice(0, 4).map((tag, index) => (
+                    <span
+                      key={index}
+                      className="text-xs px-2 py-1 rounded bg-surface-tertiary text-secondary"
+                    >
+                      #{tag}
+                    </span>
+                  ))}
+                  {data.tags.length > 4 && (
+                    <span className="text-xs text-muted">
+                      +{data.tags.length - 4} more
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
+
+      {/* Ability Scores Section - Bottom of Card */}
+      {data.ability_scores && (
+        <div className="bg-surface-tertiary border-primary">
+          <div className="grid grid-cols-6">
+            {Object.entries(data.ability_scores)
+              .filter(([, score]) => score !== undefined)
+              .map(([ability, score]) => {
+                const modifier = getAbilityModifier(score!);
+                const abilityShort = ability.toUpperCase();
+
+                return (
+                  <div
+                    key={ability}
+                    className="flex flex-col items-center bg-surface-elevated border border-primary"
+                  >
+                    {/* Ability Name */}
+                    <div className="text-xs font-semibold text-tertiary mb-1">
+                      {abilityShort}
+                    </div>
+
+                    {/* Score */}
+                    <div className="text-lg font-bold text-primary leading-none">
+                      {score}
+                    </div>
+
+                    {/* Modifier */}
+                    <div
+                      className={`text-xs font-bold px-1.5 py-0.5 rounded mt-1 ${
+                        modifier >= 0
+                          ? "bg-success text-primary"
+                          : "bg-hero-red text-primary"
+                      }`}
+                    >
+                      {formatModifier(modifier)}
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
