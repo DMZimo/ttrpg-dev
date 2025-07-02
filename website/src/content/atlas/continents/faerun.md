@@ -75,6 +75,16 @@ atlas_order: 1
 parent_region: "toril"
 map_available: true
 
+# === MAP COORDINATES ===
+coordinates:
+  lat: 0
+  lng: 0
+map_assignments:
+  - map_id: "faerun"
+    coordinates:
+      lat: 0
+      lng: 0
+
 # === META ===
 tags: ["continent", "forgotten-realms", "campaign-setting"]
 sources: ["Forgotten Realms Campaign Setting", "Sword Coast Adventurer's Guide"]

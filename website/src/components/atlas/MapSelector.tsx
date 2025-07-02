@@ -173,13 +173,6 @@ export function MapSelector({
                           <span className="mr-1">{getTypeIcon(map.type)}</span>
                           {map.type.replace("-", " ")}
                         </div>
-
-                        {/* Navigation Indicator */}
-                        {hasChildren && (
-                          <div className="absolute top-2 right-2 bg-accent-600 text-white text-xs px-2 py-1 font-medium">
-                            🔍 Zoomable
-                          </div>
-                        )}
                       </div>
 
                       {/* Map Info */}

@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
-import { MapViewer } from "./MapViewer.tsx";
+import { MapContainer } from "./MapContainer.tsx";
 import { LocationsList } from "./LocationsList.tsx";
 import { MapSelector } from "./MapSelector.tsx";
 import { SearchAndFilter } from "./SearchAndFilter.tsx";
+import { ReadingPanel } from "./ReadingPanel.tsx";
 import type { AtlasMap, AtlasLocation, MapViewerRef } from "@/types";
 
 interface AtlasViewerProps {
@@ -26,6 +27,9 @@ export default function AtlasViewer({
   const [sidebarTab, setSidebarTab] = useState<"maps" | "locations" | "search">(
     "locations"
   );
+  const [readingPanelLocation, setReadingPanelLocation] = useState<AtlasLocation | null>(null);
+  const [readingPanelMap, setReadingPanelMap] = useState<AtlasMap | null>(null);
+  const [isReadingPanelVisible, setIsReadingPanelVisible] = useState(false);
 
   // References
   const mapViewerRef = useRef<MapViewerRef>(null);
@@ -72,6 +76,37 @@ export default function AtlasViewer({
     }, 100);
   };
 
+  // Handle location click from map (opens reading panel)
+  const handleLocationClick = (location: AtlasLocation, relatedMap?: AtlasMap | null) => {
+    setReadingPanelLocation(location);
+    setReadingPanelMap(relatedMap || null);
+    setIsReadingPanelVisible(true);
+    setSelectedLocationId(location.id);
+
+    // Switch to appropriate map if needed
+    if (location.mapId !== currentMapId) {
+      setCurrentMapId(location.mapId);
+    }
+
+    // Focus the location on the map
+    setTimeout(() => {
+      mapViewerRef.current?.focusLocation(location);
+    }, 100);
+  };
+
+  // Handle reading panel close
+  const handleReadingPanelClose = () => {
+    setIsReadingPanelVisible(false);
+    setReadingPanelLocation(null);
+    setReadingPanelMap(null);
+  };
+
+  // Handle map change from reading panel
+  const handleReadingPanelMapChange = (mapId: string) => {
+    setCurrentMapId(mapId);
+    setSelectedLocationId(null);
+  };
+
   // Handle map change
   const handleMapChange = (mapId: string) => {
     setCurrentMapId(mapId);
@@ -92,7 +127,7 @@ export default function AtlasViewer({
       {/* Sidebar */}
       <div className="atlas-sidebar w-80 bg-surface-secondary border-r border-primary flex flex-col">
         {/* Sidebar Header */}
-        <div className="sidebar-header p-4 pt-20 border-b border-primary bg-surface-elevated">
+        <div className="sidebar-header p-4 border-b border-primary bg-surface-elevated">
           {/* Tab Navigation */}
           <div className="flex border border-primary overflow-hidden">
             <button
@@ -143,6 +178,7 @@ export default function AtlasViewer({
               locations={filteredLocations}
               selectedLocationId={selectedLocationId}
               onLocationSelect={handleLocationSelect}
+              onLocationInfo={handleLocationClick}
             />
           )}
 
@@ -174,17 +210,27 @@ export default function AtlasViewer({
       <div className="atlas-main flex-1 flex flex-col relative">
         {/* Map Viewer */}
         <div className="map-container flex-1 relative overflow-hidden">
-          <MapViewer
+          <MapContainer
             ref={mapViewerRef}
             map={currentMap}
             maps={maps}
             locations={filteredLocations}
             selectedLocationId={selectedLocationId}
             onLocationSelect={handleLocationSelect}
+            onLocationClick={handleLocationClick}
             onMapChange={handleMapChange}
           />
         </div>
       </div>
+
+      {/* Reading Panel */}
+      <ReadingPanel
+        location={readingPanelLocation}
+        relatedMap={readingPanelMap}
+        onClose={handleReadingPanelClose}
+        onMapChange={handleReadingPanelMapChange}
+        isVisible={isReadingPanelVisible}
+      />
     </div>
   );
 }

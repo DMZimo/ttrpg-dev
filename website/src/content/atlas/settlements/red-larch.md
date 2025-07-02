@@ -60,6 +60,32 @@ notable_locations:
 atlas_order: 1
 map_available: true
 
+# === MAP COORDINATES ===
+coordinates:
+  lat: 0
+  lng: 0
+map_assignments:
+  - map_id: "faerun"
+    coordinates:
+      lat: 15
+      lng: -20
+  - map_id: "sword-coast"
+    coordinates:
+      lat: 25
+      lng: -15
+  - map_id: "dessarin-valley"
+    coordinates:
+      lat: 10
+      lng: 5
+  - map_id: "red-larch-area"
+    coordinates:
+      lat: 0
+      lng: 0
+  - map_id: "red-larch"
+    coordinates:
+      lat: 0
+      lng: 0
+
 # === META ===
 tags: ["settlement", "town", "dessarin-valley", "starting-location"]
 sources: ["Princes of the Apocalypse", "Lost Mine of Phandelver"]

@@ -1,5 +1,7 @@
 export { default as AtlasViewer } from "./AtlasViewer";
-export { MapViewer } from "./MapViewer";
+export { MapContainer } from "./MapContainer";
 export { LocationsList } from "./LocationsList";
 export { MapSelector } from "./MapSelector";
 export { SearchAndFilter } from "./SearchAndFilter";
+export { MapLegend } from "./MapLegend";
+export { ReadingPanel } from "./ReadingPanel";

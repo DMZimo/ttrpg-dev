@@ -824,6 +824,25 @@ const continents = defineCollection({
     parent_region: z.string().optional(),
     map_available: z.boolean().default(false),
 
+    // === MAP COORDINATES ===
+    coordinates: z
+      .object({
+        lat: z.number().min(-90).max(90),
+        lng: z.number().min(-180).max(180),
+      })
+      .optional(),
+    map_assignments: z
+      .array(
+        z.object({
+          map_id: z.string(),
+          coordinates: z.object({
+            lat: z.number().min(-90).max(90),
+            lng: z.number().min(-180).max(180),
+          }),
+        })
+      )
+      .optional(),
+
     // === META ===
     tags: z.array(z.string()).optional(),
     sources: z.array(z.string()).optional(),
@@ -898,6 +917,25 @@ const regions = defineCollection({
     // === ATLAS META ===
     atlas_order: z.number().optional(),
     map_available: z.boolean().default(false),
+
+    // === MAP COORDINATES ===
+    coordinates: z
+      .object({
+        lat: z.number().min(-90).max(90),
+        lng: z.number().min(-180).max(180),
+      })
+      .optional(),
+    map_assignments: z
+      .array(
+        z.object({
+          map_id: z.string(),
+          coordinates: z.object({
+            lat: z.number().min(-90).max(90),
+            lng: z.number().min(-180).max(180),
+          }),
+        })
+      )
+      .optional(),
 
     // === META ===
     tags: z.array(z.string()).optional(),
@@ -997,6 +1035,25 @@ const settlements = defineCollection({
     // === ATLAS META ===
     atlas_order: z.number().optional(),
     map_available: z.boolean().default(false),
+
+    // === MAP COORDINATES ===
+    coordinates: z
+      .object({
+        lat: z.number().min(-90).max(90),
+        lng: z.number().min(-180).max(180),
+      })
+      .optional(),
+    map_assignments: z
+      .array(
+        z.object({
+          map_id: z.string(),
+          coordinates: z.object({
+            lat: z.number().min(-90).max(90),
+            lng: z.number().min(-180).max(180),
+          }),
+        })
+      )
+      .optional(),
 
     // === META ===
     tags: z.array(z.string()).optional(),

@@ -5,12 +5,14 @@ interface LocationsListProps {
   locations: AtlasLocation[];
   selectedLocationId: string | null;
   onLocationSelect: (location: AtlasLocation) => void;
+  onLocationInfo?: (location: AtlasLocation) => void;
 }
 
 export function LocationsList({
   locations,
   selectedLocationId,
   onLocationSelect,
+  onLocationInfo,
 }: LocationsListProps) {
   // Group locations by category
   const groupedLocations = locations.reduce((acc, location) => {
@@ -145,7 +147,7 @@ export function LocationsList({
                       <div
                         key={location.id}
                         onClick={() => onLocationSelect(location)}
-                        className={`location-card p-4 border cursor-pointer transition-all duration-200 hover:transform hover:scale-[1.02] ${
+                        className={`location-card p-4 border cursor-pointer transition-all duration-200 hover:transform hover:scale-[1.02] relative ${
                           isSelected
                             ? "border-hero-red bg-hero-red bg-opacity-10 shadow-lg"
                             : "border-primary bg-surface-elevated hover:border-accent-500 hover:bg-surface-tertiary"
@@ -175,9 +177,23 @@ export function LocationsList({
                             </div>
                           </div>
 
-                          {isSelected && (
-                            <div className="text-hero-red">📍</div>
-                          )}
+                          <div className="flex items-center gap-2">
+                            {onLocationInfo && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  onLocationInfo(location);
+                                }}
+                                className="btn-icon w-8 h-8 text-xs text-secondary hover:text-primary hover:bg-surface-tertiary transition-colors"
+                                title="View detailed information"
+                              >
+                                📖
+                              </button>
+                            )}
+                            {isSelected && (
+                              <div className="text-hero-red">📍</div>
+                            )}
+                          </div>
                         </div>
 
                         {/* Location Info */}

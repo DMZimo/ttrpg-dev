@@ -12,6 +12,10 @@ export interface AtlasMap {
     east: number;
     west: number;
   };
+  dimensions: {
+    width: number;
+    height: number;
+  };
 }
 
 export interface AtlasLocation {
