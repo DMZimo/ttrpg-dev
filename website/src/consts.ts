@@ -76,7 +76,12 @@ export const CHARACTER_CLASSES = [
   "wizard",
 ] as const;
 
-export const CHARACTER_LOCATIONS = ["red-larch", "villain", "other"] as const;
+export const CHARACTER_LOCATIONS = [
+  "red-larch",
+  "villain",
+  "cult",
+  "other",
+] as const;
 
 export const CHARACTER_CULTS = [
   "Water",
@@ -91,5 +96,6 @@ export const CHARACTER_SORT_OPTIONS = [
   { value: "level", label: "Level" },
   { value: "recent", label: "Recent" },
   { value: "type", label: "Type" },
+  { value: "status", label: "Status" },
   { value: "race", label: "Race" },
 ] as const;

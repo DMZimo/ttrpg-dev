@@ -1,137 +1,12 @@
 import React, { useState, useMemo, useEffect } from "react";
 import CharacterCard from "./CharacterCard";
 import SearchSortControls from "./SearchSortControls";
-import type { CharacterFilters as CharacterFiltersType } from "../../types/characterFiltersTypes";
+import type {
+  CharacterFilters as CharacterFiltersType,
+  Character,
+} from "../../types/characterTypes";
 // Dynamic import for CharacterFilters to avoid type-only declaration issue
 const CharacterFilters = React.lazy(() => import("./CharacterFilters"));
-
-interface Character {
-  id: string;
-  data: {
-    // Character Metadata
-    owner: string;
-    is_public: boolean;
-    publish_date_iso?: Date;
-    last_updated_iso?: Date;
-    tags?: string[];
-
-    // Character Details
-    type: "pc" | "sidekick" | "npc";
-    status:
-      | "alive"
-      | "injured"
-      | "dead"
-      | "missing"
-      | "retired"
-      | "absent"
-      | "traveling"
-      | "captured"
-      | "incapacitated"
-      | "inactive";
-    active: boolean;
-    portrait?: string;
-    token?: string;
-    color?: string;
-
-    // Character Attributes
-    name: string;
-    race: string;
-    subrace: string;
-    background?: string;
-    birthplace?: string;
-    description?: string;
-    birthdate?: Date;
-    size?: string;
-    languages?: Array<{
-      name: string;
-    }>;
-
-    // Character Roles
-    roles?: string[];
-
-    // Character Stats
-    ability_scores?: {
-      str: number;
-      dex: number;
-      con: number;
-      int: number;
-      wis: number;
-      cha: number;
-    };
-
-    // Derived stats
-    proficiency_bonus?: number;
-    saving_throws?: {
-      str?: number;
-      dex?: number;
-      con?: number;
-      int?: number;
-      wis?: number;
-      cha?: number;
-    };
-
-    // Classes and levels
-    classes?: Array<{
-      name: string;
-      level: number;
-      subclass?: string | null;
-    }>;
-    hp?: number;
-    ac?: number;
-
-    // Skills
-    skills?: Array<{
-      name: string;
-      modifier: number;
-    }>;
-    other_skills?: Array<{
-      name: string;
-    }>;
-
-    // Spellcasting
-    spellcasting?: {
-      ability: string;
-      spell_attack_bonus: number;
-      spell_save_dc: number;
-    } | null;
-
-    // Character Relationships
-    organization?: {
-      name: string;
-      disposition: number;
-    };
-    enclave?: {
-      name: string;
-      disposition: number;
-    };
-    affiliations?: Array<{
-      name: string;
-      disposition: number;
-    }> | null;
-    cult?: {
-      name: "Water" | "Earth" | "Air" | "Fire" | "Eye";
-      disposition: number;
-    } | null;
-    allies?: string[] | null;
-    enemies?: string[] | null;
-
-    // Character motivations and traits
-    personality_traits?: string[] | null;
-    ideals?: string[] | null;
-    bonds?: string[] | null;
-    flaws?: string[] | null;
-
-    // Legacy fields (keeping for backward compatibility)
-    publishDate?: Date;
-    lastUpdated?: Date;
-    isPublic: boolean;
-    class: Array<{
-      name: string;
-      level: number;
-      subclass?: string;
-    }>;
-  };
-}
 
 interface CharactersPageProps {
   characters: Character[];
@@ -407,7 +282,7 @@ const CharactersPage: React.FC<CharactersPageProps> = ({ characters }) => {
             totalCount={characters.length}
             filteredCount={filteredCharacters.length}
           />
-          <div className="h-full overflow-y-auto flex-grow">
+          <div className="h-full overflow-y-auto flex-grow characters-sidebar">
             <CharacterFilters
               onFiltersChange={handleFilterUpdate}
               totalCount={characters.length}
@@ -423,7 +298,7 @@ const CharactersPage: React.FC<CharactersPageProps> = ({ characters }) => {
         </aside>
 
         {/* Main content area - flexible width, scrollable */}
-        <main className="flex-1 pl-8 pr-2 overflow-y-auto flex flex-col">
+        <main className="flex-1 pl-8 pr-2 overflow-y-auto flex flex-col characters-content">
           {/* Character Grid */}
           <div className="grid grid-cols-3 gap-7 pt-8 pb-6 flex-grow">
             {filteredCharacters.length > 0 ? (

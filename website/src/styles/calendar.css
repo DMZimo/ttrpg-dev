@@ -1,0 +1,138 @@
+/*
+  Calendar Component Styles for TTRPG Website
+  This file contains only calendar-specific styles
+  All other styles inherit from global.css
+ */
+
+/* Calendar Sidebar Widget Styles */
+.calendar-sidebar-widget {
+  position: sticky;
+  top: 1rem;
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+}
+
+/* Ensure calendar widgets have consistent styling */
+.calendar-widget {
+  width: 100%;
+}
+
+.widget-content::-webkit-scrollbar {
+  width: 4px;
+}
+
+.widget-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.widget-content::-webkit-scrollbar-thumb {
+  background: rgba(59, 130, 246, 0.3);
+  border-radius: 2px;
+}
+
+.widget-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(59, 130, 246, 0.5);
+}
+
+.holiday-item:hover,
+.event-item:hover {
+  transform: translateY(-1px);
+  transition: transform 0.2s ease;
+}
+
+/* Calendar Day Details Hover Effect */
+.day-details {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+  z-index: 50;
+}
+
+.calendar-day:hover .day-details {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Weather Widget Specific Styles */
+.weather-widget {
+  transition: all 0.2s ease-in-out;
+}
+
+.weather-widget:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.weather-widget .weather-main {
+  position: relative;
+  overflow: hidden;
+}
+
+.weather-widget .weather-main::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--primary-600), var(--primary-400));
+  opacity: 0.7;
+}
+
+/* Responsive Calendar Layout */
+@media (max-width: 1280px) {
+  .calendar-sidebar-widget {
+    position: static;
+    max-height: none;
+  }
+
+  .calendar-container {
+    flex-direction: column;
+  }
+
+  .calendar-sidebar-left,
+  .calendar-sidebar-right {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+
+  /* On tablet, display widgets in a horizontal layout */
+  .calendar-sidebar-layout {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .calendar-sidebar-left {
+    order: 1;
+  }
+
+  .calendar-main {
+    order: 3;
+  }
+
+  .calendar-sidebar-right {
+    order: 2;
+  }
+}
+
+/* Mobile layout adjustments */
+@media (max-width: 768px) {
+  .calendar-container {
+    flex-direction: column;
+  }
+
+  .calendar-sidebar-layout {
+    flex-direction: column;
+  }
+
+  .calendar-sidebar-left {
+    order: 1;
+  }
+
+  .calendar-sidebar-right {
+    order: 2;
+  }
+
+  .calendar-main {
+    order: 3;
+  }
+}

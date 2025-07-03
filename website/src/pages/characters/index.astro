@@ -19,7 +19,10 @@ const characterData = charactersToShow.map((char) => ({
   data: {
     // Character Metadata
     owner: char.data.owner,
+    isPublic: char.data.is_public || char.data.isPublic,
     is_public: char.data.is_public,
+    publishDate: char.data.publishDate,
+    lastUpdated: char.data.last_updated_iso || char.data.lastUpdated,
     publish_date_iso: char.data.publish_date_iso,
     last_updated_iso: char.data.last_updated_iso,
     tags: char.data.tags,
@@ -55,8 +58,9 @@ const characterData = charactersToShow.map((char) => ({
 
     // Classes and levels
     classes: char.data.classes || char.data.class || [],
-    hp: char.data.hp,
-    ac: char.data.ac,
+    class: char.data.classes || char.data.class || [],
+    hp: char.data.hp || 0,
+    ac: char.data.ac || 10,
 
     // Skills
     skills: char.data.skills,
@@ -78,12 +82,6 @@ const characterData = charactersToShow.map((char) => ({
     ideals: char.data.ideals,
     bonds: char.data.bonds,
     flaws: char.data.flaws,
-
-    // Legacy fields (keeping for backward compatibility)
-    publishDate: char.data.publishDate,
-    lastUpdated: char.data.last_updated_iso || char.data.lastUpdated,
-    isPublic: char.data.is_public || char.data.isPublic,
-    class: char.data.classes || char.data.class || [],
   },
 }));
 ---

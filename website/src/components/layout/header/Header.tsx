@@ -90,7 +90,7 @@ export const Header: React.FC<HeaderProps> = ({
       {/* Main Header */}
       <header
         ref={headerRef}
-        className={`fixed left-0 right-0 z-[1000] transition-all duration-300 backdrop-blur-md ${
+        className={`fixed left-0 right-0 z-40 transition-all duration-300 backdrop-blur-md ${
           announcementHeight > 0 ? `top-[${announcementHeight}px]` : "top-0"
         } ${isVisible ? "translate-y-0" : "-translate-y-full"} ${
           isScrolled
@@ -135,7 +135,7 @@ export const Header: React.FC<HeaderProps> = ({
       </header>
 
       {/* Reading Progress Bar */}
-      <div
+      {/* <div
         id="reading-progress"
         className={`fixed left-0 h-0.5 z-[1002] transition-all duration-300 ${
           announcementHeight > 0
@@ -150,7 +150,7 @@ export const Header: React.FC<HeaderProps> = ({
           width: "0%",
           background: `linear-gradient(to right, rgb(var(--accent-600)), rgb(var(--gold-500)))`,
         }}
-      />
+      /> */}
 
       {/* Search Overlay */}
       <Search isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />

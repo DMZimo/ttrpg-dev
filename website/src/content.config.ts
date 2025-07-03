@@ -204,6 +204,7 @@ const characters = defineCollection({
     subrace: z.string(),
     background: z.string().optional(),
     birthplace: z.string().optional(),
+    culture: z.string().optional(),
     description: z.string().optional(),
     birthdate: z.coerce.date().optional(),
     size: z.string().optional(),
@@ -213,6 +214,26 @@ const characters = defineCollection({
           name: z.string(),
         })
       )
+      .optional(),
+
+    // Visuals
+    physical_description: z
+      .object({
+        gender: z.string().optional(),
+        hair: z.string().optional(),
+        eyes: z.string().optional(),
+        skin: z.string().optional(),
+        build: z.string().optional(),
+        height: z
+          .array(
+            z.object({
+              feet: z.string(),
+              inches: z.string(),
+            })
+          )
+          .optional(),
+        weight: z.string().optional(),
+      })
       .optional(),
 
     // Character Roles
@@ -258,6 +279,7 @@ const characters = defineCollection({
       .optional(),
     hp: z.number().optional(),
     ac: z.number().optional(),
+    mr: z.number().optional(),
 
     // Skills
     skills: z

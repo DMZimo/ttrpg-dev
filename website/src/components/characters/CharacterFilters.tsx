@@ -12,7 +12,7 @@ import {
 import type {
   CharacterFilters,
   CharacterFiltersProps,
-} from "../../types/characterFiltersTypes";
+} from "../../types/characterTypes";
 
 const CharacterFilters: React.FC<CharacterFiltersProps> = ({
   onFiltersChange,

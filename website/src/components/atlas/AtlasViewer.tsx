@@ -5,6 +5,7 @@ import { MapSelector } from "./MapSelector.tsx";
 import { SearchAndFilter } from "./SearchAndFilter.tsx";
 import { ReadingPanel } from "./ReadingPanel.tsx";
 import type { AtlasMap, AtlasLocation, MapViewerRef } from "@/types";
+import "@/styles/atlas.css";
 
 interface AtlasViewerProps {
   maps: AtlasMap[];

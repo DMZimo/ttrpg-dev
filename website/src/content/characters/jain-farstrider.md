@@ -7,20 +7,21 @@ last_updated_iso: 2025-06-28T00:00:00
 tags: []
 
 # Character Details
-type: "sidekick" # pc, npc, or sidekick
+type: "pc" # pc, npc, or sidekick
 status: "alive" # alive, dead, missing, unknown
 active: true
 portrait: "jain-farstrider-portrait.png"
 token: "jain-farstrider-token.png"
-color: "#FFD700" # Gold color for Aasimar
+color: "#429c00" # Gold color for Aasimar
 
 # Character Attributes
 name: "Jain Farstrider"
 race: "dwarf"
 subrace: "hill"
 background: "sage"
-birthplace: ""
-description: ""
+birthplace: "Iltkazar"
+culture: "Stoutheart"
+description: "Jain Stoutheart, known as Jain Farstrider, is a dwarf druid of the Circle of the Moon. He hails from the Stoutheart clan in Iltkazar, where he worked at the family brewery until a series of prophetic dreams compelled him to leave his home and seek adventure in the north. Jain is driven by a desire to understand his connection to nature and to uncover the mysteries that have drawn him away from his peaceful life."
 birthdate: 1471-01-20
 size: "Medium"
 languages:
@@ -93,12 +94,18 @@ bonds: null
 flaws: null
 ---
 
-# Aldor Irion
+# Jain "Farstrider" Stoutheat
 
 ## Background
 
-Born beneath the gilded ceilings of a crumbling estate in Waterdeep's North Ward, Aldor Irion grew up on the edge of splendor and shame. His family, once proud nobles, had lost nearly everything, lands seized, titles stripped, and honour tarnished by scandal and cowardice in war. To the city's elite, the Irion name was worth less than mud. But to Aldor, it was still a source of pride.
+Jain Stoutheart is a member of the Stoutheart clan out of Iltkazar. His great grandfather Juun is the founder of the Stoutheart Brewery and the creator of the secret Stoutheart recipe. It was his ingenious mix of herbs and spices along with high quality hops that created the Stoutheart brew, famous all over the southern Sword Coast. For all of his life until now, Jain was a simple dwarf, working happily at the family brewery in Iltkazar.
 
-Aasimar blood ran strong through him, marked by silver flecked eyes and a voice that carried like a trumpet's call. From a young age, Aldor trained with ruthless discipline, finding strength in doctrine. He swore that he would undo his family's shame, and conquer new lands for them to rule over.
+A short time ago, Jain, who had never had an exciting moment in his life, started having odd dreams. Initially he ascribed them to a badly fermented batch, but such a thing hasn’t happened in the Stoutheart Brewery for more than two centuries, ever since his great uncle Jerum got drunk and mixed the wrong herbs, creating a bitter, highly flammable liquid that almost destroyed the brewery completely. These dreams started to appear more and more frequently, filling him with anxiety. All the dreams had a common link: an urgency to travel north where something was happening. Jain had trouble focusing and staying awake during the day, he stopped talking and laughing with the rest of the family. Ultimately his trouble culminated in a fateful moment when, absentmindedly, he declined the offer of a full mug after a hard day’s work. His friends and relatives started talking about it and word reached his great grandfather. Juun, in his silver years, cared deeply about all his grandchildren and was troubled when he heard the story. He called Jain to his personal abode, in the tunnels deep beneath the brewery, to ask him what was wrong. When Jain told him the truth about the dreams, his great grandfather proceeded to provide him with sage advice: Jain should travel north, figure out the problem that obviously troubled him and only then return back to the Stoutheart Brewery. After all, Juun told him that he too, hadn’t always led a peaceful life. He had been an adventurer and explorer until he managed to gather the right materials in order to perfect the Stoutheart recipe and create one of the most famous breweries in the Sword Coast. He advised Jain that only by following his gut he would be able to figure out who he was and what his destiny was in life. So at 120 years of age, Jain packed a bag and left Iltkazar for destinations unknown, taking the title of Farstrider for his voyage.
 
-Now, Aldor rides north, beyond the comforts of court and coin, to the untamed frontier. He decides to start out in the Dressarin Valley, where rumours of cults and chaos have reached his ears, an opportunity wrapped in danger. He seeks not only to crush the disorder that festers there, but to carve a new dominion through steel and fire. In this savage place, he will plant the banner of House Irion anew.
+During his travels, Jain found that he has some affinity for nature, a connection that he never suspected existed while he lived deep in Iltkazar. It is that same connection that is drawing him north, like a rope tied to his respectful size of a dwarf. It has also proved helpful, getting him out of some troubles and serving him in times of need and danger. And of course, you can take the Stoutheart out of the brewery, but you can’t take the brew out of the Stoutheart. Through his long journey, Jain has been trying and sampling herbs and spices that might add to the flavor of the Stouthart and has been comparing local and exotic brews to his family’s recipe. After all, his great grandfather used to say that the brew is a living, breathing thing that grows and evolves with time, along with the people that craft it and the enthusiasts that enjoy it.
+
+His gut and his travels have brought him north, to the Dessarin Valley, where he can feel that something is wrong. He feels it in the air and in the water, but mostly in the earth, wherein he has lived most of his life. He’s heard rumors about the occurrences in the area and is particularly interested in the assembly of druids under the Scarlet Moon. He therefore seeks to find where they gather, in what he has heard is called the Scarlet Moon Hall. Jain doesn’t know if these druids are truly trying to help the land or serve some other, nefarious cause, but his gut is telling him he should definitely investigate.
+
+Jain is short and stout, as all dwarves should be. He’s not particularly strong, but his great grandfather used to say he’s sharp as a tack and stubborn as a goat. He enjoys a good brew and a good meal, which have been rare occurrences during his travels. His brown eyes examine the world around him with curiosity, settled above a respectable brown-red beard. His bald head is covered in dark blue runic tattoos. He travels in a long, hooded traveler’s cloak that protects him from the weather and in the wilds can double as a mattress and cover. He has a small rounded buckler and carries a quarterstaff made out of the remains of a beer barrel.
+
+When Jain met the rest of the group, he was planning to travel north, but got drunk in Westbridge and took the wrong carriage. The result was to backtrack south, to Red Larch.

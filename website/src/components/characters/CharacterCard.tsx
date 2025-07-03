@@ -1,132 +1,5 @@
 import React from "react";
-
-interface Character {
-  id: string;
-  data: {
-    // Character Metadata
-    owner: string;
-    is_public: boolean;
-    publish_date_iso?: Date;
-    last_updated_iso?: Date;
-    tags?: string[];
-
-    // Character Details
-    type: "pc" | "sidekick" | "npc";
-    status:
-      | "alive"
-      | "injured"
-      | "dead"
-      | "missing"
-      | "retired"
-      | "absent"
-      | "traveling"
-      | "captured"
-      | "incapacitated"
-      | "inactive";
-    active: boolean;
-    portrait?: string;
-    token?: string;
-    color?: string;
-
-    // Character Attributes
-    name: string;
-    race: string;
-    subrace: string;
-    background?: string;
-    birthplace?: string;
-    description?: string;
-    birthdate?: Date;
-    size?: string;
-    languages?: Array<{
-      name: string;
-    }>;
-
-    // Character Roles
-    roles?: string[];
-
-    // Character Stats
-    ability_scores?: {
-      str: number;
-      dex: number;
-      con: number;
-      int: number;
-      wis: number;
-      cha: number;
-    };
-
-    // Derived stats
-    proficiency_bonus?: number;
-    saving_throws?: {
-      str?: number;
-      dex?: number;
-      con?: number;
-      int?: number;
-      wis?: number;
-      cha?: number;
-    };
-
-    // Classes and levels
-    classes?: Array<{
-      name: string;
-      level: number;
-      subclass?: string | null;
-    }>;
-    hp?: number;
-    ac?: number;
-
-    // Skills
-    skills?: Array<{
-      name: string;
-      modifier: number;
-    }>;
-    other_skills?: Array<{
-      name: string;
-    }>;
-
-    // Spellcasting
-    spellcasting?: {
-      ability: string;
-      spell_attack_bonus: number;
-      spell_save_dc: number;
-    } | null;
-
-    // Character Relationships
-    organization?: {
-      name: string;
-      disposition: number;
-    };
-    enclave?: {
-      name: string;
-      disposition: number;
-    };
-    affiliations?: Array<{
-      name: string;
-      disposition: number;
-    }> | null;
-    cult?: {
-      name: "Water" | "Earth" | "Air" | "Fire" | "Eye";
-      disposition: number;
-    } | null;
-    allies?: string[] | null;
-    enemies?: string[] | null;
-
-    // Character motivations and traits
-    personality_traits?: string[] | null;
-    ideals?: string[] | null;
-    bonds?: string[] | null;
-    flaws?: string[] | null;
-
-    // Legacy fields (keeping for backward compatibility)
-    publishDate?: Date;
-    lastUpdated?: Date;
-    isPublic: boolean;
-    class: Array<{
-      name: string;
-      level: number;
-      subclass?: string;
-    }>;
-  };
-}
+import type { Character } from "../../types/characterTypes";
 
 interface CharacterCardProps {
   character: Character;
@@ -412,26 +285,6 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
           : {}
       }
     >
-      {/*Roles */}
-      <div className="absolute top-2 right-2 flex items-center gap-2">
-        {data.roles && data.roles.length > 0 && (
-          <div className="flex flex-wrap gap-2">
-            {data.roles.map((role, index) => (
-              <div key={index} className="flex items-center group relative">
-                <img
-                  src={getRoleIcon(role)}
-                  alt={role}
-                  className="w-6 h-6 object-contain"
-                  title={role.charAt(0).toUpperCase() + role.slice(1)}
-                />
-                <span className="absolute bottom-full mb-1 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                  {role.charAt(0).toUpperCase() + role.slice(1)}
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
       <div className="flex gap-4 pt-4 px-2 relative">
         {/* Avatar positioned at top left */}
         <div
@@ -517,8 +370,8 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
               </div>
             )}
 
-            {/* Status Icon - Only show if not alive - Top Right */}
-            {data.status !== "alive" && (
+            {/* Status Icon - Only show if not alive and not dead - Top Right */}
+            {data.status !== "alive" && data.status !== "dead" && (
               <div className="absolute -top-1 -left-1 text-lg bg-surface-elevated rounded-full p-1 shadow-md">
                 <span title={`Status: ${data.status}`}>{getStatusIcon()}</span>
               </div>
@@ -651,35 +504,60 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
                 )}
               </div>
             </div>
-            {/* Ability Scores Section - Left of Card */}
-            {data.ability_scores && (
-              <div className="absolute grid grid-cols-3 gap-1.5 right-0 top-6">
-                {Object.entries(data.ability_scores)
-                  .filter(([, score]) => score !== undefined)
-                  .map(([ability, score]) => {
-                    const modifier = getAbilityModifier(score!);
-                    const abilityShort = ability.toUpperCase();
+            <div className="absolute -top-2.5 -right-0.5">
+              {/* Ability Scores Section - Left of Card */}
+              {data.ability_scores && (
+                <div className="grid grid-cols-3 gap-1.5 right-0 top-6">
+                  {Object.entries(data.ability_scores)
+                    .filter(([, score]) => score !== undefined)
+                    .map(([ability, score]) => {
+                      const modifier = getAbilityModifier(score!);
+                      const abilityShort = ability.toUpperCase();
 
-                    return (
+                      return (
+                        <div
+                          key={ability}
+                          className="w-12 h-10 flex flex-col items-center bg-surface-elevated shadow-amber-100 shadow-sm rounded-md"
+                        >
+                          {/* Ability Name */}
+                          <div className="text-xs text-tertiary mb-0.5">
+                            {abilityShort}
+                            {formatModifier(modifier)}
+                          </div>
+
+                          {/* Score */}
+                          <div className="text-xs font-bold text-primary leading-none">
+                            {score}
+                          </div>
+                        </div>
+                      );
+                    })}
+                </div>
+              )}
+              {/*Roles */}
+              <div className="flex items-center gap-2 mt-2">
+                {data.roles && data.roles.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {data.roles.map((role, index) => (
                       <div
-                        key={ability}
-                        className="w-12 h-10 flex flex-col items-center bg-surface-elevated shadow-amber-100 shadow-sm rounded-md"
+                        key={index}
+                        className="flex items-center group relative"
                       >
-                        {/* Ability Name */}
-                        <div className="text-xs text-tertiary mb-0.5">
-                          {abilityShort}
-                          {formatModifier(modifier)}
-                        </div>
-
-                        {/* Score */}
-                        <div className="text-xs font-bold text-primary leading-none">
-                          {score}
-                        </div>
+                        <img
+                          src={getRoleIcon(role)}
+                          alt={role}
+                          className="w-6 h-6 object-contain"
+                          title={role.charAt(0).toUpperCase() + role.slice(1)}
+                        />
+                        <span className="absolute bottom-full mb-1 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                          {role.charAt(0).toUpperCase() + role.slice(1)}
+                        </span>
                       </div>
-                    );
-                  })}
+                    ))}
+                  </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
 
           {/* Content Section */}

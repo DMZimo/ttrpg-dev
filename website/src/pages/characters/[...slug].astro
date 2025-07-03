@@ -1,6 +1,10 @@
 ---
 import { getCollection, type CollectionEntry, render } from "astro:content";
 import BaseLayout from "@/layouts/BaseLayout.astro";
+// Import only what we need from character components
+import { CharacterHeader } from "@/components/characters/slug/CharacterHeader";
+import { CharacterSidebar } from "@/components/characters/slug/CharacterSidebar";
+import "@/styles/characters.css";
 
 export async function getStaticPaths() {
   const characters = await getCollection("characters");
@@ -16,318 +20,251 @@ type Props = {
 
 const { character } = Astro.props;
 const { Content } = await render(character);
-
-// Determine character type styling
-const getTypeColor = (type: string) => {
-  switch (type) {
-    case "pc":
-      return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200";
-    case "npc":
-      return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
-    case "sidekick":
-      return "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200";
-    default:
-      return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200";
-  }
-};
-
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case "alive":
-      return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
-    case "dead":
-      return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200";
-    case "missing":
-      return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200";
-    default:
-      return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200";
-  }
-};
-
-// Get portrait image path
-const getPortraitPath = () => {
-  if (character.data.portrait) {
-    return `/src/assets/portraits/${character.data.portrait}`;
-  }
-
-  // Fallback to placeholder
-  return "/src/assets/portraits/placeholder-portrait.png";
-};
-
-// Get token image path
-const getTokenPath = () => {
-  if (character.data.token) {
-    return `/src/assets/tokens/${character.data.token}`;
-  }
-
-  // Fallback to placeholder
-  return "/src/assets/tokens/placeholder-token.webp";
-};
-
-// Get cult icon for cult members
-const getCultIcon = () => {
-  if (!character.data.tags) return null;
-
-  if (
-    character.data.tags.includes("fire-cult") ||
-    character.data.tags.includes("eternal-flame")
-  ) {
-    return "/src/assets/icons/eternal_flame.webp";
-  }
-  if (
-    character.data.tags.includes("water-cult") ||
-    character.data.tags.includes("crushing-wave")
-  ) {
-    return "/src/assets/icons/crushing_wave_icon.webp";
-  }
-  if (
-    character.data.tags.includes("air-cult") ||
-    character.data.tags.includes("howling-hatred")
-  ) {
-    return "/src/assets/icons/howling_hatred_icon.webp";
-  }
-  if (
-    character.data.tags.includes("earth-cult") ||
-    character.data.tags.includes("black-earth")
-  ) {
-    return "/src/assets/icons/black_earth_icon.webp";
-  }
-
-  return null;
-};
+const characterColor = character.data.color;
 ---
 
 <BaseLayout
   title={`${character.data.name} - Dessarin Valley Chronicles`}
   description={character.data.description ||
     `Character profile for ${character.data.name}`}
+  class=""
 >
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <!-- Character Header -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 mb-8">
-      <div class="flex flex-col lg:flex-row lg:items-start gap-6">
-        <!-- Portrait Section -->
-        <div class="lg:w-64 flex-shrink-0">
-          <div class="relative">
-            <img
-              src={getPortraitPath()}
-              alt={`${character.data.name} portrait`}
-              class="w-full h-64 object-cover rounded-lg shadow-lg"
-              onerror="this.src='/src/assets/portraits/placeholder-portrait.png'"
-            />
+  <!-- Character-specific styling -->
+  <style define:vars={{ characterColor }}>
+    .character-accent {
+      --character-color: var(--characterColor, rgb(var(--primary-500)));
+    }
+  </style>
 
-            <!-- Cult Icon Overlay -->
+  <!-- Main Character Layout -->
+  <div class="relative h-screen pt-[64px]">
+    <!-- Character Navigation -->
+
+    <!-- Left Sidebar - Navigation and Character Stats -->
+    <div class="w-[32rem] h-full overflow-y-auto pt-2 pl-5 z-40">
+      <div class="flex items-center px-1 z-[100]">
+        <CharacterHeader character={character} client:load />
+      </div>
+      <div>
+        <!-- Basic Stats -->
+        <div class="mb-4">
+          <h4 class="text-sm font-semibold text-text-primary mb-2">Details</h4>
+          <div class="flex flex-col gap-1.5">
             {
-              getCultIcon() && (
-                <div class="absolute top-2 right-2 w-8 h-8 rounded-full bg-white dark:bg-gray-700 p-1 shadow-lg">
-                  <img
-                    src={getCultIcon()}
-                    alt="Cult affiliation"
-                    class="w-full h-full object-contain"
-                    title={`${character.data.tags
-                      ?.find((tag) => tag.includes("cult"))
-                      ?.replace("-cult", "")
-                      .replace("-", " ")
-                      .toUpperCase()} Cult`}
-                  />
+              character.data.background && (
+                <div class="flex flex-col gap-0.5">
+                  <span class="text-xs font-semibold text-text-secondary">
+                    Background:
+                  </span>
+                  <span class="text-xs text-text-primary break-words">
+                    {character.data.background}
+                  </span>
                 </div>
               )
             }
-          </div>
 
-          <!-- Token Section -->
-          <div class="mt-4">
-            <h4 class="text-sm font-medium text-gray-900 dark:text-white mb-2">
-              Tabletop Token
-            </h4>
-            <img
-              src={getTokenPath()}
-              alt={`${character.data.name} token`}
-              class="w-24 h-24 object-cover rounded-lg shadow-md mx-auto border-2 border-gray-200 dark:border-gray-600"
-              onerror="this.src='/src/assets/tokens/placeholder-token.webp'"
-            />
+            {
+              character.data.birthplace && (
+                <div class="flex flex-col gap-0.5">
+                  <span class="text-xs font-semibold text-text-secondary">
+                    Birthplace:
+                  </span>
+                  <span class="text-xs text-text-primary break-words">
+                    {character.data.birthplace}
+                  </span>
+                </div>
+              )
+            }
+
+            {
+              character.data.culture && (
+                <div class="flex flex-col gap-0.5">
+                  <span class="text-xs font-semibold text-text-secondary">
+                    Culture:
+                  </span>
+                  <span class="text-xs text-text-primary break-words">
+                    {character.data.culture}
+                  </span>
+                </div>
+              )
+            }
+
+            {
+              character.data.size && (
+                <div class="flex flex-col gap-0.5">
+                  <span class="text-xs font-semibold text-text-secondary">
+                    Size:
+                  </span>
+                  <span class="text-xs text-text-primary break-words">
+                    {character.data.size}
+                  </span>
+                </div>
+              )
+            }
+
+            {
+              character.data.languages &&
+                character.data.languages.length > 0 && (
+                  <div class="flex flex-col gap-0.5">
+                    <span class="text-xs font-semibold text-text-secondary">
+                      Languages:
+                    </span>
+                    <span class="text-xs text-text-primary break-words">
+                      {character.data.languages
+                        .map((lang) =>
+                          typeof lang === "string" ? lang : lang.name
+                        )
+                        .join(", ")}
+                    </span>
+                  </div>
+                )
+            }
           </div>
         </div>
 
-        <div class="flex-1">
-          <!-- Name and Title -->
-          <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-2">
-            {character.data.name}
-          </h1>
-
-          <!-- Race and Class -->
-          <div class="text-xl text-gray-600 dark:text-gray-300 mb-4">
-            {character.data.race}
-            {character.data.subrace && ` (${character.data.subrace})`}
-            {
-              character.data.class && character.data.class.length > 0 && (
-                <span>
-                  {" • "}
-                  {character.data.class.map((cls, index) => (
-                    <span>
-                      {cls.name}
-                      {cls.level && ` ${cls.level}`}
-                      {cls.subclass && ` (${cls.subclass})`}
-                      {index < character.data.class.length - 1 && " / "}
+        <!-- Physical Description -->
+        {
+          character.data.physical_description && (
+            <div class="mb-4">
+              <h4 class="text-sm font-semibold text-text-primary mb-2">
+                Physical Description
+              </h4>
+              <div class="flex flex-col gap-1.5">
+                {character.data.physical_description.gender && (
+                  <div class="flex flex-col gap-0.5">
+                    <span class="text-xs font-semibold text-text-secondary">
+                      Gender:
                     </span>
-                  ))}
-                </span>
-              )
-            }
-          </div>
-
-          <!-- Tags and Status -->
-          <div class="flex flex-wrap gap-2 mb-6">
-            <span
-              class={`px-3 py-1 rounded-full text-sm font-medium ${getTypeColor(character.data.type)}`}
-            >
-              {character.data.type.toUpperCase()}
-            </span>
-            {
-              character.data.status && (
-                <span
-                  class={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(character.data.status)}`}
-                >
-                  {character.data.status}
-                </span>
-              )
-            }
-            {
-              character.data.tags?.map((tag) => (
-                <span class="px-3 py-1 rounded-full text-sm bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300">
-                  {tag}
-                </span>
-              ))
-            }
-          </div>
-
-          <!-- Description -->
-          {
-            character.data.description && (
-              <p class="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
-                {character.data.description}
-              </p>
-            )
-          }
-        </div>
-
-        <!-- Stats Panel -->
-        <div class="lg:w-80">
-          <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-6">
-            <h3
-              class="text-lg font-semibold text-gray-900 dark:text-white mb-4"
-            >
-              Character Details
-            </h3>
-
-            <!-- Basic Info -->
-            <div class="space-y-3 text-sm">
-              {
-                character.data.background && (
-                  <div>
-                    <span class="font-medium text-gray-600 dark:text-gray-400">
-                      Background:
-                    </span>
-                    <span class="text-gray-900 dark:text-gray-100 ml-2">
-                      {character.data.background}
+                    <span class="text-xs text-text-primary break-words">
+                      {character.data.physical_description.gender}
                     </span>
                   </div>
-                )
-              }
-
-              {
-                character.data.birthplace && (
-                  <div>
-                    <span class="font-medium text-gray-600 dark:text-gray-400">
-                      Birthplace:
+                )}
+                {character.data.physical_description.hair && (
+                  <div class="flex flex-col gap-0.5">
+                    <span class="text-xs font-semibold text-text-secondary">
+                      Hair:
                     </span>
-                    <span class="text-gray-900 dark:text-gray-100 ml-2">
-                      {character.data.birthplace}
+                    <span class="text-xs text-text-primary break-words">
+                      {character.data.physical_description.hair}
                     </span>
                   </div>
-                )
-              }
-
-              {
-                character.data.owner && (
-                  <div>
-                    <span class="font-medium text-gray-600 dark:text-gray-400">
-                      Player:
+                )}
+                {character.data.physical_description.eyes && (
+                  <div class="flex flex-col gap-0.5">
+                    <span class="text-xs font-semibold text-text-secondary">
+                      Eyes:
                     </span>
-                    <span class="text-gray-900 dark:text-gray-100 ml-2">
-                      {character.data.owner}
+                    <span class="text-xs text-text-primary break-words">
+                      {character.data.physical_description.eyes}
                     </span>
                   </div>
-                )
-              }
+                )}
+                {character.data.physical_description.skin && (
+                  <div class="flex flex-col gap-0.5">
+                    <span class="text-xs font-semibold text-text-secondary">
+                      Skin:
+                    </span>
+                    <span class="text-xs text-text-primary break-words">
+                      {character.data.physical_description.skin}
+                    </span>
+                  </div>
+                )}
+                {character.data.physical_description.build && (
+                  <div class="flex flex-col gap-0.5">
+                    <span class="text-xs font-semibold text-text-secondary">
+                      Build:
+                    </span>
+                    <span class="text-xs text-text-primary break-words">
+                      {character.data.physical_description.build}
+                    </span>
+                  </div>
+                )}
+                {character.data.physical_description.height && (
+                  <div class="flex flex-col gap-0.5">
+                    <span class="text-xs font-semibold text-text-secondary">
+                      Height:
+                    </span>
+                    <span class="text-xs text-text-primary break-words">
+                      {character.data.physical_description.height
+                        .map((h) => `${h.feet}'${h.inches}"`)
+                        .join(", ")}
+                    </span>
+                  </div>
+                )}
+                {character.data.physical_description.weight && (
+                  <div class="flex flex-col gap-0.5">
+                    <span class="text-xs font-semibold text-text-secondary">
+                      Weight:
+                    </span>
+                    <span class="text-xs text-text-primary break-words">
+                      {character.data.physical_description.weight}
+                    </span>
+                  </div>
+                )}
+              </div>
             </div>
-
-            <!-- Combat Stats -->
-            {
-              (character.data.hp || character.data.ac) && (
-                <div class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-600">
-                  <h4 class="font-medium text-gray-900 dark:text-white mb-3">
-                    Combat Stats
-                  </h4>
-                  <div class="grid grid-cols-2 gap-4 text-sm">
-                    {character.data.hp && (
-                      <div class="text-center bg-red-50 dark:bg-red-900/20 rounded-lg p-3">
-                        <div class="text-2xl font-bold text-red-600 dark:text-red-400">
-                          {character.data.hp}
-                        </div>
-                        <div class="text-gray-600 dark:text-gray-400">HP</div>
-                      </div>
-                    )}
-                    {character.data.ac && (
-                      <div class="text-center bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3">
-                        <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                          {character.data.ac}
-                        </div>
-                        <div class="text-gray-600 dark:text-gray-400">AC</div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )
-            }
-
-            <!-- Roles -->
-            {
-              character.data.roles && character.data.roles.length > 0 && (
-                <div class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-600">
-                  <h4 class="font-medium text-gray-900 dark:text-white mb-3">
-                    Roles
-                  </h4>
-                  <div class="flex flex-wrap gap-1">
-                    {character.data.roles.map((role) => (
-                      <span class="text-xs bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200 px-2 py-1 rounded">
-                        {role.name}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )
-            }
-          </div>
-        </div>
+          )
+        }
       </div>
     </div>
 
-    <!-- Character Content -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
-      <div class="prose prose-lg dark:prose-invert max-w-none">
-        <Content />
-      </div>
-    </div>
+    <!-- Character Page Content - Full viewport layout -->
+    <div
+      class="w-full m-0 p-0 bg-surface-secondary z-30 relative character-accent"
+    >
+      <!-- Main Character Content - Biography Only -->
+      <div class="character-main-content-scrollable">
+        {
+          character.body && (
+            <div class="character-content">
+              <div class="prose prose-lg max-w-none">
+                <Content />
+              </div>
+            </div>
+          )
+        }
 
-    <!-- Navigation -->
-    <div class="mt-8 text-center">
-      <a
-        href="/characters"
-        class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
-      >
-        ← Back to Characters
-      </a>
+        <!-- Fallback if no biography content -->
+        {
+          !character.body && (
+            <div class="character-content">
+              <div class="text-center text-secondary py-12">
+                <p>No biography available for this character.</p>
+              </div>
+            </div>
+          )
+        }
+      </div>
     </div>
   </div>
+
+  <!-- Dynamic adjustment for announcement banner -->
+  <script>
+    // Adjust layout when announcement banner is present
+    function adjustForAnnouncement() {
+      const announcementBanner = document.querySelector(
+        ".announcement-banner"
+      ) as HTMLElement;
+      const characterLayout = document.querySelector(
+        ".character-layout-fullscreen"
+      ) as HTMLElement;
+      const sidebar = document.querySelector(
+        ".character-layout-fullscreen > div:first-child"
+      ) as HTMLElement;
+
+      if (announcementBanner && characterLayout && sidebar) {
+        const announcementHeight = announcementBanner.offsetHeight;
+        const totalTopOffset = 64 + announcementHeight;
+
+        characterLayout.style.paddingTop = `${totalTopOffset}px`;
+        sidebar.style.top = `${totalTopOffset}px`;
+        sidebar.style.height = `calc(100vh - ${totalTopOffset}px)`;
+      }
+    }
+
+    // Run on load and when announcement banner changes
+    document.addEventListener("DOMContentLoaded", adjustForAnnouncement);
+    window.addEventListener("resize", adjustForAnnouncement);
+  </script>
 </BaseLayout>

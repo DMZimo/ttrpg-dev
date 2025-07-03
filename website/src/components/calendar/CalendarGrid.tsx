@@ -1,5 +1,5 @@
 import React from "react";
-import { transformMonthData } from "../../utils/gameCalendarUtils";
+import { transformMonthData } from "../../utils/calendarUtils";
 import type {
   CalendarDayData,
   CalendarGridProps,
@@ -23,15 +23,15 @@ export default function CalendarGrid({
   }
 
   return (
-    <div className="calendar-bg rounded-b-lg shadow-lg border calendar-border overflow-visible">
+    <div className="bg-surface-secondary rounded-b-lg shadow-lg border border-primary overflow-visible">
       {/* Regular month view - 3 tendays of 10 days each */}
       <table className="w-full table-fixed">
         <thead>
-          <tr className="calendar-surface-secondary">
+          <tr className="bg-surface-tertiary/50">
             {Array.from({ length: 10 }, (_, i) => (
               <th
                 key={i}
-                className="py-3 px-2 text-sm font-medium calendar-text-secondary border-r calendar-border last:border-r-0 w-[10%]"
+                className="py-3 px-2 text-sm font-medium text-secondary border-r border-primary last:border-r-0 w-[10%]"
               >
                 {i + 1}
               </th>
@@ -42,7 +42,7 @@ export default function CalendarGrid({
           {Array.from({ length: 3 }).map((_, tendayIdx) => (
             <tr
               key={tendayIdx}
-              className="border-b calendar-border last:border-b-0"
+              className="border-b border-primary last:border-b-0"
             >
               {Array.from({ length: 10 }).map((_, dayIdx) => {
                 const day = tendayIdx * 10 + dayIdx + 1;
@@ -60,17 +60,13 @@ export default function CalendarGrid({
                 return (
                   <td
                     key={dayIdx}
-                    className={`calendar-day group relative border-r calendar-border last:border-r-0 transition-all duration-200 hover:calendar-hover-bg cursor-pointer w-[10%] ${
+                    className={`calendar-day group relative border-r border-primary last:border-r-0 transition-all duration-200 hover:bg-surface-tertiary cursor-pointer w-[10%] ${
                       compact ? "h-16" : "h-20"
                     } ${
-                      isToday
-                        ? "calendar-accent-bg ring-2 calendar-accent-border"
-                        : ""
+                      isToday ? "bg-hero-red/20 ring-2 border-hero-red" : ""
                     } ${
-                      isSelected
-                        ? "ring-2 ring-blue-500 bg-blue-100 dark:bg-blue-900/30"
-                        : ""
-                    } ${hasEvents ? "calendar-warning-bg" : ""}`.trim()}
+                      isSelected ? "ring-2 ring-blue-500 bg-blue-900/30" : ""
+                    } ${hasEvents ? "bg-gold-900/20" : ""}`.trim()}
                     title={`${dayData.day} ${monthData.data.name} ${displayYear} - ${dayData.weather.condition}, ${dayData.weather.temperature}`}
                     onClick={() => onDayClick(day)}
                   >
@@ -83,10 +79,10 @@ export default function CalendarGrid({
                       <span
                         className={`font-semibold ${
                           isToday
-                            ? "calendar-accent"
+                            ? "text-hero-red"
                             : isSelected
-                            ? "text-blue-600 dark:text-blue-400"
-                            : "calendar-text-primary"
+                            ? "text-blue-400"
+                            : "text-primary"
                         } ${compact ? "text-sm" : "text-base"}`}
                       >
                         {dayData.day}
@@ -110,7 +106,7 @@ export default function CalendarGrid({
                                 </span>
                               ))}
                             {dayData.events.length > (compact ? 1 : 2) && (
-                              <span className="text-xs calendar-text-tertiary flex-shrink-0">
+                              <span className="text-xs text-tertiary flex-shrink-0">
                                 +{dayData.events.length - (compact ? 1 : 2)}
                               </span>
                             )}
@@ -144,7 +140,7 @@ export default function CalendarGrid({
 
                     {/* Enhanced Hover Details */}
                     <div
-                      className="day-details fixed bg-surface-elevated calendar-text-primary text-xs rounded-lg p-3 opacity-0 group-hover:opacity-100 transition-opacity z-50 min-w-max pointer-events-none shadow-card border border-primary transform -translate-x-1/2 translate-y-2"
+                      className="day-details fixed bg-surface-elevated text-primary text-xs rounded-lg p-3 opacity-0 group-hover:opacity-100 transition-opacity z-50 min-w-max pointer-events-none shadow-card border border-primary transform -translate-x-1/2 translate-y-2"
                       style={{
                         left: "50%",
                         top: "100%",
@@ -184,13 +180,13 @@ export default function CalendarGrid({
 
       {/* Special Days Section - shown after the regular month */}
       {specialDays.length > 0 && (
-        <div className="border-t calendar-border p-6 text-center bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-amber-900/20 dark:to-yellow-900/20">
+        <div className="border-t border-primary p-6 text-center bg-gradient-to-r from-amber-900/20 to-yellow-900/20">
           {specialDays.map((specialDay, index) => (
             <div key={index} className="space-y-3">
-              <div className="text-2xl font-bold calendar-text-primary">
+              <div className="text-2xl font-bold text-primary">
                 🎉 {specialDay.holidayName} 🎉
               </div>
-              <div className="text-sm calendar-text-secondary max-w-2xl mx-auto">
+              <div className="text-sm text-secondary max-w-2xl mx-auto">
                 {specialDay.specialDayType === "shieldmeet"
                   ? "The rare leap day celebration occurring every four years"
                   : `Special festival day between ${
@@ -203,7 +199,7 @@ export default function CalendarGrid({
                       )?.data.name || "Next Month"
                     } 1`}
               </div>
-              <div className="flex flex-wrap justify-center gap-4 text-xs calendar-text-secondary">
+              <div className="flex flex-wrap justify-center gap-4 text-xs text-secondary">
                 <span>
                   🌤️ {specialDay.weather.condition} (
                   {specialDay.weather.temperature})
@@ -218,7 +214,7 @@ export default function CalendarGrid({
               </div>
               <button
                 onClick={() => onSpecialDayClick(specialDay)}
-                className="calendar-accent-bg hover:opacity-90 text-white px-4 py-2 rounded-lg transition-colors text-sm"
+                className="bg-accent-900/20 hover:opacity-90 text-white px-4 py-2 rounded-lg transition-colors text-sm"
               >
                 Learn More About {specialDay.holidayName}
               </button>

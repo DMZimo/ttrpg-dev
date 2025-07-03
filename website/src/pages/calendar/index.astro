@@ -1,0 +1,204 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Calendar from "@/components/calendar/Calendar";
+import CurrentDateWidget from "@/components/calendar/CurrentDateWidget";
+import "@/styles/calendar.css";
+
+// Import campaign configuration (optional if using utility defaults)
+// import { CAMPAIGN_DATE, CAMPAIGN_SETTINGS } from "../../consts";
+import { getCollection } from "astro:content";
+
+import {
+  getCurrentCampaignDate,
+  getCurrentCampaignTime,
+} from "@/utils/calendarUtils";
+
+// Get URL parameters for navigation and view options
+const url = new URL(Astro.request.url);
+const yearParam = url.searchParams.get("year");
+const monthParam = url.searchParams.get("month");
+
+// Get all timekeeping collections (with error handling for missing collections)
+const months = await getCollection("months");
+const holidays = await getCollection("holidays");
+
+let seasons: any[] = [];
+let celestial: any[] = [];
+let events: any[] = [];
+let calendarSystems: any[] = [];
+
+try {
+  seasons = await getCollection("seasons");
+} catch {
+  seasons = [];
+}
+try {
+  celestial = await getCollection("celestial");
+} catch {
+  celestial = [];
+}
+try {
+  events = await getCollection("events");
+} catch {
+  events = [];
+}
+try {
+  calendarSystems = await getCollection("calendarSystems");
+} catch {
+  calendarSystems = [];
+}
+
+// Use campaign date as the current date or fallback to utility function
+const currentDate = getCurrentCampaignDate();
+const currentTime = getCurrentCampaignTime();
+
+// Display parameters with fallbacks to campaign date or current date
+const displayYear = yearParam ? parseInt(yearParam) : currentDate.year;
+const displayMonth = monthParam ? parseInt(monthParam) : currentDate.month;
+const validMonth = Math.max(1, Math.min(12, displayMonth));
+const validYear = Math.max(1, displayYear);
+---
+
+<BaseLayout
+  title="Calendar of Harptos - Timekeeping Portal"
+  description="Central timekeeping portal for the Faerûnian calendar - explore months, holidays, celestial events, and seasons"
+>
+  <div class="flex w-full pt-16 min-h-screen">
+    <!-- Main Calendar Content -->
+    <div class="calendar-main w-screen mx-auto">
+      <Calendar
+        year={validYear}
+        month={validMonth}
+        currentDate={currentDate}
+        currentTime={currentTime}
+        months={months}
+        holidays={holidays}
+        seasons={seasons}
+        celestial={celestial}
+        events={events}
+        regionName="Sword Coast"
+        client:load
+      />
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  // Global calendar state for filtering and display
+  let activeFilters = new Set<string>();
+  let viewMode =
+    new URLSearchParams(window.location.search).get("view") || "month";
+
+  function changeViewMode(mode: string) {
+    const url = new URL(window.location.href);
+    url.searchParams.set("view", mode);
+    window.location.href = url.toString();
+  }
+
+  function toggleResources() {
+    const url = new URL(window.location.href);
+    const current = url.searchParams.get("resources") === "true";
+
+    if (current) {
+      url.searchParams.delete("resources");
+    } else {
+      url.searchParams.set("resources", "true");
+    }
+
+    window.location.href = url.toString();
+  }
+
+  function toggleCompactMode() {
+    const url = new URL(window.location.href);
+    const current = url.searchParams.get("compact") === "true";
+
+    if (current) {
+      url.searchParams.delete("compact");
+    } else {
+      url.searchParams.set("compact", "true");
+    }
+
+    window.location.href = url.toString();
+  }
+
+  // Filter functionality (read-only display filtering)
+  function toggleFilter(filterType: string) {
+    if (activeFilters.has(filterType)) {
+      activeFilters.delete(filterType);
+    } else {
+      activeFilters.add(filterType);
+    }
+    applyDisplayFilters();
+  }
+
+  function applyDisplayFilters() {
+    const elements = document.querySelectorAll("[data-filter]");
+    elements.forEach((element) => {
+      const filters = (element as HTMLElement).dataset.filter?.split(",") || [];
+      const isVisible =
+        activeFilters.size === 0 ||
+        filters.some((filter) => activeFilters.has(filter));
+
+      if (isVisible) {
+        element.classList.remove("filtered-out");
+      } else {
+        element.classList.add("filtered-out");
+      }
+    });
+  }
+
+  // Enhanced navigation handlers
+  document.addEventListener("DOMContentLoaded", function () {
+    // Keyboard shortcuts
+    document.addEventListener("keydown", function (e) {
+      if (
+        e.target &&
+        ["INPUT", "TEXTAREA"].includes((e.target as HTMLElement).tagName)
+      )
+        return;
+
+      switch (e.key) {
+        case "r":
+        case "R":
+          toggleResources();
+          break;
+        case "c":
+        case "C":
+          toggleCompactMode();
+          break;
+        case "ArrowLeft":
+          // Navigate to previous month
+          const prevBtn = document.querySelector(
+            'a[aria-label="Previous month"]'
+          ) as HTMLAnchorElement;
+          if (prevBtn) prevBtn.click();
+          break;
+        case "ArrowRight":
+          // Navigate to next month
+          const nextBtn = document.querySelector(
+            'a[aria-label="Next month"]'
+          ) as HTMLAnchorElement;
+          if (nextBtn) nextBtn.click();
+          break;
+        case "Home":
+          // Go to current month
+          const todayBtn = document.querySelector(
+            'button[aria-label="Go to current month"]'
+          ) as HTMLButtonElement;
+          if (todayBtn) todayBtn.click();
+          break;
+      }
+    });
+  });
+
+  function showDateInformation(dateStr: string) {
+    // Enhanced date information display
+    console.log("Date selected:", dateStr);
+  }
+
+  // Make functions globally available
+  (window as any).changeViewMode = changeViewMode;
+  (window as any).toggleResources = toggleResources;
+  (window as any).toggleCompactMode = toggleCompactMode;
+  (window as any).toggleFilter = toggleFilter;
+</script>

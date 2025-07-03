@@ -2,6 +2,7 @@
 import { Header } from "@/components/layout/header/Header.tsx";
 import { AnnouncementBanner } from "@/components/layout/AnnouncementBanner.tsx";
 import "@/styles/global.css";
+import "@/styles/ui.css";
 import { SITE_TITLE } from "@/consts";
 import { ANNOUNCEMENTS } from "@/config/announcements";
 import FallbackImage from "@/assets/covers/journal-placeholder.jpg";
@@ -94,7 +95,9 @@ const {
     />
 
     <!-- Main Content -->
-    <main class={`w-full flex-grow ${className || ""}`}>
+    <main
+      class={`w-full flex-grow ${className === "character-page" ? "character-page-main" : ""} ${className || ""}`}
+    >
       <slot />
     </main>
   </body>

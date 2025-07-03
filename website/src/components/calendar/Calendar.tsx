@@ -5,13 +5,16 @@ import {
   getSpecialEvents,
   getSpecialDaysForMonth,
   type HarptosDate,
-} from "../../utils/gameCalendarUtils";
+  type HarptosTime,
+} from "../../utils/calendarUtils";
 import {
   generateEnhancedWeather,
   type EnhancedWeatherData,
 } from "../../utils/weatherUtils";
 import CalendarGrid from "./CalendarGrid";
 import WeatherWidget from "./WeatherWidget";
+import CurrentDateWidget from "./CurrentDateWidget";
+import { Button } from "../ui/Button";
 import type {
   CalendarDayData,
   CalendarDataProps,
@@ -21,14 +24,17 @@ interface CalendarProps extends CalendarDataProps {
   year: number;
   month: number;
   currentDate: HarptosDate;
+  currentTime?: HarptosTime; // Optional current time for widget
   compact?: boolean;
   onDateSelect?: (date: string) => void;
+  regionName?: string; // For weather data
 }
 
 export default function Calendar({
   year,
   month,
   currentDate,
+  currentTime,
   months,
   holidays,
   seasons,
@@ -36,6 +42,7 @@ export default function Calendar({
   events = [],
   compact = false,
   onDateSelect,
+  regionName = "Sword Coast",
 }: CalendarProps) {
   const [displayYear, setDisplayYear] = useState(year);
   const [displayMonth, setDisplayMonth] = useState(month);
@@ -323,163 +330,127 @@ export default function Calendar({
   }, [showQuickJump, showMonthInfo]);
 
   return (
-    <div className="calendar-container">
-      {/* Calendar Header */}
-      <div className="calendar-header bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 rounded-t-lg shadow-md">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center space-x-4">
-            <button
-              onClick={() => navigateYear("prev")}
-              className="hover:bg-white/20 p-2 rounded-lg transition-colors"
-              title="Previous Year"
-            >
-              ⟪
-            </button>
-            <button
-              onClick={() => navigateMonth("prev")}
-              className="hover:bg-white/20 p-2 rounded-lg transition-colors"
-              title="Previous Month"
-            >
-              ⟨
-            </button>
-          </div>
-
-          <div className="text-center">
-            <h2 className="text-2xl font-bold">
-              {monthData.data.name} {displayYear}
-            </h2>
-            <p className="text-sm opacity-90">
-              {monthData.data.alias} • {monthData.data.season}
-            </p>
-          </div>
-
-          <div className="flex items-center space-x-4">
-            <button
-              onClick={() => navigateMonth("next")}
-              className="hover:bg-white/20 p-2 rounded-lg transition-colors"
-              title="Next Month"
-            >
-              ⟩
-            </button>
-            <button
-              onClick={() => navigateYear("next")}
-              className="hover:bg-white/20 p-2 rounded-lg transition-colors"
-              title="Next Year"
-            >
-              ⟫
-            </button>
-          </div>
+    <div className="calendar-container flex gap-4">
+      {/* Left Sidebar - Current Date Widget */}
+      <div className="calendar-sidebar-left w-80">
+        <div className="calendar-sidebar-widget sticky top-4">
+          <CurrentDateWidget
+            currentDate={currentDate}
+            currentTime={
+              currentTime || {
+                hour: 12,
+                minute: 0,
+                period: "noon",
+                formalName: "Noon",
+              }
+            }
+            months={months}
+            holidays={holidays}
+            celestial={celestial}
+            events={events}
+          />
         </div>
-
-        <div className="flex justify-center space-x-4 mt-4">
-          <button
-            onClick={goToCurrentDate}
-            className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg transition-colors text-sm"
-          >
-            Today ({currentDate.month}/{currentDate.day}/{currentDate.year})
-          </button>
-          <button
-            onClick={() => setShowQuickJump(!showQuickJump)}
-            className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg transition-colors text-sm"
-          >
-            Quick Jump
-          </button>
-          <button
-            onClick={toggleMonthInfo}
-            className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg transition-colors text-sm"
-          >
-            Month Info
-          </button>
-        </div>
-
-        {/* Quick Jump Menu */}
-        {showQuickJump && (
-          <div className="quick-jump-container absolute z-10 bg-white rounded-lg shadow-lg p-4 mt-2 grid grid-cols-3 gap-2">
-            {months.map((m) => (
-              <button
-                key={m.data.month_number}
-                onClick={() => jumpToMonth(m.data.month_number)}
-                className={`p-2 rounded text-sm transition-colors ${
-                  m.data.month_number === displayMonth
-                    ? "bg-blue-500 text-white"
-                    : "text-gray-700 hover:bg-gray-100"
-                }`}
-              >
-                {m.data.name}
-              </button>
-            ))}
-          </div>
-        )}
-
-        {/* Month Info Panel */}
-        {showMonthInfo && (
-          <div className="month-info-container absolute z-10 bg-white rounded-lg shadow-lg p-4 mt-2 text-gray-800 max-w-md">
-            <h4 className="font-bold text-lg mb-2">{monthData.data.name}</h4>
-            <p className="text-sm mb-2">{monthData.data.Description}</p>
-            <div className="text-xs space-y-1">
-              <p>
-                <strong>Season:</strong> {monthData.data.season}
-              </p>
-              <p>
-                <strong>Alias:</strong> {monthData.data.alias}
-              </p>
-              {monthData.data.activities.length > 0 && (
-                <div>
-                  <strong>Activities:</strong>
-                  <ul className="ml-4 list-disc">
-                    {monthData.data.activities
-                      .slice(0, 3)
-                      .map((activity, idx) => (
-                        <li key={idx}>
-                          {typeof activity === "string"
-                            ? activity
-                            : "Complex Activity"}
-                        </li>
-                      ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
       </div>
 
-      {/* Calendar Grid */}
-      <CalendarGrid
-        calendarDays={calendarDays}
-        specialDays={specialDays}
-        displayYear={displayYear}
-        displayMonth={displayMonth}
-        selectedDate={selectedDate}
-        compact={compact}
-        onDayClick={handleDayClick}
-        onSpecialDayClick={handleSpecialDayClick}
-        months={months}
-      />
+      {/* Main Calendar Area */}
+      <div className="calendar-main flex-1">
+        {/* Calendar Header */}
+        <div className="calendar-header bg-gradient-to-r from-hero-red-dark to-hero-red text-white p-6 rounded-t-lg shadow-md">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center space-x-4">
+              <Button
+                variant="ghost"
+                onClick={() => navigateYear("prev")}
+                ariaLabel="Previous Year"
+                title="Previous Year"
+                size="sm"
+              >
+                ⟪
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => navigateMonth("prev")}
+                ariaLabel="Previous Month"
+                title="Previous Month"
+                size="sm"
+              >
+                ⟨
+              </Button>
+            </div>
 
-      {/* Weather Widget - shows when a day is selected */}
-      {selectedDate && (
-        <div className="mt-4">
+            <div className="text-center">
+              <h2 className="text-2xl font-bold">
+                {monthData.data.name} {displayYear}
+              </h2>
+              <p className="text-sm opacity-90">
+                {monthData.data.alias} • {monthData.data.season}
+              </p>
+            </div>
+
+            <div className="flex items-center space-x-4">
+              <Button
+                variant="ghost"
+                onClick={() => navigateMonth("next")}
+                ariaLabel="Next Month"
+                title="Next Month"
+                size="sm"
+              >
+                ⟩
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => navigateYear("next")}
+                ariaLabel="Next Year"
+                title="Next Year"
+                size="sm"
+              >
+                ⟫
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Calendar Grid */}
+        <CalendarGrid
+          calendarDays={calendarDays}
+          specialDays={specialDays}
+          displayYear={displayYear}
+          displayMonth={displayMonth}
+          selectedDate={selectedDate}
+          compact={compact}
+          onDayClick={handleDayClick}
+          onSpecialDayClick={handleSpecialDayClick}
+          months={months}
+        />
+      </div>
+
+      {/* Right Sidebar - Weather Widget */}
+      <div className="calendar-sidebar-right w-80">
+        <div className="calendar-sidebar-widget sticky top-4">
+          <h3 className="font-semibold text-lg mb-2">Weather Conditions</h3>
           <WeatherWidget
             selectedDay={
-              calendarDays.find(
-                (day) =>
-                  `${displayYear}-${displayMonth}-${day.day}` === selectedDate
-              ) || null
+              selectedDate
+                ? calendarDays.find(
+                    (day) =>
+                      `${displayYear}-${displayMonth}-${day.day}` ===
+                      selectedDate
+                  ) || null
+                : calendarDays.find(
+                    (day) =>
+                      day.year === currentDate.year &&
+                      day.month === currentDate.month &&
+                      day.day === currentDate.day
+                  ) || calendarDays[0] // Default to current day or first day
             }
             currentDate={currentDate}
             months={months}
             compact={compact}
-            showExtendedForecast={true}
-            showHistoricalWeather={true}
-            showRegionalVariations={true}
-            showWeatherTrends={true}
             showGameplayEffects={true}
-            regionName="Sword Coast"
-            forecastDays={7}
+            regionName={regionName}
           />
         </div>
-      )}
+      </div>
     </div>
   );
 }

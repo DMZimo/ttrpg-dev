@@ -36,9 +36,9 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPath }) => {
   return (
     <div className="flex items-center gap-1">
       {createNavLink("/journal", "Journal", "📔")}
+      {createNavLink("/campaign", "Campaign", "⚔️")}
       {createNavLink("/atlas", "Atlas", "🗺️")}
-      {createNavLink("/party", "Party", "👥")}
-      {createNavLink("/timekeeping", "Time & Weather", "🌤️")}
+      {createNavLink("/calendar", "Calendar", "🌤️")}
       {createNavLink("/characters", "People", "🏘️")}
       {createLockedLink("Factions", "⚜️")}
     </div>

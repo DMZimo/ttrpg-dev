@@ -1,10 +1,10 @@
 ---
 # Character Metadata
-owner: "Wouter"
+owner: "TheFlightlessDutchman"
 is_public: true
 publish_date_iso: 2025-06-28T00:00:00
 last_updated_iso: 2025-06-28T00:00:00
-tags: [pc, aasimar, paladin, noble, conquest, waterdeep, tethyrian]
+tags: [pc, aasimar, paladin, noble, conquest, waterdeep]
 
 # Character Details
 type: "pc" # pc, npc, or sidekick
@@ -20,12 +20,25 @@ race: "Aasimar"
 subrace: "Scourge"
 background: "Noble"
 birthplace: "Waterdeep"
+culture: "Waterdhavian"
 description: "A noble Aasimar Paladin, Aldor Irion is a scion of the once-great House Irion, now seeking to restore his family's honor through conquest and leadership. With a commanding presence and a heart of fire, he rides into the unknown to carve out a new destiny for his lineage."
 birthdate: 1471-01-20
 size: "Medium"
 languages:
   - name: "Common"
   - name: "Celestial"
+
+# Visuals
+physical_description:
+  gender: "male"
+  hair: "Long, silver hair reaching past his shoulders"
+  eyes: "Silver flecked eyes that shine with a celestial light"
+  skin: "Pale, with a faint golden sheen"
+  build: "Athletic, with a strong and imposing presence"
+  height:
+    - feet: "6"
+      inches: "2"
+  weight: "180 lbs"
 
 # Character Roles
 roles: ["tank", "melee", "support", "ranged", "caster"]
@@ -55,6 +68,7 @@ classes:
     subclass: "Mastermind"
 hp: 22
 ac: 18
+mr: 18
 
 # Skills (proficient skills only)
 skills:
