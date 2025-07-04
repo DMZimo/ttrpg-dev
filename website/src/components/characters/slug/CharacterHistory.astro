@@ -1,0 +1,51 @@
+---
+// Character history and background information component
+interface Props {
+  character: any;
+}
+
+const { character } = Astro.props;
+---
+
+<div class="flex gap-2 text-xs text-text-secondary">
+    <div class="w-fit flex flex-col gap-1">
+        <div class="flex w-fit rounded-md bg-surface-tertiary p-1">
+            {character.data.physical_description && (
+                <span class="w-13">{character.data.size}</span>
+                <span class="w-8">{character.data.physical_description.gender.charAt(0).toUpperCase() + character.data.physical_description.gender.slice(1)}</span>
+                <span class="w-6">{character.data.physical_description.height.map((h) => `${h.feet}'${h.inches}"`).join(", ")}</span>
+                <span class="w-12">{character.data.physical_description.weight}</span>
+            )}
+        </div>
+        <div class="rounded-md h-15 bg-surface-tertiary p-1">
+            <div class="flex items-center justify-between gap-1.5">
+                {character.data.birthplace && (
+                    <span class="font-semibold">Birthplace:</span>
+                    <span>{character.data.birthplace}</span>
+                )}
+            </div>
+            <div class="flex items-center justify-between gap-1.5">
+                {character.data.culture && (
+                    <span class="font-semibold">Culture:</span>
+                    <span>{character.data.culture}</span>
+                )}
+            </div>
+            <div class="flex items-center justify-between gap-1.5">
+                {character.data.background && (
+                    <span class="font-semibold">Background:</span>
+                    <span>{character.data.background}</span>
+                )}
+            </div>
+        </div>
+    </div>
+    <div class="w-43 rounded-md bg-surface-tertiary p-1">
+        {character.data.languages && character.data.languages.length > 0 && (
+            <p>
+                <span class="font-semibold">Languages:</span>
+                <span>
+                {character.data.languages.map((lang: string | { name: string }) => typeof lang === "string" ? lang : lang.name).join(", ")}
+                </span>
+            </p>
+        )}
+    </div>
+</div>

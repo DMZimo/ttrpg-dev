@@ -54,20 +54,155 @@ classes:
 hp: 22
 ac: 18
 
-# Skills (proficient skills only)
+# Skills
 skills:
-  - name: "Athletics"
+  - name: "Acrobatics"
+    ability: "dex"
     modifier: 2
+    passive: 12
+    proficient: false
+    expertise: false
+    key: "acr"
+  - name: "Animal Handling"
+    ability: "wis"
+    modifier: 4
+    passive: 14
+    proficient: false
+    expertise: false
+    key: "ani"
+  - name: "Arcana"
+    ability: "int"
+    modifier: 2
+    passive: 12
+    proficient: false
+    expertise: false
+    key: "arc"
+  - name: "Athletics"
+    ability: "str"
+    modifier: 2
+    passive: 12
+    proficient: true
+    expertise: false
+    key: "ath"
+  - name: "Deception"
+    ability: "cha"
+    modifier: 1
+    passive: 11
+    proficient: false
+    expertise: false
+    key: "dec"
+  - name: "History"
+    ability: "int"
+    modifier: 2
+    passive: 12
+    proficient: false
+    expertise: false
+    key: "his"
   - name: "Insight"
+    ability: "wis"
     modifier: 6
+    passive: 16
+    proficient: true
+    expertise: false
+    key: "ins"
+  - name: "Intimidation"
+    ability: "cha"
+    modifier: 1
+    passive: 11
+    proficient: false
+    expertise: false
+    key: "itm"
+  - name: "Investigation"
+    ability: "int"
+    modifier: 2
+    passive: 12
+    proficient: false
+    expertise: false
+    key: "inv"
+  - name: "Medicine"
+    ability: "wis"
+    modifier: 4
+    passive: 14
+    proficient: false
+    expertise: false
+    key: "med"
+  - name: "Nature"
+    ability: "int"
+    modifier: 2
+    passive: 12
+    proficient: false
+    expertise: false
+    key: "nat"
   - name: "Perception"
+    ability: "wis"
     modifier: 6
+    passive: 16
+    proficient: true
+    expertise: false
+    key: "prc"
+  - name: "Performance"
+    ability: "cha"
+    modifier: 1
+    passive: 11
+    proficient: false
+    expertise: false
+    key: "prf"
+  - name: "Persuasion"
+    ability: "cha"
+    modifier: 1
+    passive: 11
+    proficient: false
+    expertise: false
+    key: "per"
+  - name: "Religion"
+    ability: "int"
+    modifier: 2
+    passive: 12
+    proficient: false
+    expertise: false
+    key: "rel"
+  - name: "Sleight of Hand"
+    ability: "dex"
+    modifier: 2
+    passive: 12
+    proficient: false
+    expertise: false
+    key: "slt"
+  - name: "Stealth"
+    ability: "dex"
+    modifier: 2
+    passive: 12
+    proficient: false
+    expertise: false
+    key: "ste"
   - name: "Survival"
+    ability: "wis"
     modifier: 6
-other_skills:
+    passive: 16
+    proficient: true
+    expertise: false
+    key: "sur"
+
+# Tools
+tools:
   - name: "Herbalism Kit"
+    ability: "int"
+    modifier: 4
+    proficient: true
+    expertise: false
+    key: "herb"
   - name: "Brewer's Supplies"
+    ability: "int"
+    modifier: 4
+    proficient: true
+    expertise: false
+    key: "brewer"
   - name: "Dulcimer"
+    ability: "cha"
+    modifier: 3
+    proficient: true
+    expertise: false
+    key: "dulcimer"
 
 # Spellcasting
 spellcasting:

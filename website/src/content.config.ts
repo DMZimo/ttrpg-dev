@@ -233,6 +233,7 @@ const characters = defineCollection({
           )
           .optional(),
         weight: z.string().optional(),
+        physical_prose: z.string().optional(),
       })
       .optional(),
 
@@ -281,19 +282,68 @@ const characters = defineCollection({
     ac: z.number().optional(),
     mr: z.number().optional(),
 
-    // Skills
+    // Skills and Proficiencies
+    // Each skill entry contains:
+    // - name: The skill name (e.g., "Acrobatics", "Athletics")
+    // - ability: The associated ability score abbreviation (e.g., "str", "dex", "con", "int", "wis", "cha")
+    // - modifier: The total modifier for the skill including ability and proficiency bonuses
+    // - passive: The passive score (typically 10 + modifier)
+    // - proficiency: The proficiency level (0 = not proficient, 1 = proficient, 2 = expertise)
     skills: z
       .array(
         z.object({
           name: z.string(),
+          ability: z.string(),
           modifier: z.number(),
+          passive: z.number().optional(),
+          proficient: z.union([
+            z.boolean().default(false),
+            z.literal(0).transform(() => false),
+            z.literal(1).transform(() => true),
+            z.literal(2).transform(() => true),
+          ]),
+          expertise: z
+            .boolean()
+            .default(false)
+            .or(
+              z.number().refine((val) => val === 2, {
+                message:
+                  "Expertise must be true/false or 2 (for double proficiency)",
+              })
+            ),
+          key: z.string().optional(), // For D&D 5e system keys like "acr", "ath", etc.
         })
       )
       .optional(),
-    other_skills: z
+
+    // Tools the character is proficient with
+    // - name: The tool name (e.g., "Thieves' Tools", "Herbalism Kit")
+    // - ability: The associated ability score typically used with this tool
+    // - modifier: The total modifier including ability and proficiency
+    // - proficient: Whether the character is proficient with this tool
+    // - expertise: Whether the character has expertise with this tool
+    tools: z
       .array(
         z.object({
           name: z.string(),
+          ability: z.string(),
+          modifier: z.number(),
+          proficient: z.union([
+            z.boolean().default(false),
+            z.literal(0).transform(() => false),
+            z.literal(1).transform(() => true),
+            z.literal(2).transform(() => true),
+          ]),
+          expertise: z
+            .boolean()
+            .default(false)
+            .or(
+              z.number().refine((val) => val === 2, {
+                message:
+                  "Expertise must be true/false or 2 (for double proficiency)",
+              })
+            ),
+          key: z.string().optional(), // For D&D 5e system keys
         })
       )
       .optional(),

@@ -27,6 +27,17 @@ size: "Medium"
 languages:
   - name: "Common"
   - name: "Celestial"
+  - name: "Elvish"
+  - name: "Draconic"
+  - name: "Infernal"
+  - name: "Thieves' Cant" # Aldor has learned this from his rogue training, useful for covert communication
+  - name: "Dwarvish" # As a noble, he has had dealings with various cultures in Waterdeep
+  - name: "Gnomish" # Knowledge of gnomish culture is common among Waterdeep's elite
+  - name: "Halfling" # Familiarity with halfling culture, often seen in Waterdeep's North Ward
+  - name: "Orcish" # Understanding of orc culture, useful for dealing with frontier threats
+  - name: "Giant" # Knowledge of giant culture, often relevant in the North
+  - name: "Sylvan" # Familiarity with the language of fey creatures, useful in the wilderness
+  - name: "Undercommon" # Useful for dealing with the Underdark and its denizens
 
 # Visuals
 physical_description:
@@ -39,6 +50,7 @@ physical_description:
     - feet: "6"
       inches: "2"
   weight: "180 lbs"
+  physical_prose: "The Aasimar in front of you is a striking figure, with long silver hair that cascades down his back, framing a face that is both regal and fierce. His silver flecked eyes seem to glow with an inner light, hinting at his celestial heritage. His skin is pale, almost luminescent, and he carries himself with the confidence of a noble born to lead. Clad in polished armor adorned with the sigil of House Irion, he exudes an aura of authority and purpose."
 
 # Character Roles
 roles: ["tank", "melee", "support", "ranged", "caster"]
@@ -70,18 +82,143 @@ hp: 22
 ac: 18
 mr: 18
 
-# Skills (proficient skills only)
+# Skills
 skills:
+  - name: "Acrobatics"
+    ability: "dex"
+    modifier: 0
+    passive: 10
+    proficient: false
+    expertise: false
+    key: "acr"
+  - name: "Animal Handling"
+    ability: "wis"
+    modifier: 2
+    passive: 12
+    proficient: false
+    expertise: false
+    key: "ani"
+  - name: "Arcana"
+    ability: "int"
+    modifier: 1
+    passive: 11
+    proficient: false
+    expertise: false
+    key: "arc"
   - name: "Athletics"
+    ability: "str"
     modifier: 4
+    passive: 14
+    proficient: true
+    expertise: false
+    key: "ath"
+  - name: "Deception"
+    ability: "cha"
+    modifier: 4
+    passive: 14
+    proficient: false
+    expertise: false
+    key: "dec"
   - name: "History"
+    ability: "int"
     modifier: 3
+    passive: 13
+    proficient: true
+    expertise: false
+    key: "his"
+  - name: "Insight"
+    ability: "wis"
+    modifier: 2
+    passive: 12
+    proficient: false
+    expertise: false
+    key: "ins"
   - name: "Intimidation"
+    ability: "cha"
     modifier: 6
+    passive: 16
+    proficient: true
+    expertise: false
+    key: "itm"
+  - name: "Investigation"
+    ability: "int"
+    modifier: 1
+    passive: 11
+    proficient: false
+    expertise: false
+    key: "inv"
+  - name: "Medicine"
+    ability: "wis"
+    modifier: 2
+    passive: 12
+    proficient: false
+    expertise: false
+    key: "med"
+  - name: "Nature"
+    ability: "int"
+    modifier: 1
+    passive: 11
+    proficient: false
+    expertise: false
+    key: "nat"
+  - name: "Perception"
+    ability: "wis"
+    modifier: 2
+    passive: 12
+    proficient: false
+    expertise: false
+    key: "prc"
+  - name: "Performance"
+    ability: "cha"
+    modifier: 4
+    passive: 14
+    proficient: false
+    expertise: false
+    key: "prf"
   - name: "Persuasion"
+    ability: "cha"
     modifier: 6
-other_skills:
-  - name: "Chess set"
+    passive: 16
+    proficient: true
+    expertise: false
+    key: "per"
+  - name: "Religion"
+    ability: "int"
+    modifier: 1
+    passive: 11
+    proficient: false
+    expertise: false
+    key: "rel"
+  - name: "Sleight of Hand"
+    ability: "dex"
+    modifier: 0
+    passive: 10
+    proficient: false
+    expertise: false
+    key: "slt"
+  - name: "Stealth"
+    ability: "dex"
+    modifier: 0
+    passive: 10
+    proficient: false
+    expertise: false
+    key: "ste"
+  - name: "Survival"
+    ability: "wis"
+    modifier: 2
+    passive: 12
+    proficient: false
+    expertise: false
+    key: "sur"
+
+# Tools
+tools:
+  - name: "Chess Set"
+    ability: "int"
+    modifier: 3
+    proficient: true
+    expertise: false
+    key: "chess"
 
 # Spellcasting
 spellcasting:

@@ -4,7 +4,7 @@ import SearchSortControls from "./SearchSortControls";
 import type {
   CharacterFilters as CharacterFiltersType,
   Character,
-} from "../../types/characterTypes";
+} from "@/types/characterTypes";
 // Dynamic import for CharacterFilters to avoid type-only declaration issue
 const CharacterFilters = React.lazy(() => import("./CharacterFilters"));
 

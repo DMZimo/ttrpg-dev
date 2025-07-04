@@ -346,7 +346,7 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
                   data.type === "pc"
                     ? "/src/assets/ui/portrait-frame-pc.png"
                     : data.type === "npc"
-                    ? "/src/assets/ui/portrait-frame-npc.png"
+                    ? "/src/assets/ui/portrait-frame-npc.webp"
                     : "/src/assets/ui/portrait-frame-sidekick.png"
                 }
                 alt={`${data.type.toUpperCase()} portrait frame`}
