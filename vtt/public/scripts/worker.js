@@ -85,8 +85,8 @@ async function _handleInitializeWorker({taskId, workerName, debug, loadPrimitive
  * @private
  */
 async function _loadLibrary(path) {
-  let source = await fetch(path).then(r => r.text());
-  eval(source);
+  const source = await fetch(path).then(r => r.text());
+  eval.call(globalThis, source);
 }
 
 /* -------------------------------------------- */
@@ -100,14 +100,15 @@ async function _loadLibrary(path) {
  * @private
  */
 async function _handleLoadFunction({taskId, functionName, functionBody}={}) {
-  // Strip existing function name and parse it
-  functionBody = functionBody.replace(/^function [A-z0-9\s]+\(/, "function(");
-  let fn = eval(`${functionName} = ${functionBody}`);
+
+  // Evaluate in an anonymous scope to prevent collision with variables defined in this function's scope
+  const fn = eval(`(function() { return ${functionBody}; })()`);
   if ( !fn ) throw new Error(`Failed to load function ${functionName}`);
+  Object.defineProperty(fn, "name", {value: functionName});
 
   // Record the function to the global scope
   functions.set(functionName, fn);
-  globalThis.functionName = fn;
+  globalThis[functionName] = fn;
   if ( _debug ) console.debug(`Worker ${_workerName} | Loaded function ${functionName}`);
   return {taskId};
 }

@@ -54,7 +54,7 @@ async function processBufferToBase64({buffer, width, height, type="image/png", q
 
 /**
  * Expand a single RED channel buffer into a RGBA buffer and returns it to the main thread.
- * The created RGBA buffer is transfered.
+ * The created RGBA buffer is transferred.
  * @param {object} options
  * @param {Uint8ClampedArray} options.buffer       Buffer to expand.
  * @param {number} options.width                   Width of the image.
@@ -86,9 +86,9 @@ async function processBufferRedToBufferRGBA({buffer, width, height, out, hash, s
 
 /**
  * Reduce a RGBA buffer into a single RED buffer and returns it to the main thread.
- * The created RGBA buffer is transfered.
+ * The created RGBA buffer is transferred.
  * @param {object} options
- * @param {Uint8ClampedArray} options.buffer       Buffer to expand.
+ * @param {Uint8ClampedArray} options.buffer       Buffer to reduce.
  * @param {number} options.width                   Width of the image.
  * @param {number} options.height                  Height of the image.
  * @param {ArrayBuffer} [options.out]              The output buffer.

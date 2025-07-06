@@ -43,27 +43,6 @@ body.players {
     }
   }
 
-  // Permissions Configuration
-  #permissions-config {
-    header {
-      text-align: center;
-      font-weight: bold;
-    }
-    .index {
-      flex: 0 0 200px;
-      text-align: left;
-    }
-    .permissions-list { padding: 0; }
-    .permission { border-bottom: 2px ridge var(--color-cool-3); }
-    .form-fields { justify-content: space-around; }
-
-    // TODO: Only needed until we can unify styles between in-game permissions dialog and user management permissions
-    //       dialog.
-    button {
-      --button-size: calc(1.25 * var(--input-height));
-    }
-  }
-
   /* ----------------------------------------- */
   /*  Permissions Config                       */
   /* ----------------------------------------- */
@@ -93,8 +72,14 @@ body.players {
     }
     .index {
       flex: 0 0 200px;
-      text-align: left;
       font-weight: bold;
+      text-align: left;
+    }
+
+    // TODO: Only needed until we can unify styles between in-game permissions dialog and user management permissions
+    //       dialog.
+    button {
+      --button-size: calc(1.25 * var(--input-height));
     }
   }
 }

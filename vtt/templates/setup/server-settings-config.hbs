@@ -7,7 +7,13 @@
         <div class="form-group{{#if noAdminPW}} notification warning{{/if}}">
             <label for="{{rootId}}-adminPassword">{{fields.adminPassword.label}}</label>
             <div class="form-fields">
-                <input type="password" name="adminPassword" id="{{rootId}}-adminPassword" value="{{source.adminPassword}}">
+                {{#if noAdminPW}}
+                <input type="password" name="adminPassword" id="{{rootId}}-adminPassword">
+                {{else}}
+                <button type="button" data-action="changePassword" id="changePassword">
+                    {{ localize "SERVER_SETTINGS.ChangePassword.label" }}
+                </button>
+                {{/if}}
             </div>
             <p class="hint">{{fields.adminPassword.hint}}</p>
         </div>

@@ -1,7 +1,7 @@
 <div class="standard-form">
     <input type="hidden" name="type" value="{{source.type}}">
     <input type="hidden" name="folder" value="{{source.folder}}">
-    {{formGroup fields.name value=source.name placeholder=namePlaceholder rootId=rootId}}
+    {{formGroup fields.name value=name placeholder=namePlaceholder rootId=rootId autofocus=(not name)}}
     {{formGroup fields.color value=source.color placeholder="#000000" rootId=rootId}}
 
     <div class="form-group">

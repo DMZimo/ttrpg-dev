@@ -223,10 +223,24 @@
       &:hover {
         color: var(--control-hover-icon-color);
         border-color: var(--control-hover-border-color);
+        img { opacity: 1; }
       }
       &.active {
         color: var(--control-active-icon-color);
         border-color: var(--control-active-border-color);
+      }
+
+      > span {
+        display: inline-flex;
+        gap: 4px;
+        &:has(> i) { align-items: center; }
+      }
+
+      img {
+        width: 16px;
+        height: 16px;
+        opacity: .7;
+        filter: var(--hud-icon-filter, none);
       }
     }
   }
@@ -263,8 +277,15 @@
     transform: scale(var(--ui-scale)) translate(var(--transformX), var(--transformY));
 
     .icon {
-      color: var(--color-text-secondary);
+      color: var(--control-icon-color);
       font-size: var(--font-size-20);
+    }
+    .img {
+      width: 20px;
+      height: 20px;
+      opacity: .7;
+      filter: var(--hud-icon-filter, none);
+      background: transparent no-repeat center / contain;
     }
     .total-measurement,
     .total-elevation {

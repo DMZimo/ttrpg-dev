@@ -11,6 +11,7 @@
 
   // Toggle control button
   button.toggle {
+    display: none;
     position: absolute;
     top: 0;
     right: 0;
@@ -19,6 +20,8 @@
       display: none;
     }
   }
+
+  &:hover button.toggle:enabled { display: block; }
 
   // Active editors only
   .editor-container {
@@ -201,7 +204,14 @@ prose-mirror.inactive { overflow: hidden auto; }
     box-shadow: 0 3px 6px rgb(0 0 0 / 45%);
   }
 
-  > ul { display: block; }
+  > ul {
+    display: block;
+
+    &:not(:has(> li > ul)) {
+      max-height: 400px;
+      overflow: hidden auto;
+    }
+  }
 
   li {
     padding: 1px 6px;

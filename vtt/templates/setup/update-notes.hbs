@@ -18,20 +18,25 @@
 <footer class="form-footer">
     {{#if canSnapshot}}
     <button type="button" data-action="createSnapshot">
-        <i class="fa-solid fa-camera-retro"></i>
+        <i class="fa-solid fa-camera-retro" inert></i>
         <span>{{localize "SETUP.BACKUPS.CreateSnapshot"}}</span>
     </button>
     {{/if}}
     {{#if canCheckCompatibility}}
     <button type="button" data-action="checkCompatibility">
-        <i class="fa-solid fa-code-branch"></i>
+        <i class="fa-solid fa-code-branch" inert></i>
         <span>{{localize "SETUP.PreviewCompatibility"}}</span>
     </button>
     {{/if}}
-    {{#unless manual.required}}
-    <button type="button" class="bright" data-action="update">
-        <i class="fa-solid fa-cloud-arrow-down"></i>
-        <label>{{localize "SETUP.UPDATE_NOTES.BeginDownload"}}</label>
+    <button type="button" class="bright" data-action="update" {{disabled (not canUpdate)}}
+            {{#unless canUpdate}}data-tooltip aria-label="{{localize "SETUP.NoUpdateMode.Hint"}}"{{/unless}}>
+        <i class="fa-solid fa-cloud-arrow-down" inert></i>
+        <label>
+            {{~#if canUpdate~}}
+            {{localize "SETUP.UPDATE_NOTES.BeginDownload"}}
+            {{~else~}}
+            {{localize "SETUP.NoUpdateMode.Label"}}
+            {{~/if~}}
+        </label>
     </button>
-    {{/unless}}
 </footer>

@@ -64,7 +64,7 @@
     }
   }
 
-  .placeable-hud {
+  .placeable-hud, #measurement .waypoint-label {
     --control-icon-color: rgba(0 0 0 / 70%);
     --control-active-icon-color: rgba(0 0 0 / 70%);
     --control-hover-icon-color: #000;
@@ -110,6 +110,8 @@
     --entry-active-bg: rgb(255 255 255 / 35%);
     --token-effect-filter: invert(1);
   }
+
+  #token-hud, #measurement { --hud-icon-filter: invert(1); }
 
   /* AV */
   #camera-views, &#camera-views {
