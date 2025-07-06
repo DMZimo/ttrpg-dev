@@ -1,0 +1,25 @@
+{
+  "id": "module.splatter.2025-07-06.1751787293869",
+  "title": "Splatter",
+  "description": "Blood up your games",
+  "version": "5.0.1",
+  "relationships": {
+    "systems": [],
+    "requires": [],
+    "recommends": [],
+    "conflicts": [],
+    "flags": {}
+  },
+  "compatibility": {
+    "minimum": "13",
+    "verified": "13"
+  },
+  "size": 204453,
+  "note": "",
+  "snapshotId": "snapshot.2025-07-06.1751787288509",
+  "originalSize": 548122,
+  "createdAt": 1751787293869,
+  "packageId": "splatter",
+  "type": "module",
+  "system": null
+}

@@ -1,0 +1,25 @@
+{
+  "id": "module.smalltime.2025-07-06.1751787293846",
+  "title": "SmallTime",
+  "description": "A small module for displaying and controlling the current time of day.",
+  "version": "1.25.1",
+  "compatibility": {
+    "minimum": "13",
+    "verified": "13"
+  },
+  "relationships": {
+    "systems": [],
+    "requires": [],
+    "recommends": [],
+    "conflicts": [],
+    "flags": {}
+  },
+  "size": 341643,
+  "note": "",
+  "snapshotId": "snapshot.2025-07-06.1751787288509",
+  "originalSize": 458024,
+  "createdAt": 1751787293846,
+  "packageId": "smalltime",
+  "type": "module",
+  "system": null
+}

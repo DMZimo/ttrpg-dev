@@ -1,0 +1,35 @@
+{
+  "id": "module.fvtt-perf-optim.2025-07-06.1751787294072",
+  "title": "Prime Performance",
+  "version": "0.11.2",
+  "description": "Provides a collection of unofficial performance optimizations and hacks for foundry vtt.",
+  "compatibility": {
+    "minimum": "12.324",
+    "verified": "13.345",
+    "maximum": "13"
+  },
+  "relationships": {
+    "requires": [
+      {
+        "id": "lib-wrapper",
+        "type": "module",
+        "compatibility": {
+          "minimum": "1.0.0.0",
+          "verified": "1.12.14.0"
+        }
+      }
+    ],
+    "systems": [],
+    "recommends": [],
+    "conflicts": [],
+    "flags": {}
+  },
+  "size": 2001750,
+  "note": "",
+  "snapshotId": "snapshot.2025-07-06.1751787288509",
+  "originalSize": 2224042,
+  "createdAt": 1751787294072,
+  "packageId": "fvtt-perf-optim",
+  "type": "module",
+  "system": null
+}

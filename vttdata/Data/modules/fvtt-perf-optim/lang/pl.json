@@ -1,0 +1,85 @@
+{
+	"fvtt-perf-optim": {
+		"settings": {
+			"optimize-interface-layer-clipping": {
+				"name": "Optymalizacja wsadowego renderowania Token UI",
+				"hint": "Optymalizuje renderowanie serii elementów interfejsu użytkownika tokenów. Nie przewiduje się pogorszenia jakości obrazu. Wymagane, aby ustawienia buforowania pasków tokenów i efektów miały zauważalny wpływ."
+			},
+			"token-bars-caching": {
+				"name": "Paski zasobów tokenów w pamięci podręcznej",
+				"hint": "Buforuje paski zasobów tokenów do tekstur. Spodziewane bardzo niewielkie pogorszenie jakości obrazu przy wysokich poziomach powiększenia."
+			},
+			"token-effects-caching": {
+				"name": "Efekty tokenów w pamięci podręcznej",
+				"hint": "Buforuje pasek efektów tokenów. Przy dużym powiększeniu można spodziewać się niewielkiego pogorszenia jakości obrazu."
+			},
+			"precomputed-noise-textures": {
+				"name": "Optymalizacja animowanych świateł",
+				"hint": "Optymalizuje shader niektórych animowanych świateł (Czarująca fala, Wróżkowe światło, Widmowe światło, Zadymiona ścieżka, Wirująca mgła, Wir) poprzez wykorzystanie wstępnie obliczonych tekstur szumu FBM. Wpływ na wygląd jest minimalny, ale znaczący dla wydajności, zwłaszcza na słabszych kartach graficznych."
+			},
+			"reduce-lighting-resolution": {
+				"name": "Skala rozdzielczości efektów świetlnych",
+				"hint": "Zmniejsza wewnętrzną rozdzielczość efektów świetlnych, aby poprawić wydajność. Może to znacznie poprawić wydajność, zwłaszcza w przypadku użycia wielu świateł lub dużych źródeł światła. Wpływ na wygląd powinien być minimalny, z wyjątkiem niektórych bardzo wysokich poziomów powiększenia i niektórych efektów świetlnych, takich jak heksagonalna kopuła, które mają bardzo wyraźne kontury. Skalę renderowania dla poszczególnych warstw oświetlenia można skonfigurować w menu ustawień."
+			},
+			"spritesheet-substitution": {
+				"name": "Zastąpienie tekstur szablonami sprite'ów",
+				"hint": "Zastępuje podstawowe ikony SVG i inne elementy graficzne zoptymalizowanymi zestawami sprite'ów. Może to poprawić wydajność i wykorzystanie zasobów podczas wyświetlania wielu ikon interfejsu użytkownika dla dzienników, świateł, drzwi itp."
+			},
+			"spritesheet-substitution-custom": {
+				"name": "Niestandardowe zestawy sprite'ów",
+				"label": "Zarządzaj niestandardowymi zestawami sprite'ów",
+				"hint": "Niestandardowe zestawy sprite'ów mogą być używane do zastąpienia bardziej podstawowych lub niestandardowych ikon i tekstur, na przykład niestandardowych znaczników stanu, grafiki tokenów lub kafelków, aby poprawić wydajność.",
+				"menu": {
+					"add": "Dodaj niestandardowy zestaw sprite'ów",
+					"spritesheet": "Wybierz niestandardowy zestaw sprite'ów",
+					"delete": "Usuń niestandardowy zestaw sprite'ów",
+					"title": "Zarządzaj niestandardowymi zestawami sprite'ów",
+					"warn-no-src": "Musisz wybrać źródło zestawu sprite'ów, aby go dodać.",
+					"warn-no-json": "Wybrany plik musi być prawidłowym plikiem JSON zawierającym zestaw sprite'ów pixi.js.",
+					"warn-inalid-asset": "Wybrany plik nie zawiera prawidłowych danych zestawu sprite'ów pixi.js.",
+					"warn-init-failed": "Prime Performance: Nie udało się załadować domyślnych zestawów sprite'ów zastępujących ikony. Optymalizacja zestawów sprite'ów zostanie wyłączona. Więcej szczegółów znajdziesz w konsoli.",
+					"warn-custom-spritesheets-failed": "Prime Performance: Nie udało się załadować jednego lub więcej niestandardowych zestawów sprite'ów. Sprawdź konsolę, aby uzyskać więcej informacji."
+				}
+			},
+			"token-ring-spritesheet-support": {
+				"name": "Obsługa zestawów sprite'ów tokenów dynamicznych",
+				"hint": "Umożliwia zastąpienie tokenów z dynamicznymi pierścieniami teksturami zestawu sprite'ów. Jest to konieczne tylko w przypadku używania dynamicznych pierścieni tokenów i funkcji zastępowania tokenów teksturami zestawu sprite'ów."
+			},
+			"disable-app-v2-background-blur": {
+				"name": "Wyłącz efekty rozmycia tła",
+				"hint": "Wyłącza efekty rozmycia tła w aplikacji v2 i wszystkich innych elementach interfejsu użytkownika. Może to znacznie poprawić wydajność, zwłaszcza na słabszych kartach graficznych i niektórych systemach operacyjnych, takich jak MacOS."
+			},
+
+			"custom-render-scale": {
+				"name": "Skala renderowania efektów świetlnych",
+				"label": "Konfiguracja skali renderowania",
+				"hint": "Skonfiguruj skalę renderowania efektów świetlnych na płótnie. Może to znacznie poprawić wydajność, zwłaszcza w przypadku słabszych kart graficznych. Efekt wizualny może być niezauważalny lub bardzo wyraźny, w zależności od warstwy efektów. Aby ta konfiguracja zadziałała, należy aktywować opcję „Zmniejsz rozdzielczość efektów świetlnych”.",
+				"menu": {
+					"title": "Niestandardowa skala renderowania",
+					"label": "Niestandardowa skala renderowania",
+					"description": "Skonfiguruj indywidualne skale renderowania dla różnych efektów świetlnych. Skala renderowania jest mnożnikiem wewnętrznej rozdzielczości efektów świetlnych. Wartość 100 oznacza skalę renderowania 100%, czyli brak zmian. Wartość 50 oznacza zmniejszenie rozdzielczości o połowę i tak dalej.",
+					"confirm": "Potwierdź",
+					"cancel": "Reset",
+					"FIELDS": {
+						"background": {
+							"label": "Tło",
+							"hint": "Skala renderowania efektów tła. Duży efekt wizualny, minimalny wpływ na wydajność. Optymalna wartość domyślna to 100%."
+						},
+						"illumination": {
+							"label": "Oświetlenie",
+							"hint": "Skala renderowania efektów świetlnych. Bardzo niewielki wpływ na wygląd, średni wpływ na wydajność. Optymalna wartość domyślna to 40%."
+						},
+						"coloration": {
+							"label": "Zabarwienie",
+							"hint": "Skala efektów zabarwienia. Średni do bardzo wysokiego wpływu wizualnego, w zależności od techniki zabarwienia. Wysoki wpływ na wydajność. Optymalna wartość domyślna to 100%."
+						},
+						"darkness": {
+							"label": "Ciemność",
+							"hint": "Skala efektów ciemności. Minimalny wpływ na wygląd i wydajność. Optymalna wartość domyślna to 50%."
+						}
+					}
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,135 @@
+<form>
+  <section>
+
+    <datalist id="groups">
+      {{#each groups}}
+      <option value="{{this}}"></option>
+      {{/each}}
+    </datalist>
+
+    <ol class="token-variant-table" style="overflow-x: hidden;">
+      <li class="table-row table-header flexrow">
+        <div class="mapping-controls">
+          <a class="create-mapping" title="Add new mapping"> <i class="fas fa-plus"></i></a>
+        </div>
+        <div class="mapping-label" title="Optional description for the mapping. Actor mappings will override Global ones if their Labels match."><label>Description</label></div>
+        <div class="mapping-expression"><label>Expression</label>&nbsp;&nbsp;<i class="fas fa-question-circle" title="Accepted Operators:&#013;• && ( logical AND)&#013;• || (logical OR)&#013;• \! (escaped logical NOT)&#013;• \( (escaped open bracket to group expressions)&#013;• \) (escaped closed bracket to group expressions)&#013;&#013;Accepted hp and Token property Comparators:&#013;• = (equal)&#013;• < (less than)&#013;• > (greater than)&#013;• <= (less than or equal)&#013;• >= (greater than or equal)&#013;• <> (lesser or greater than)&#013;&#013;Accepted wildcards&#013;• \*&#013;• \{  \}&#013;&#013;Examples of valid expressions:&#013;• Flying&#013;• Dead && Burning&#013;• Flying && \! \( Prone || Dead \)&#013;• hp<=50%&#013;• name=&ldquo;Raging Barbarian&ldquo;&#013;• lockRotation=&ldquo;true&ldquo;&#013;• flags.token-variants.test=&ldquo;true&ldquo;&#013;• Exhaustion \*&#013;• Exhaustion \{1,2,3\}&#013;&#013;Special Effect Names:&#013;• token-variants-combat : Actives when Token is in combat&#013;• combat-turn : Activates when it's Token's turn in combat&#013;• combat-turn-next : Actives when Token is next in the initiative order"></i></div>
+        <div class="mapping-priority" title="The order in which mappings are to be resolved. Which scripts are run first, token configs are prioritized, and overlay display order will all be based off of this value."><label>Priority</label></div>
+        <div class="mapping-image" title="Image to be applied to the token."><label>Image</label></div>
+        <!-- <div class="mapping-config" title="Token Configuration and Scripts"><label>Config</label></div> -->
+        <div class="mapping-overlay" title="Image, text, or shapes to be shown on the token."><label>Overlay</label></div>
+        <div class="mapping-alwaysOn" title="If checked mapping will always be treated as active, regardless whether the Expression is true or not."><label>Always On</label></div>
+        <div class="mapping-disable" title="If checked mapping will never be activated regardless of whether the Expression is true or not."><label>Disable</label></div>
+        {{#if global}}
+        <div class="mapping-target" title="Actor types that this mapping is applicable to."><i class="fas fa-users"></i></div>
+        {{/if}}
+        <div class="mapping-group" title="Mappings sharing Group names will be displayed under the same header."><label>Group</label></div>
+      </li>
+
+    {{#each groupedMappings as |mappings group|}}
+      <div class="group-title flexrow">
+        <p><a class="group-delete" data-group="{{group}}"><i class="fas fa-trash fa-xs"></i></a> {{group}}</p>
+        <div class="group-disable {{#if mappings.active}}active{{/if}}" data-group="{{group}}"><a><i class="fas fa-power-off"></i></a></div>
+        <div class="group-toggle active {{#if ../global}}global{{/if}}" data-group="{{group}}"><a><i class="fas fa-chevron-double-up"></i></a></div>
+      </div>
+      {{#each mappings.list as |mapping|}}
+      <input type="text" name="mappings.{{mapping.i}}.id" value="{{mapping.id}}" hidden/>
+      <li class="table-row flexrow {{#if mapping.parentID}}child{{/if}}" data-group="{{group}}" data-index="{{mapping.i}}">
+        <div class="mapping-controls">
+          <a class="clone-mapping" title="Clone mapping"><i class="fas fa-clone"></i></a>
+          <a class="delete-mapping" title="Delete mapping"><i class="fas fa-trash"></i></a>
+        </div>
+        <div class="mapping-label">
+          <input
+            type="text"
+            name="mappings.{{mapping.i}}.label"
+            value="{{mapping.label}}"
+          />
+        </div>
+        <div class="mapping-expression">
+          <div class="expression-container">
+            <a class="expression-switch" title="Toggle between Expression and JavaScript Code"><i class="fad fa-code"></i></a>
+            <div>
+              <div class="div-input {{#if hasCodeExp}}hidden{{/if}}" contenteditable="true" title="Expression">{{{mapping.highlightedExpression}}}</div>
+              <input
+                type="text"
+                name="mappings.{{mapping.i}}.expression"
+                value="{{mapping.expression}}"
+                hidden/>
+            </div>
+            <div class="expression-code {{#unless hasCodeExp}}hidden{{/unless}}">
+              <textarea name="mappings.{{mapping.i}}.codeExp" title="JavaScript Code&#013;'token' document is available within this context">{{mapping.codeExp}}</textarea>
+            </div>
+          </div>
+        </div>
+        <div class="mapping-priority">
+          <input
+            type="number"
+            name="mappings.{{mapping.i}}.priority"
+            value="{{mapping.priority}}"
+            placeholder="priority"
+          />
+        </div>
+        <div class="mapping-image">
+          <video
+            height="32" width="32"
+            src="{{mapping.imgSrc}}"
+            title="{{mapping.imgName}}"
+            autoplay
+            loop
+            muted
+            {{#unless isVideo}}hidden{{/unless}}
+            >
+          </video>
+          <img height="32" width="32" src="{{#if mapping.imgSrc}} {{mapping.imgSrc}} {{else}} {{../NO_IMAGE}} {{/if}}" title="{{mapping.imgName}}" {{#if isVideo}}hidden{{/if}}/>
+          <input
+            class="imgSrc"
+            type="hidden"
+            name="mappings.{{mapping.i}}.imgSrc"
+            value="{{mapping.imgSrc}}"
+          />
+          <input
+            class="imgName"
+            type="hidden"
+            name="mappings.{{mapping.i}}.imgName"
+            value="{{mapping.imgName}}"
+          />
+        </div>
+        <div class="mapping-config">
+          <!-- <a><i class="fas fa-cog fa-lg config {{#if mapping.hasTokenConfig}}active{{/if}}"></i></a> -->
+          <a><i class="fas fa-edit config-edit {{#if mapping.hasConfig}}active{{/if}}"></i></a>
+          <a><i class="fas fa-play config-script {{#if mapping.hasScript}}active{{/if}}"></i></a>
+          <input class="config" type="hidden" name="mappings.{{mapping.i}}.config" value="{{mapping.config}}">
+        </div>
+        <div class="mapping-overlay">
+          <input type="checkbox" name="mappings.{{mapping.i}}.overlay" {{#if mapping.overlay}}checked{{/if}}/>
+          <a {{#if mapping.parentID}}class="child" title="Child Of: {{mapping.parentID}}"{{/if}}><i class="fas fa-cog fa-lg overlay-config"></i></a>
+        </div>
+        <div class="mapping-alwaysOn">
+          <input type="checkbox" name="mappings.{{mapping.i}}.alwaysOn" {{#if mapping.alwaysOn}}checked{{/if}} title="Enabling will not trigger scripts."/>
+        </div>
+        <div class="mapping-disable">
+          <input type="checkbox" name="mappings.{{mapping.i}}.disabled" {{#if mapping.disabled}}checked{{/if}}/>
+        </div>
+        {{#if ../../global}}
+        <div class="mapping-target btn" title="Configure Applicable Actors">
+          <a><i class="fas fa-users"></i></a>
+        </div>
+        {{/if}}
+        <div class="mapping-group">
+            <input list="groups" name="mappings.{{mapping.i}}.group" value="{{mapping.group}}"/>
+        </div>
+        {{#if mapping.tokenIDs}}
+          <i class="tokens fa-duotone fa-circle-user" title="{{mapping.tokenIDs}}"></i>
+          <input type="text" name="mappings.{{mapping.i}}.tokens" value="{{mapping.tokensString}}" hidden />
+        {{/if}}
+      </li>
+      {{/each}}
+    {{/each}}
+    </ol>
+  </section>
+  <footer class="sheet-footer flexrow">
+    <button class="save-mappings" type="button"><i class="far fa-save"></i>Save</button>
+    <button class="save-mappings-close" style="flex: 0.2;" type="button"><i class="far fa-save"></i>Save & Close</button>
+  </footer>
+</form>

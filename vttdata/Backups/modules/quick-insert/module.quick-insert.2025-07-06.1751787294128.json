@@ -1,0 +1,25 @@
+{
+  "id": "module.quick-insert.2025-07-06.1751787294128",
+  "title": "Quick Insert - Search Widget",
+  "description": "Quickly find actors, items, spells etc. and insert them wherever you need them right now - the map, character sheets, roll tables, journals, you name it. <br /> <ul><li>Open with <kbd>Ctrl</kbd> + <kbd>Space</kbd> (default)</li> <li>Hold <kbd>Shift</kbd> to select more than one result</li> <li>Drag and drop directly from the search results</li></ul>",
+  "version": "3.5.3",
+  "compatibility": {
+    "minimum": "12.324",
+    "verified": "13.341"
+  },
+  "relationships": {
+    "systems": [],
+    "requires": [],
+    "recommends": [],
+    "conflicts": [],
+    "flags": {}
+  },
+  "size": 336725,
+  "note": "",
+  "snapshotId": "snapshot.2025-07-06.1751787288509",
+  "originalSize": 1399434,
+  "createdAt": 1751787294128,
+  "packageId": "quick-insert",
+  "type": "module",
+  "system": null
+}

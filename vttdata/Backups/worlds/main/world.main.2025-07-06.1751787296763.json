@@ -1,0 +1,25 @@
+{
+  "title": "Princes of the Apocalypse",
+  "id": "world.main.2025-07-06.1751787296763",
+  "system": "dnd5e",
+  "compatibility": {
+    "minimum": "13",
+    "verified": "13"
+  },
+  "description": "",
+  "version": "0",
+  "relationships": {
+    "systems": [],
+    "requires": [],
+    "recommends": [],
+    "conflicts": [],
+    "flags": {}
+  },
+  "size": 10465160,
+  "note": "",
+  "snapshotId": "snapshot.2025-07-06.1751787288509",
+  "originalSize": 19764742,
+  "createdAt": 1751787296763,
+  "packageId": "main",
+  "type": "world"
+}

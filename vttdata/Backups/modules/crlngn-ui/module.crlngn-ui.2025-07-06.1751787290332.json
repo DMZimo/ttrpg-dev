@@ -1,0 +1,26 @@
+{
+  "id": "module.crlngn-ui.2025-07-06.1751787290332",
+  "title": "Carolingian UI",
+  "version": "2.5.3",
+  "description": "Style changes and tweaks to improve look and feel of Foundry UI",
+  "compatibility": {
+    "minimum": "13.339",
+    "verified": "13.346",
+    "maximum": "13.999"
+  },
+  "relationships": {
+    "systems": [],
+    "requires": [],
+    "recommends": [],
+    "conflicts": [],
+    "flags": {}
+  },
+  "size": 237281,
+  "note": "",
+  "snapshotId": "snapshot.2025-07-06.1751787288509",
+  "originalSize": 1065353,
+  "createdAt": 1751787290332,
+  "packageId": "crlngn-ui",
+  "type": "module",
+  "system": null
+}

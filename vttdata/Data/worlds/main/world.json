@@ -2,14 +2,14 @@
   "title": "Princes of the Apocalypse",
   "id": "main",
   "system": "dnd5e",
-  "joinTheme": "default",
-  "coreVersion": "13.345",
+  "joinTheme": "minimal",
+  "coreVersion": "13.346",
   "compatibility": {
     "minimum": "13",
-    "verified": "13"
+    "verified": "13.346"
   },
   "systemVersion": "5.0.4",
-  "lastPlayed": "Sat Jun 28 2025 12:31:22 GMT+0300 (Israel Daylight Time)",
+  "lastPlayed": "Sun Jul 06 2025 10:35:52 GMT+0300 (Israel Daylight Time)",
   "packs": [
     {
       "type": "Item",
@@ -24,7 +24,9 @@
       "flags": {}
     }
   ],
-  "playtime": 265681,
-  "background": "systems/dnd5e/ui/official/dnd5e-background.webp",
-  "nextSession": "2025-06-23T16:00:00.000Z"
+  "playtime": 454550,
+  "background": "assets/srd5e/img/adventure/PotA/credits.webp",
+  "nextSession": "2025-06-30T16:00:00.000Z",
+  "description": "",
+  "flags": {}
 }

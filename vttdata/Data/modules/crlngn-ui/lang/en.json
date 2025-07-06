@@ -159,7 +159,7 @@
             "hint": "[Requires reload] <b>Player color</b>: uses the player's color on Foundry; <b>Roll Type</b>: uses color coding for attack, save, skill check, etc. <b>None:</b> no border at all (will allow borders set by other modules).",
             "options": {
               "playerColor": "Player Color",
-              "rollType": "Roll Type",
+              "rollType": "Roll Type (DnD5e)",
               "none": "None"
             }
           },
@@ -310,12 +310,20 @@
             "hint": "Enable to apply global color theme and styles to DnD 5e actor sheets (PC and NPC)"
           },
           "useHorizontalSheetTabs": {
-            "label": "Use horizontal tabs with labels",
+            "label": "Use horizontal tabs with labels on 5e sheets",
             "hint": "Enable to use horizontal tabs with labels on 5e actor sheets instead of the lateral icon tabs"
           }
         },
         "reset": "Reset",
         "save": "Save"
+      },
+      "enforceGMSettings": {
+        "label": "Enforce GM Settings to Players",
+        "hint": "When enabled, all players will use the GM's UI settings when they connect. This ensures a consistent UI experience across all players."
+      },
+      "defaultSettings": {
+        "label": "Default GM Settings",
+        "hint": "Stores the GM's preferred settings for enforcement to players"
       },
       "controlIconSize": {
         "label": "Size of control icons",

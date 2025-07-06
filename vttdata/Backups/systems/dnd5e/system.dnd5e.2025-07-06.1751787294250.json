@@ -1,0 +1,25 @@
+{
+  "id": "system.dnd5e.2025-07-06.1751787294250",
+  "title": "Dungeons & Dragons Fifth Edition",
+  "description": "A system for playing the fifth edition of the world's most popular role-playing game in the Foundry Virtual Tabletop environment.",
+  "version": "5.0.4",
+  "compatibility": {
+    "minimum": "13.341",
+    "verified": "13"
+  },
+  "relationships": {
+    "systems": [],
+    "requires": [],
+    "recommends": [],
+    "conflicts": [],
+    "flags": {}
+  },
+  "size": 96259787,
+  "note": "",
+  "snapshotId": "snapshot.2025-07-06.1751787288509",
+  "originalSize": 121353358,
+  "createdAt": 1751787294250,
+  "packageId": "dnd5e",
+  "type": "system",
+  "system": null
+}

@@ -1,0 +1,815 @@
+<form class="tva-overlay-form">
+
+    <nav class="sheet-tabs tabs" data-group="main" aria-role="Form Tab Navigation">
+        <a class="item active" data-tab="misc"><i class="fas fa-wrench"></i> Misc</a>
+        <a class="item" data-tab="appearance"><i class="fas fa-expand"></i> Appearance</a>
+        <a class="item" data-tab="image" style="border-left: 1px solid rgba(0, 0, 0, 0.2);"><i class="fas fa-image"></i> Image</a>
+        <a class="item" data-tab="text"><i class="fas fa-text-size"></i> Text</a>
+        <a class="item" data-tab="shapes" style="border-right: 1px solid rgba(0, 0, 0, 0.2);"><i class="fas fa-shapes"></i> Shapes</a>
+        <!-- <a class="item" data-tab="html"><i class="fas fa-bolt"></i> HTML</a> -->
+        <a class="item" data-tab="filter"><i class="fas fa-paint-roller"></i> Filter</a>
+        <a class="item" data-tab="visibility"><i class="fas fa-eye"></i> Visibility</a>
+        <a class="item" data-tab="animation"><i class="fas fa-camera-movie"></i> Animation</a>
+        <a class="item" data-tab="interactivity"><i class="fas fa-bolt"></i> Triggers</a>
+        <a class="item {{#if variables}}non-empty-variables{{/if}}" data-tab="variables"><i class="fas fa-superscript"></i> Variables</a>
+    </nav>
+
+    <input type="text" name="id" value="{{id}}" hidden>
+
+    {{#if tmfxActive}}
+    <datalist id="tmfxPresets">
+        {{#each tmfxPresets }}
+        <option value="{{this}}"></option>
+        {{/each}}
+    </datalist>
+    {{/if}}
+
+    {{#if ceEffects}}
+    <datalist id="ceEffects">
+        {{#each ceEffects }}
+        <option value="{{this}}"></option>
+        {{/each}}
+    </datalist>
+    {{/if}}
+
+    <datalist id="macros">
+        {{#each macros }}
+        <option value="{{this}}"></option>
+        {{/each}}
+    </datalist>
+
+    <section class = "content">
+
+        <div class="tab" data-group="main" data-tab="html">
+
+            <nav class="tabs sheet-tabs secondary-tabs" data-group="html" aria-role="Sight Configuration Tabs">
+                <a class="item active" data-tab="template" data-group="html"><i class="fa-solid fa-eye"></i> Template</a>
+                <!-- <a class="item" data-tab="style" data-group="html"><i class="fa-solid fa-radar"></i> CSS</a> -->
+                <a class="item" data-tab="listeners" data-group="html"><i class="fa-solid fa-cogs"></i> Listeners</a>
+            </nav>
+
+            <div class="tab" data-group="html" data-tab="template">
+                <textarea class="html-text" name="html.template">{{html.template}}</textarea>
+            </div>
+
+            <div class="tab" data-group="html" data-tab="style">
+                <p class="notes">Use unique IDs and classes to apply styles as it is not possible to limit CSS scope to just the overlay and anything entered here will be applicable to the rest of the document.</p>
+                <textarea class="html-text"name="html.style">{{html.style}}</textarea>
+            </div>
+
+            <div class="tab" data-group="html" data-tab="listeners">
+                <p class="notes">Register your listeners here. Overlays "<b>html</b>" is accessible in this scope.</p>
+                <textarea class="html-text" name="html.listeners">{{html.listeners}}</textarea>
+            </div>
+        </div>
+
+        <div class="tab" data-group="main" data-tab="interactivity">
+            <div class="form-group">
+                <label>Event</label>
+                <div class="form-fields">
+                <select>
+                    <option value="clickLeft">Click Left</option>
+                    <option value="clickLeft2">Double Click Left</option>
+                    <option value="clickRight">Click Right</option>
+                    <option value="clickRight2">Double Click Right</option>
+                    <option value="hoverIn">Hover In</option>
+                    <option value="hoverOut">Hover Out</option>
+                </select>
+                <button class="addEvent" type="button">Add</button>
+                </div>
+            </div>
+
+            {{#each interactivity as |event|}}
+
+            <fieldset>
+                <legend><b>{{event.listener}}</b> <a class="deleteEvent" data-index="{{@index}}" title="Remove"><i class="fas fa-trash-alt"></i></a></legend>
+                <input type="hidden" name="interactivity.{{@index}}.listener" value="{{event.listener}}">
+
+                <div class="form-group">
+                    <label>Macro</label>
+                    <div class="form-fields">
+                        <input list="macros" name="interactivity.{{@index}}.macro" value="{{event.macro}}">
+                    </div>
+                </div>
+
+                {{#if ../ceActive}}
+                <div class="form-group">
+                    <label>DFreds Effect</label>
+                    <div class="form-fields">
+                      <input list="ceEffects" name="interactivity.{{@index}}.ceEffect" value="{{event.ceEffect}}">
+                    </div>
+                </div>
+                {{/if}}
+
+                {{#if ../tmfxActive}}
+                <div class="form-group">
+                    <label>TMFX (Preset)</label>
+                    <div class="form-fields">
+                      <input list="tmfxPresets" name="interactivity.{{@index}}.tmfxPreset" value="{{event.tmfxPreset}}">
+                    </div>
+                </div>
+                {{/if}}
+
+                <div class="form-group">
+                    <label>Script</label>
+                    <div class="form-fields">
+                        <textarea name="interactivity.{{@index}}.script">{{event.script}}</textarea>
+                    </div>
+                </div>
+            </fieldset>
+
+            {{/each}}
+
+        </div>
+
+        <div class="tab active" data-group="main" data-tab="misc">
+
+            <div class="form-group">
+                <label>Parent</label>
+                <div class="form-fields">
+                <select name="parentID">
+                    <option value="TOKEN" {{#if (eq ../../parent "TOKEN")}}selected="selected"{{/if}}>Token (Placeable)</option>
+                    {{#each parents as |parent group|}}
+                    <optgroup label="{{group}}">
+                        {{#each parent.list as |mapping|}}
+                        <option value="{{mapping.id}}" {{#if (eq ../../parentID mapping.id)}}selected="selected"{{/if}}>{{mapping.label}}</option>
+                        {{/each}}
+                    </optgroup>
+                    {{/each}}
+                </select>
+                </div>
+            </div>
+
+            <div class="form-group token-specific-fields">
+                <label>UI Element</label>
+                <div class="form-fields">
+                    <input type="checkbox" name="ui" data-dtype="Boolean" value="{{ui}}" {{#if ui}}checked{{/if}}>
+                </div>
+                <p class="notes">Overlay marked as a UI element will always display above Tokens and will not interact with scene lighting.</p>
+            </div>
+
+            <fieldset class="token-specific-fields">
+                <legend>Display Priority</legend>
+
+                <div class="form-group ui-hide">
+                    <label><i class="fal fa-eclipse"></i> Underlay</label>
+                    <div class="form-fields">
+                        <input type="checkbox" name="underlay" data-dtype="Boolean" value="{{underlay}}" {{#if underlay}}checked{{/if}}>
+                    </div>
+                    <p class="notes">Place the image, video or text underneath the token.</p>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="far fa-arrow-to-bottom"></i> BOTTOM</label>
+                    <div class="form-fields">
+                        <input type="checkbox" name="bottom" data-dtype="Boolean" value="{{bottom}}" {{#if bottom}}checked{{/if}}>
+                    </div>
+                    <p class="notes">Place this underlay below all tokens.</p>
+                </div>
+
+                <div class="form-group ui-hide">
+                    <label><i class="far fa-arrow-to-top"></i> TOP</label>
+                    <div class="form-fields">
+                        <input type="checkbox" name="top" data-dtype="Boolean" value="{{top}}" {{#if top}}checked{{/if}}>
+                    </div>
+                    <p class="notes">Place this overlay above all tokens.</p>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Link To Token</legend>
+                <div class="form-group token-specific-fields">
+                    <label>Tint Color</label>
+                    <div class="form-fields">
+                        <input type="checkbox" name="inheritTint" data-dtype="Boolean" value="{{inheritTint}}" {{#if inheritTint}}checked{{/if}}>
+                    </div>
+                </div>
+    
+                <div class="form-group">
+                    <label>Rotation</label>
+                    <div class="form-fields">
+                        <input type="checkbox" name="linkRotation" data-dtype="Boolean" value="{{linkRotation}}" {{#if linkRotation}}checked{{/if}}>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>&nbsp;&nbsp; -- Overlay Relative</label>
+                    <div class="form-fields">
+                        <input type="checkbox" name="animation.relative" data-dtype="Boolean" value="{{animation.relative}}" {{#if animation.relative}}checked{{/if}}>
+                    </div>
+                </div>
+    
+                <div class="form-group token-specific-fields">
+                    <label>Mirror Image</label>
+                    <div class="form-fields">
+                        <input type="checkbox" name="linkMirror" data-dtype="Boolean" value="{{linkMirror}}" {{#if linkMirror}}checked{{/if}}>
+                    </div>
+                </div>
+
+                <div class="form-group token-specific-fields">
+                    <label>Scale</label>
+                    <div class="form-fields">
+                        <input type="checkbox" name="linkScale" data-dtype="Boolean" value="{{linkScale}}" {{#if linkScale}}checked{{/if}}>
+                    </div>
+                </div>
+
+                <div class="form-group slim token-specific-fields">
+                    <label>Dimensions</label>
+                    <div class="form-fields">
+                        <label>Width</label>
+                        <input type="checkbox" name="linkDimensionsX" data-dtype="Boolean" value="{{linkDimensionsX}}" {{#if linkDimensionsX}}checked{{/if}}>
+                        <label>Height</label>
+                        <input type="checkbox" name="linkDimensionsY" data-dtype="Boolean" value="{{linkDimensionsY}}" {{#if linkDimensionsY}}checked{{/if}}>
+                    </div>
+                </div>
+    
+                <div class="form-group">
+                    <label>Opacity</label>
+                    <div class="form-fields">
+                        <input type="checkbox" name="linkOpacity" data-dtype="Boolean" value="{{linkOpacity}}" {{#if linkOpacity}}checked{{/if}}>
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Link To Stage</legend>
+                <div class="form-group token-specific-fields">
+                    <label>Scale</label>
+                    <div class="form-fields">
+                        <input type="checkbox" name="linkStageScale" data-dtype="Boolean" value="{{linkStageScale}}" {{#if linkStageScale}}checked{{/if}}>
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Video</legend>
+                <div class="form-group">
+                    <label>Loop Video</label>
+                    <div class="form-fields">
+                        <input type="checkbox" name="loop" data-dtype="Boolean" value="{{loop}}" {{#if loop}}checked{{/if}}>
+                    </div>
+                </div>
+    
+                <div class="form-group">
+                    <label>Play Once and Hide</label>
+                    <div class="form-fields">
+                        <input type="checkbox" name="playOnce" data-dtype="Boolean" value="{{playOnce}}" {{#if playOnce}}checked{{/if}}>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+
+        <div class="tab active" data-group="main" data-tab="image">
+            <div class="form-group">
+                <button class="addImage" type="button">Add Image</button>
+            </div>
+
+            {{#each img as |image|}}
+            <hr>
+            <div class="form-group" style="padding: 5px;">
+                <label><a class="deleteImage" data-index="{{@index}}" title="Remove"><i class="fas fa-trash-alt"></i></a> Image</label>
+                <div class="form-fields">
+                    <button type="button" class="file-picker" data-type="imagevideo" data-target="img.{{@index}}.src" title="Browse Files"><i class="fas fa-file-import fa-fw"></i></button>
+                    <input class="image" type="text" name="img.{{@index}}.src" placeholder="path/image.png" value="{{image.src}}">
+                    <input type="checkbox" title="Link to Token Image" name="img.{{@index}}.linked" {{#if image.linked}}checked{{/if}}>
+                    <button type="button" title="Select Image" class="token-variants-image-select-button" data-type="imagevideo" data-target="img.{{@index}}.src"><i class="fas fa-images"></i></button>
+                </div>
+            </div>
+            {{/each}}
+            <hr>
+
+            {{~>modules/token-variants/templates/partials/repeating.html repeating=repeating root="" repeat=repeat padding="true"}}
+        </div>
+
+        <div class="tab active" data-group="main" data-tab="appearance">
+
+            <fieldset>
+                <legend>Appearance</legend>
+
+                <div class="form-group">
+                    <label>Opacity</label>
+                    <div class="form-fields">
+                        <input type="range" value="{{alpha}}" min="0" max="1" step="0.05">
+                        <input name="alpha" class="range-value" type="text" value="{{alpha}}"></input>
+                    </div>
+                </div>
+    
+                <div class="form-group">
+                    <label>Tint Color</label>
+                    <div class="form-fields">
+                        <input class="color" type="text" name="tint" value="{{tint}}">
+                        <input type="color" value="{{tint}}" data-edit="tint">
+                    </div>
+                </div>
+
+                {{~>modules/token-variants/templates/partials/interpolateColor.html root="" interpolateColor=interpolateColor label="Tint Color"}}
+            </fieldset>
+
+            <fieldset>
+                <legend>Dimensions</legend>
+
+                <div class="form-group">
+                    <label>Width <i class="fas fa-question-circle" title="Set exact image width.&#013; *To take effect requires Scale and Dimension linking under Misc to be disabled.*"></i></label>
+                    <div class="form-fields">
+                        <input name="width" type="text" value="{{width}}" min="0"></input>
+                    </div>
+                </div> 
+    
+                <div class="form-group">
+                    <label>Height <i class="fas fa-question-circle" title="Set exact image height.&#013; *To take effect requires Scale and Dimension linking under Misc to be disabled.*"></i></label>
+                    <div class="form-fields">
+                        <input name="height" type="text" value="{{height}}" min="0"></input>
+                    </div>
+                </div> 
+    
+                <div>
+                    <div class="form-group">
+                        <label>Scale Width</label>
+                        <div class="form-fields">
+                            <input class="scaleX" type="range" value="{{scaleX}}" min="0.01" max="6" step="0.01">
+                            <input name="scaleX" class="range-value" type="text" value="{{scaleX}}"></input>
+                        </div>
+                        <div class="scaleLock" style="flex: 0 !important;margin-left: 3px;"><a><i class="fas fa-link"></i></a></div>
+                    </div>
+    
+                    <div class="form-group">
+                        <label>Scale Height</label>
+                        <div class="form-fields">
+                            <input class="scaleY" type="range" value="{{scaleY}}" min="0.01" max="6" step="0.01">
+                            <input name="scaleY" class="range-value" type="text" value="{{scaleY}}"></input>
+                        </div>
+                        <div class="scaleLock" style="flex: 0 !important;margin-left: 3px;"><a><i class="fas fa-link"></i></a></div>
+                    </div>
+                </div>
+    
+                <div class="form-group">
+                    <label>Rotation</label>
+                    <div class="form-fields">
+                        <input type="range" value="{{angle}}" min="-360" max="360" step="1">
+                        <input name="angle" class="range-value" type="text" value="{{angle}}"></input>
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Positioning</legend>
+
+                <button class="reticle" type="button">ASSISTED POSITIONING</button>
+
+                <div class="form-group">
+                    <label>Offset X <span class="units">(Pixels)</span></label>
+                    <div class="form-fields">
+                        <input name="pOffsetX" type="text" value="{{pOffsetX}}"></input>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Offset Y <span class="units">(Pixels)</span></label>
+                    <div class="form-fields">
+                        <input name="pOffsetY" type="text" value="{{pOffsetY}}"></input>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label>Offset X <span class="units">(Parent Scale)</span></label>
+                    <div class="form-fields">
+                        <input class="offsetX" type="range" value="{{offsetX}}" min="-3" max="3" step="0.01">
+                        <input name="offsetX" type="text" class="range-value" value="{{offsetX}}"></input>
+                    </div>
+                    <p class="notes">Offset relative to parent width.</p>
+                    <p class="notes">e.g. If you want the overlay positioned at the left edge of the parent, set it as "0.5" which is equivalent to "parent width * 0.5"</p>
+                </div>
+
+                <div class="form-group">
+                    <label>Offset Y <span class="units">(Parent Scale)</span></label>
+                    <div class="form-fields">
+                        <input class="offsetY" type="range" value="{{offsetY}}" min="-3" max="3" step="0.01">
+                        <input name="offsetY" type="text" class="range-value" value="{{offsetY}}"></input>
+                    </div>
+                    <p class="notes">Offset relative to parent height.</p>
+                    <p class="notes">e.g. If you want the overlay positioned at the top of the parent, set it as "0.5" which is equivalent to "parent height * 0.5"</p>
+                </div>
+
+                <div class="form-group">
+                    <label>Anchor</label>
+                    <div class="form-fields">
+                        <label>X</label>
+                        <input name="anchor.x" type="number" step="any" value="{{anchor.x}}" min="0" max="1"></input>
+                        <label>Y</label>
+                        <input name="anchor.y" type="number" step="any" value="{{anchor.y}}" min="0" max="1"></input>
+                    </div>
+                    <p class="notes">Set the point on an overlay to be used to anchor it to the center of the parent.</p>
+                </div>
+
+            </fieldset>
+
+            <img src="modules/token-variants/img/anchor_diagram.webp" width="200" height="200" style="margin: auto;display: block;border: none;"/>
+        </div>
+
+        <div class="tab active" data-group="main" data-tab="filter">
+            <div class="form-group">
+                <label>Filter</label>
+                <div class="form-fields">
+                <select name="filter">
+                    {{#each filters as |filter|}}
+                    <option value="{{filter}}" {{#if (eq ../filter filter)}}selected="selected"{{/if}}>{{filter}}</option>
+                    {{/each}}
+                </select>
+                </div>
+            </div>
+
+            <div class="filterOptions">
+                {{{filterOptions}}}
+            </div>
+        </div>
+
+        <div class="tab active" data-group="main" data-tab="animation">
+            <div class="form-group">
+                <label>Rotate</label>
+                <div class="form-fields">
+                    <input type="checkbox" name="animation.rotate" data-dtype="Boolean" value="{{animation.rotate}}" {{#if animation.rotate}}checked{{/if}}>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Duration (ms)</label>
+                <div class="form-fields">
+                    <input type="range" value="{{animation.duration}}" min="100" max="30000" step="100">
+                    <input name="animation.duration" class="range-value" type="text" value="{{animation.duration}}"></input>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Clockwise</label>
+                <div class="form-fields">
+                    <input type="checkbox" name="animation.clockwise" data-dtype="Boolean" value="{{animation.clockwise}}" {{#if animation.clockwise}}checked{{/if}}>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab active" data-group="main" data-tab="visibility">
+            <div class="form-group">
+                <label>Always Visible</label>
+                <div class="form-fields">
+                    <input type="checkbox" name="alwaysVisible" data-dtype="Boolean" value="{{alwaysVisible}}" {{#if alwaysVisible}}checked{{/if}}>
+                </div>
+                <p class="notes">Overlay will be visible in explored areas of the map even when the Token is not.</p>
+            </div>
+
+            <div class="form-group">
+                <label>Limit Visibility to Owner</label>
+                <div class="form-fields">
+                    <input type="checkbox" name="limitedToOwner" data-dtype="Boolean" value="{{limitedToOwner}}" {{#if limitedToOwner}}checked{{/if}}>
+                </div>
+            </div>
+  
+            <fieldset>
+                <legend>Limit Visibility to Users</legend>
+                {{#each users as |user|}}
+                <div class="form-group">
+                    <label>{{user.name}}</label>
+                    <div class="form-fields">
+                        <input type="checkbox" name="limitedUsers" data-dtype="String" value="{{user.id}}" {{#if user.selected}}checked{{/if}}>
+                    </div>
+                </div>
+                {{/each}}
+            </fieldset>
+
+            <fieldset>
+                <legend>Limit Visibility to State</legend>
+                <div class="form-group">
+                    <label>Hover</label>
+                    <div class="form-fields">
+                        <input type="checkbox" name="limitOnHover" data-dtype="Boolean" value="{{limitOnHover}}" {{#if limitOnHover}}checked{{/if}}>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Highlight</label>
+                    <div class="form-fields">
+                        <input type="checkbox" name="limitOnHighlight" data-dtype="Boolean" value="{{limitOnHighlight}}" {{#if limitOnHighlight}}checked{{/if}}>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Control</label>
+                    <div class="form-fields">
+                        <input type="checkbox" name="limitOnControl" data-dtype="Boolean" value="{{limitOnControl}}" {{#if limitOnControl}}checked{{/if}}>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>HUD</label>
+                    <div class="form-fields">
+                        <input type="checkbox" name="limitOnHUD" data-dtype="Boolean" value="{{limitOnHUD}}" {{#if limitOnHUD}}checked{{/if}}>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Target</label>
+                    <div class="form-fields">
+                        <label>User</label>
+                        <input type="checkbox" name="limitOnTarget" data-dtype="Boolean" value="{{limitOnTarget}}" {{#if limitOnTarget}}checked{{/if}}>
+                        <label>Any</label>
+                        <input type="checkbox" name="limitOnAnyTarget" data-dtype="Boolean" value="{{limitOnAnyTarget}}" {{#if limitOnAnyTarget}}checked{{/if}}>
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Limit Visibility to Token With Effect</legend>
+                <div class="form-group">
+                    <label>Effect Name</label>
+                    <div class="form-fields">
+                        <input type="text" name="limitOnEffect" value="{{limitOnEffect}}" placeholder="Reveal: Overlay">
+                    </div>
+                    <p class="notes">Overlay will only be visible to Tokens with this effect applied to them.</p>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Limit Visibility to Token With Property</legend>
+                <div class="form-group">
+                    <label>Expression</label>
+                    <div class="form-fields">
+                        <input type="text" name="limitOnProperty" value="{{limitOnProperty}}" placeholder="actor.system.attributes.senses.truesight>0">
+                    </div>
+                    <p class="notes">Overlay will only be visible to Tokens that satisfy this expression.</p>
+                    <p class="notes"> e.g. 
+                        <br>actor.system.attributes.senses.truesight>0 
+                        <br> actor.system.skills.prc.passive>=15
+                        <br>hp&lt;=50%</p>
+                </div>
+            </fieldset>
+
+            {{#if vision5e}}
+            <fieldset>
+                <legend>Vision5e</legend>
+                <div class="form-group">
+                    <label>Visible on Imprecise Modes</label>
+                    <div class="form-fields">
+                        <input type="checkbox" name="impreciseVisible" data-dtype="Boolean" value="{{impreciseVisible}}" {{#if impreciseVisible}}checked{{/if}}>
+                    </div>
+                    <p class="notes">Enable to display the overlay with vision modes that do not reveal identity, such as <b>Hearing</b> and <b>Tremorsense</b>.</p>
+                </div>
+            </fieldset>
+            {{/if}}
+        </div>
+
+        <div class="tab active" data-group="main" data-tab="text">
+            <div class="form-group">
+                <label>Text</label>
+                <div class="form-fields">
+                    <textarea class="text-field" name="text.text">{{text.text}}</textarea>
+                </div>
+                <p class="notes">For this text to show make sure that no image is assigned to this overlay.</p>
+                <p class="notes">Token attributes can be inserted as so: <b>&#123;&#123;name&#125;&#125;</b></p>
+            </div>
+
+            {{~>modules/token-variants/templates/partials/repeating.html repeating=text.repeating root="text." repeat=text.repeat}}
+
+            <div class="form-group">
+                <label>{{localize "DRAWING.FontFamily"}}</label>
+                <div class="form-fields">
+                    <select name="text.fontFamily">
+                    {{#each fonts as |font|}}
+                    <option value="{{font}}" {{#if (eq ../text.fontFamily font)}}selected="selected"{{/if}}>{{font}}</option>
+                    {{/each}}
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>{{localize "DRAWING.FillColor"}}</label>
+                <div class="form-fields">
+                    <color-picker name="text.fill" value="{{text.fill}}"></color-picker>
+                </div>
+            </div>
+
+            {{~>modules/token-variants/templates/partials/interpolateColor.html root="text." interpolateColor=text.interpolateColor label="Fill Color"}}
+            
+            <div class="form-group">
+                <label>Font Size</label>
+                <div class="form-fields">
+                    <input type="range" value="{{text.fontSize}}" min="24" max="100" step="1">
+                    <input name="text.fontSize" class="range-value" type="text" value="{{text.fontSize}}"></input>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Font Weight</label>
+                <div class="form-fields">
+                <select name="text.fontWeight">
+
+                    {{#each fontWeights as |fw|}}
+                    <option value="{{fw}}" {{#if (eq ../text.fontWeight fw)}}selected="selected"{{/if}}>{{fw}}</option>
+                    {{/each}}
+                </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Align</label>
+                <div class="form-fields">
+                <select name="text.align">
+                    {{#each textAlignmentOptions as |option|}}
+                    <option value="{{option.value}}" {{#if (eq ../text.align option.value)}}selected="selected"{{/if}}>{{option.label}}</option>
+                    {{/each}}
+                </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Letter Spacing <span class="units">(Pixels)</span></label>
+                <div class="form-fields">
+                    <input type="range" value="{{text.letterSpacing}}" min="0" max="25" step="0.1">
+                    <input name="text.letterSpacing" class="range-value" type="text" value="{{text.letterSpacing}}"></input>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Shadow</label>
+                <div class="form-fields">
+                    <input type="checkbox" name="text.dropShadow" data-dtype="String" value="{{text.dropShadow}}" {{#if text.dropShadow}}checked{{/if}}>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Stroke Thickness</label>
+                <div class="form-fields">
+                    <input type="range" value="{{text.strokeThickness}}" min="0" max="25" step="1">
+                    <input name="text.strokeThickness" class="range-value" type="text" value="{{text.strokeThickness}}"></input>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Stroke Color</label>
+                <div class="form-fields">
+                    <input class="color" type="text" name="text.stroke" value="{{text.stroke}}">
+                    <input type="color" value="{{text.stroke}}" data-edit="text.stroke">
+                </div>
+            </div>
+
+            <fieldset>
+                <legend>Wrapping</legend>
+
+                <div class="form-group">
+                    <label>Enabled</label>
+                    <div class="form-fields">
+                        <input type="checkbox" name="text.wordWrap" data-dtype="Boolean" {{#if text.wordWrap}}checked{{/if}}>
+                    </div>
+                </div>
+    
+                <div class="form-group">
+                    <label>Word Wrap Width <span class="units">(Pixels)</span></label>
+                    <div class="form-fields">
+                        <input type="range" value="{{text.wordWrapWidth}}" min="0" max="1000" step="5">
+                        <input name="text.wordWrapWidth" class="range-value" type="text" value="{{text.wordWrapWidth}}"></input>
+                    </div>
+                </div>
+    
+                <div class="form-group">
+                    <label>Break Words</label>
+                    <div class="form-fields">
+                        <input type="checkbox" name="text.breakWords" data-dtype="Boolean" {{#if text.breakWords}}checked{{/if}}>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Max Height <span class="units">(Pixels)</span></label>
+                    <div class="form-fields">
+                        <input type="range" value="{{text.maxHeight}}" min="0" max="1000" step="5">
+                        <input name="text.maxHeight" class="range-value" type="text" value="{{text.maxHeight}}"></input>
+                    </div>
+                </div>
+            </fieldset>
+
+
+            <h2>Curve</h2>
+
+            <p class="notes">Curve the text either by defining an angle it should bend by or a radius of an imaginary circle whose edge the text should sit on. </p>
+
+            <div class="form-group">
+                <label>Angle <span class="units">(Degrees)</span></label>
+                <div class="form-fields">
+                    <input type="range" value="{{text.curve.angle}}" min="0" max="360" step="0.5">
+                    <input name="text.curve.angle" class="range-value" type="text" value="{{text.curve.angle}}"></input>
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label>Radius <span class="units">(Pixels)</span></label>
+                <div class="form-fields">
+                    <input type="range" value="{{text.curve.radius}}" min="0" max="450" step="5">
+                    <input name="text.curve.radius" class="range-value" type="text" value="{{text.curve.radius}}"></input>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Invert</label>
+                <div class="form-fields">
+                    <input type="checkbox" name="text.curve.invert" data-dtype="Boolean" {{#if text.curve.invert}}checked{{/if}}>
+                </div>
+            </div>
+        </div>
+        <div class="tab" data-group="main" data-tab="shapes">
+
+            <div class="form-group">
+                <label>Shape</label>
+                <div class="form-fields">
+                <select>
+                    {{#each allShapes as |shape|}}
+                    <option value="{{shape}}">{{shape}}</option>
+                    {{/each}}
+                </select>
+                <button class="addShape" type="button">Add</button>
+                </div>
+            </div>
+
+            {{#each shapes as |shape|}}
+            <hr><hr>
+
+            {{#if (eq shape.shape.type "rectangle")}}
+                {{~>modules/token-variants/templates/partials/shapeRectangle.html shape}}
+            {{else if (eq shape.shape.type "ellipse")}}
+                {{~>modules/token-variants/templates/partials/shapeEllipse.html shape}}
+            {{else if (eq shape.shape.type "polygon")}}
+                {{~>modules/token-variants/templates/partials/shapePolygon.html shape}}
+            {{else if (eq shape.shape.type "torus")}}
+                {{~>modules/token-variants/templates/partials/shapeTorus.html shape}}
+            {{else if (eq shape.shape.type "cutCircle")}}
+                {{~>modules/token-variants/templates/partials/shapeCutCircle.html shape}}
+            {{/if}}
+
+            <fieldset>
+                <legend>Line Style</legend>
+                <div class="form-group">
+                    <label>Width</label>
+                    <div class="form-fields">
+                        <input type="range" value="{{shape.line.width}}" min="0" max="100" step="1">
+                        <input name="shapes.{{@index}}.line.width" class="range-value" type="text" value="{{shape.line.width}}"></input>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Color</label>
+                    <div class="form-fields">
+                        <color-picker name="shapes.{{@index}}.line.color" value="{{shape.line.color}}"></color-picker>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Opacity</label>
+                    <div class="form-fields">
+                        <input type="range" value="{{shape.line.alpha}}" min="0" max="1" step="0.05">
+                        <input name="shapes.{{@index}}.line.alpha" class="range-value" type="text" value="{{shape.line.alpha}}"></input>
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend>Fill</legend>
+                <div class="form-group">
+                    <label>Color</label>
+                    <div class="form-fields">
+                        <color-picker name="shapes.{{@index}}.fill.color" value="{{shape.fill.color}}"></color-picker>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Opacity</label>
+                    <div class="form-fields">
+                        <input type="range" value="{{shape.fill.alpha}}" min="0" max="1" step="0.05">
+                        <input name="shapes.{{@index}}.fill.alpha" class="range-value" type="text" value="{{shape.fill.alpha}}"></input>
+                    </div>
+                </div>
+
+                {{~>modules/token-variants/templates/partials/interpolateColor.html root=(concat "shapes." @index ".fill.") interpolateColor=shape.fill.interpolateColor label="Color"}}
+
+            </fieldset>
+
+            {{~>modules/token-variants/templates/partials/repeating.html repeating=shape.repeating root=(concat "shapes." @index ".") repeat=shape.repeat padding="true"}}
+
+            <hr><hr>
+            {{/each}}
+        </div>
+    </div>
+
+    <div class="tab" data-group="main" data-tab="variables">
+        <p class="notes">Define variables that you can insert into any overlay field. Useful when you have a constant value you want to re-use; for example multiple shapes that all share the same width</p>
+        <p class="notes">e.g. @shapeWidth</p>
+        <table>
+            <tr>
+                <th></th>
+                <th>Name</th><th>Value</th>
+                <th><a class="create-variable" title="Add a new variable."><i class="fas fa-plus"></i></a></th>
+            </tr>
+        {{#each variables as |variable|}}
+        <tr data-index="{{@index}}">
+            <td>@</td>
+            <td><input type="text" name="variables.{{@index}}.name" value="{{variable.name}}"></td>
+            <td><input type="text" name="variables.{{@index}}.value" value="{{variable.value}}"></td>
+            <td> <a class="delete-variable" title="Delete variable."><i class="fa-solid fa-trash"></i></a></td>
+        </tr>
+        {{/each}}
+        </table>
+    </div>
+
+    </section>
+
+    <input type="hidden" name="effect" value="{{effect}}">
+
+    <footer class="sheet-footer flexrow">
+        <button type="submit"><i class="far fa-save"></i>{{localize "token-variants.common.apply"}}</button>
+    </footer>
+</form>

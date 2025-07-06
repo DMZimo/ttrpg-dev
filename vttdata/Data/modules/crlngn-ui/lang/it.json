@@ -159,7 +159,7 @@
             "hint": "[Richiede ricaricamento] <b>Colore giocatore</b>: usa il colore del giocatore su Foundry; <b>Tipo di Tiro</b>: usa la codifica colori per attacco, salvezza, prova di abilità, ecc. <b>Nessuno:</b> nessun bordo (permetterà i bordi impostati da altri moduli).",
             "options": {
               "playerColor": "Colore Giocatore",
-              "rollType": "Tipo di Tiro",
+              "rollType": "Tipo di Tiro (DnD5e)",
               "none": "Nessuno"
             }
           },
@@ -316,6 +316,14 @@
         },
         "reset": "Ripristina",
         "save": "Salva"
+      },
+      "enforceGMSettings": {
+        "label": "Applica Impostazioni GM ai Giocatori",
+        "hint": "Quando abilitato, tutti i giocatori utilizzeranno le impostazioni UI del GM quando si connettono. Questo garantisce un'esperienza UI coerente per tutti i giocatori."
+      },
+      "defaultSettings": {
+        "label": "Impostazioni GM Predefinite",
+        "hint": "Memorizza le impostazioni preferite del GM da applicare ai giocatori"
       },
       "controlIconSize": {
         "label": "Dimensione delle icone di controllo",

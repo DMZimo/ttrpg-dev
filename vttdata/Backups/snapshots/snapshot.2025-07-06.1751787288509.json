@@ -1,0 +1,31 @@
+{
+  "type": "snapshot",
+  "generation": 13,
+  "build": 345,
+  "id": "snapshot.2025-07-06.1751787288509",
+  "note": "",
+  "originalSize": 323746544,
+  "createdAt": 1751787290247,
+  "size": 177012585,
+  "backups": [
+    "module.bg3-inspired-hotbar.2025-07-06.1751787290248",
+    "module.colorsettings.2025-07-06.1751787290317",
+    "module.crlngn-ui.2025-07-06.1751787290332",
+    "module.dice-calculator.2025-07-06.1751787290369",
+    "module.dice-so-nice.2025-07-06.1751787290395",
+    "module.diceaddiction.2025-07-06.1751787290679",
+    "module.lib-wrapper.2025-07-06.1751787291342",
+    "module.plutonium.2025-07-06.1751787291362",
+    "module.smalltime.2025-07-06.1751787293846",
+    "module.splatter.2025-07-06.1751787293869",
+    "module.trs-foundryvtt-dice-set.2025-07-06.1751787293898",
+    "module.fvtt-perf-optim.2025-07-06.1751787294072",
+    "module.quick-insert.2025-07-06.1751787294128",
+    "module.permission_viewer.2025-07-06.1751787294167",
+    "module.token-z.2025-07-06.1751787294171",
+    "module.token-variants.2025-07-06.1751787294174",
+    "system.dnd5e.2025-07-06.1751787294250",
+    "world.main.2025-07-06.1751787296763",
+    "world.testworld.2025-07-06.1751787297155"
+  ]
+}

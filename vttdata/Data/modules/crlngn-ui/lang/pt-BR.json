@@ -159,7 +159,7 @@
             "hint": "Isso pode ser substituído por outros módulos. <b>Cor do jogador</b>: usa a cor do jogador no Foundry; <b>Tipo de Rolagem</b>: usa codificação de cores para ataque, salvaguarda, teste de habilidade, etc. <b>Nenhuma:</b> sem bordas (permite bordas de outros módulos).",
             "options": {
               "playerColor": "Cor do Jogador",
-              "rollType": "Tipo de Rolagem",
+              "rollType": "Tipo de Rolagem (DnD5e)",
               "none": "Nenhuma"
             }
           },
@@ -316,6 +316,14 @@
         },
         "reset": "Redefinir",
         "save": "Salvar"
+      },
+      "enforceGMSettings": {
+        "label": "Aplicar Configurações do GM aos Jogadores",
+        "hint": "Quando ativado, todos os jogadores usarão as configurações de interface do GM ao se conectarem. Isso garante uma experiência consistente para todos os jogadores."
+      },
+      "defaultSettings": {
+        "label": "Configurações Padrão do GM",
+        "hint": "Armazena as configurações preferidas do GM para aplicar aos jogadores"
       },
       "controlIconSize": {
         "label": "Tamanho dos ícones de controle",
