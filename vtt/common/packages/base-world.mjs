@@ -4,22 +4,13 @@ import {FILE_CATEGORIES} from "../constants.mjs";
 import {hasFileExtension} from "../data/validators.mjs";
 
 /**
- * @import {PackageManifestData} from "./_types.mjs";
+ * @import {WorldManifestData} from "./_types.mjs";
  */
 
 /**
  * The data schema used to define World manifest files.
  * Extends the basic PackageData schema with some additional world-specific fields.
- * @property {string} system            The game system name which this world relies upon
- * @property {string} coreVersion       The version of the core software for which this world has been migrated
- * @property {string} systemVersion     The version of the game system for which this world has been migrated
- * @property {string} [background]      A web URL or local file path which provides a background banner image
- * @property {string} [nextSession]     An ISO datetime string when the next game session is scheduled to occur
- * @property {boolean} [resetKeys]      Should user access keys be reset as part of the next launch?
- * @property {boolean} [safeMode]       Should the world launch in safe mode?
- * @property {string} [joinTheme]       The theme to use for this world's join page.
- * @property {object} [demo]            Configuration for demo worlds.
- * @property {string} [demo.sourceZip]  Path to the world's fresh data.
+ * @extends BasePackage<WorldManifestData>
  */
 export default class BaseWorld extends BasePackage {
 
@@ -82,7 +73,7 @@ export default class BaseWorld extends BasePackage {
 
   /**
    * Check the given compatibility data against the current installation state and determine its availability.
-   * @param {Partial<PackageManifestData>} data  The compatibility data to test.
+   * @param {Partial<WorldManifestData>} data  The compatibility data to test.
    * @param {object} [options]
    * @param {ReleaseData} [options.release]      A specific software release for which to test availability.
    *                                             Tests against the current release by default.

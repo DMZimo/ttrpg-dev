@@ -106,7 +106,7 @@ export default function BaseShaderMixin(ShaderClass) {
     /* -------------------------------------------- */
 
     /**
-     * Convertion functions for sRGB and Linear RGB.
+     * Conversion functions for sRGB and Linear RGB.
      * @type {string}
      */
     static COLOR_SPACES = `
@@ -173,7 +173,7 @@ export default function BaseShaderMixin(ShaderClass) {
     /**
      * High Quality Fractional Brownian Motion.
      * @param {number} [octaves=3]               Number of octaves (iteration).
-     * @param {number} [fbmFuncName="fbm"]       Name of the fbm function.
+     * @param {string} [fbmFuncName="fbm"]       Name of the fbm function.
      * @param {string} [noiseFuncName="noise"]   Name of the noise function to use inside fbm (must return a `float`).
      * @param {string} [vecType="vec2"]          The vec type the function accepts as a parameter.
      * @returns {string} The formed fbm function

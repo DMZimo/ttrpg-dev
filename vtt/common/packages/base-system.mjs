@@ -3,23 +3,13 @@ import * as fields from "../data/fields.mjs";
 import AdditionalTypesField from "./sub-types.mjs";
 
 /**
- * @import {DocumentTypesConfiguration} from "./_types.mjs";
+ * @import {SystemManifestData} from "./_types.mjs";
  */
 
 /**
  * The data schema used to define System manifest files.
  * Extends the basic PackageData schema with some additional system-specific fields.
- * @property {DocumentTypesConfiguration} [documentTypes]  Additional document subtypes provided by this system.
- * @property {string} [background]        A web URL or local file path which provides a default background banner for
- *                                        worlds which are created using this system
- * @property {string} [initiative]        A default initiative formula used for this system
- * @property {number} [grid]              The default grid settings to use for Scenes in this system
- * @property {number} [grid.type]         A default grid type to use for Scenes in this system
- * @property {number} [grid.distance]     A default distance measurement to use for Scenes in this system
- * @property {string} [grid.units]        A default unit of measure to use for distance measurement in this system
- * @property {number} [grid.diagonals]    The default rule used by this system for diagonal measurement on square and hexagonal grids
- * @property {string} [primaryTokenAttribute] An Actor data attribute path to use for Token primary resource bars
- * @property {string} [secondaryTokenAttribute] An Actor data attribute path to use for Token secondary resource bars
+ * @extends BasePackage<SystemManifestData>
  */
 export default class BaseSystem extends BasePackage {
 
@@ -35,14 +25,14 @@ export default class BaseSystem extends BasePackage {
         distance: new fields.NumberField({required: true, nullable: false, positive: true, initial: 1}),
         units: new fields.StringField({required: true}),
         diagonals: new fields.NumberField({required: true, choices: Object.values(CONST.GRID_DIAGONALS),
-          initial: CONST.GRID_DIAGONALS.EQUIDISTANT, validationError: "must be a value in CONST.GRID_DIAGONALS"}),
+          initial: CONST.GRID_DIAGONALS.EQUIDISTANT, validationError: "must be a value in CONST.GRID_DIAGONALS"})
       }),
       primaryTokenAttribute: new fields.StringField(),
       secondaryTokenAttribute: new fields.StringField()
     });
   }
 
-  /** @inheritdoc */
+  /** @override */
   static type = "system";
 
   /**

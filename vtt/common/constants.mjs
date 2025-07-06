@@ -1527,6 +1527,13 @@ export const KEYBINDING_PRECEDENCE = Object.freeze({
 });
 
 /**
+ * Directories in the public storage path.
+ */
+export const FILE_PICKER_PUBLIC_DIRS = Object.freeze([
+  "cards", "css", "fonts", "icons", "lang", "scripts", "sounds", "ui"
+]);
+
+/**
  * The allowed set of HTML template extensions
  */
 export const HTML_FILE_EXTENSIONS = Object.freeze({

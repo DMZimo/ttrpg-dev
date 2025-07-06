@@ -73,7 +73,7 @@ export default class Macro extends ClientDocumentMixin(BaseMacro) {
    * @param {Actor} [scope.actor]     An Actor who is the protagonist of the executed action
    * @param {Token} [scope.token]     A Token which is the protagonist of the executed action
    * @param {Event|RegionEvent} [scope.event]   An optional event passed to the executed macro
-   * @returns {Promise<unknown>|void} A promising containing a created {@link foundry.documents.ChatMessage}
+   * @returns {Promise<unknown>|void} A promise containing a created {@link foundry.documents.ChatMessage}
    *                                  (or `undefined`) if a chat  macro or the return value if a script macro.
    *                                  A void return is possible if the user is not permitted to execute macros
    *                                  or a script macro execution fails.

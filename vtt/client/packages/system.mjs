@@ -3,7 +3,9 @@ import ClientPackageMixin from "@client/packages/client-package.mjs";
 
 /**
  * @extends BaseSystem
- * @mixes ClientPackageMixin
+ * @mixes {@link ClientPackageMixin}
+ * @see {@link foundry.packages.types.SystemManifestData} For the system.json schema
+ * @see {@link foundry.ClientPackage}
  * @category Packages
  */
 export default class System extends ClientPackageMixin(BaseSystem) {

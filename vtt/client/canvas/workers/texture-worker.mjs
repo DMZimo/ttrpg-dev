@@ -59,8 +59,6 @@ export default class TextureCompressor extends AsyncWorker {
    * @param {number} width                                  Buffered image width.
    * @param {number} height                                 Buffered image height.
    * @param {object} [options]
-   * @param {string} [options.type="image/png"]             The required image type.
-   * @param {number} [options.quality=1]                    The required image quality.
    * @param {string} [options.hash]                         The precomputed hash.
    * @param {boolean} [options.debug]                       The debug option.
    * @returns {Promise<*>}
@@ -84,14 +82,14 @@ export default class TextureCompressor extends AsyncWorker {
 
   /**
    * Expand a buffer in RED format to a buffer in RGBA format.
-   * @param {Uint8ClampedArray} buffer                      Buffer used to create the image data.
-   * @param {number} width                                  Buffered image width.
-   * @param {number} height                                 Buffered image height.
+   * @param {Uint8ClampedArray} buffer               Buffer used to create the image data.
+   * @param {number} width                           Buffered image width.
+   * @param {number} height                          Buffered image height.
    * @param {object} [options]
-   * @param {ArrayBuffer} [options.out]                     The output buffer to write the expanded pixels to. May be detached.
-   * @param {string} [options.hash]                         The precomputed hash.
-   * @param {boolean} [options.debug]                       The debug option.
-   * @returns {Promise<*>}
+   * @param {ArrayBuffer} [options.out]              The output buffer to write the expanded pixels to. May be detached.
+   * @param {string} [options.hash]                  The precomputed hash.
+   * @param {boolean} [options.debug]                The debug option.
+   * @returns {Promise<unknown>}
    */
   async expandBufferRedToBufferRGBA(buffer, width, height, options={}) {
     if ( options.out?.byteLength < (buffer.length * 4) ) throw new Error("Output buffer is too small");
@@ -115,14 +113,14 @@ export default class TextureCompressor extends AsyncWorker {
 
   /**
    * Reduce a buffer in RGBA format to a buffer in RED format.
-   * @param {Uint8ClampedArray} buffer                      Buffer used to create the image data.
-   * @param {number} width                                  Buffered image width.
-   * @param {number} height                                 Buffered image height.
+   * @param {Uint8ClampedArray} buffer                Buffer used to create the image data.
+   * @param {number} width                            Buffered image width.
+   * @param {number} height                           Buffered image height.
    * @param {object} [options]
-   * @param {ArrayBuffer} [options.out]                     The output buffer to write the reduced pixels to. May be detached.
-   * @param {string} [options.hash]                         The precomputed hash.
-   * @param {boolean} [options.debug]                       The debug option.
-   * @returns {Promise<*>}
+   * @param {ArrayBuffer} [options.out]               The output buffer to write the reduced pixels to. May be detached.
+   * @param {string} [options.hash]                   The precomputed hash.
+   * @param {boolean} [options.debug]                 The debug option.
+   * @returns {Promise<unknown>}
    */
   async reduceBufferRGBAToBufferRED(buffer, width, height, options={}) {
     if ( options.out?.byteLength < (buffer.length / 4) ) throw new Error("Output buffer is too small");
@@ -151,7 +149,7 @@ export default class TextureCompressor extends AsyncWorker {
    * @param {ArrayBuffer} [options.out]                     The output buffer to copy the pixels to. May be detached.
    * @param {string} [options.hash]                         The precomputed hash.
    * @param {boolean} [options.debug]                       The debug option.
-   * @returns {Promise<*>}
+   * @returns {Promise<unknown>}
    */
   async copyBuffer(buffer, options={}) {
     if ( options.out?.byteLength < buffer.length ) throw new Error("Output buffer is too small");

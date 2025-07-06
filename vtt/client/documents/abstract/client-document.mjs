@@ -80,11 +80,7 @@ export default function ClientDocumentMixin(Base) {
 
     /* -------------------------------------------- */
 
-    /**
-     * A reference to the Compendium Collection containing this Document, if any, and otherwise null.
-     * @this {ClientDocument}
-     * @returns {CompendiumCollection|null}
-     */
+    /** @override */
     get compendium() {
       return this.inCompendium ? game.packs.get(this.pack) : null;
     }
@@ -936,11 +932,10 @@ export default function ClientDocumentMixin(Base) {
      * 2. A UUID
      *
      * @param {object} data           The data object extracted from a DataTransfer event
-     * @param {object} options        Additional options which affect drop data behavior
      * @returns {Promise<Document>}   The resolved Document
      * @throws If a Document could not be retrieved from the provided data.
      */
-    static async fromDropData(data, options={}) {
+    static async fromDropData(data) {
       let document = null;
 
       // Case 1 - Data explicitly provided
@@ -980,9 +975,9 @@ export default function ClientDocumentMixin(Base) {
      * doesn't contain a `_stats` field, the data is assumed to be pre-V10, when the `_stats` field didn't exist yet.
      * The `_stats` field must not be stripped from the data before it is exported!
      * @param {object} source                  The document data that is imported.
-     * @param {DocumentConstructionContext} [context]
-     *   The model construction context passed to {@link foundry.abstract.Document.fromSource}.
-     * @param {boolean} [context.strict=true]  Strict validation is enabled by default.
+     * @param {DocumentConstructionContext} [context] The model construction context passed to
+     *                                                {@link foundry.abstract.Document.fromSource}. Strict validation is
+     *                                                enabled by default.
      * @returns {Promise<Document>}
      */
     static async fromImport(source, context) {
@@ -1128,9 +1123,9 @@ export default function ClientDocumentMixin(Base) {
       if ( this.type ) {
         const typeLabel = documentConfig.typeLabels[this.type];
         const typeName = game.i18n.has(typeLabel) ? `${game.i18n.localize(typeLabel)}` : "";
-        dataset.tooltipText ??= typeName ?
-          game.i18n.format("DOCUMENT.TypePageFormat", {type: typeName, page: documentName}) :
-          documentName;
+        dataset.tooltipText ??= typeName
+          ? game.i18n.format("DOCUMENT.TypePageFormat", {type: typeName, page: documentName})
+          : documentName;
         anchorIcon = icon ?? documentConfig.typeIcons?.[this.type] ?? documentConfig.sidebarIcon;
       }
 
@@ -1241,7 +1236,7 @@ export default function ClientDocumentMixin(Base) {
           figcaption.append(el);
         }
         figure.insertAdjacentElement(captionPosition === "bottom" ? "beforeend" : "afterbegin", figcaption);
-        if ( captionPosition === "top" ) figure.append(figcaption.querySelector(":scope > cite"));
+        if ( (captionPosition === "top") && cite ) figure.append(figcaption.querySelector(":scope > cite"));
       }
       figure.classList.add("content-embed"); // For backwards compatibility
       return this._createInlineEmbed(figure);

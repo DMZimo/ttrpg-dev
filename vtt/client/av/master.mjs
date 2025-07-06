@@ -88,7 +88,7 @@ export default class AVMaster {
 
       // Initialize local broadcasting
       this.#initialize();
-      return this._connected = connected;
+      return this.#connected = connected;
     };
 
     return this.#connecting = connect().finally(() => this.#connecting = null);

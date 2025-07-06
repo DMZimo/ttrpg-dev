@@ -291,6 +291,15 @@ export default class Document extends DataModel {
   }
 
   /**
+   * A reference to the Compendium Collection containing this Document, if any, and otherwise null.
+   * @returns {CompendiumCollection|null}
+   * @abstract
+   */
+  get compendium() {
+    throw new Error("A subclass of Document must implement this getter.");
+  }
+
+  /**
    * Is this document embedded within a parent document?
    * @returns {boolean}
    */

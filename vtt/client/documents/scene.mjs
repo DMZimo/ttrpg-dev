@@ -52,7 +52,7 @@ export default class Scene extends ClientDocumentMixin(BaseScene) {
 
   /**
    * Provide a thumbnail image path used to represent this document.
-   * @type {string}
+   * @type {string|null}
    */
   get thumbnail() {
     return this.thumb;

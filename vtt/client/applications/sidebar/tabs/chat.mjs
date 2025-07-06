@@ -1173,6 +1173,8 @@ export default class ChatLog extends HandlebarsApplicationMixin(AbstractSidebarT
     const replacement = await this.constructor.renderMessage(message, options);
     const rolls = replacement.querySelectorAll('[data-action="expandRoll"]');
     for ( let i = 0; i < rolls.length; i++ ) rolls[i].classList.toggle("expanded", expanded[i]);
+    replacement.hidden = existing.hidden;
+    replacement.style.opacity = existing.style.opacity;
     existing.replaceWith(replacement);
     if ( "_lifeSpan" in existing ) {
       replacement._lifeSpan = existing._lifeSpan;
@@ -1227,7 +1229,7 @@ export default class ChatLog extends HandlebarsApplicationMixin(AbstractSidebarT
 
     if ( !this.isPopout ) {
       const existing = this.#notificationsElement.querySelector(`.message[data-message-id="${message.id}"]`);
-      if ( existing ) await this.#rerenderMessage(message, existing, { canDelete: false, canClose: false });
+      if ( existing ) await this.#rerenderMessage(message, existing, { canDelete: false, canClose: true });
     }
 
     if ( notify ) this.notify(message);
@@ -1343,12 +1345,21 @@ export default class ChatLog extends HandlebarsApplicationMixin(AbstractSidebarT
    */
   async #postNotification(message, { existing }={}) {
     const log = this.#notificationsElement.querySelector(".chat-log");
-    const element = await this.constructor.renderMessage(message, { canDelete: false, canClose: true });
     const paused = log.querySelector(".message.hovered");
     this.#notificationsElement.classList.add("active");
     this.#notifyAlertDebounce();
+
+    const dummy = document.createElement("li");
+    dummy.classList.add("chat-message", "message");
+    dummy.dataset.messageId = message.id;
+    dummy.hidden = true;
+    log.append(dummy);
+
+    let element = await this.constructor.renderMessage(message, { canDelete: false, canClose: true });
     element.addEventListener("pointerenter", this.#onHoverNotification.bind(this));
     element.addEventListener("pointerleave", this.#onHoverNotification.bind(this));
+    element.hidden = true;
+    dummy.replaceWith(element);
 
     // Insert spacer element to animate gap for card to be inserted.
     const { height=130 } = existing?.getBoundingClientRect() ?? {};
@@ -1363,8 +1374,10 @@ export default class ChatLog extends HandlebarsApplicationMixin(AbstractSidebarT
     ).finished;
 
     // Insert the new card.
+    spacer.remove();
+    element = this.#notificationsElement.querySelector(`.message[data-message-id="${message.id}"]`);
     element.style.opacity = "0";
-    spacer.replaceWith(element);
+    element.hidden = false;
     element.animate({
       opacity: [0, 1],
       transform: ["translateY(-35px)", "translateY(0)"]
@@ -1500,6 +1513,7 @@ export default class ChatLog extends HandlebarsApplicationMixin(AbstractSidebarT
    * If the chat log is popped out, do not display notifications.
    * @param {object} [options]
    * @param {boolean} [options.closing=false]  Whether this method has been triggered by the chat popout closing.
+   * @fires {hookEvents:renderChatInput}
    * @internal
    */
   _toggleNotifications({ closing=false }={}) {
@@ -1511,13 +1525,19 @@ export default class ChatLog extends HandlebarsApplicationMixin(AbstractSidebarT
     const embedInput = !this._shouldShowNotifications({ closing });
     log.hidden = embedInput;
     privacyButtons.classList.toggle("vertical", !embedInput);
+    const previousParent = inputElement.parentElement;
     if ( embedInput ) {
       const target = ui.chat.popout?.rendered && !closing ? ui.chat.popout : ui.chat;
       target.element.querySelector(".chat-controls").insertAdjacentElement("afterbegin", privacyButtons);
       target.element.querySelector(".chat-form").append(inputElement);
     }
     else notifications.append(inputElement, privacyButtons);
+    Hooks.callAll("renderChatInput", this, {
+      "#chat-message": inputElement,
+      "#roll-privacy": privacyButtons
+    }, { previousParent });
     this.#offsetHotbar(!embedInput);
+    if ( this.#isAtBottom ) this.scrollBottom();
   }
 
   /* -------------------------------------------- */

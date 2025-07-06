@@ -629,6 +629,47 @@ export default class WallsLayer extends PlaceablesLayer {
 
   /* -------------------------------------------- */
 
+  /**
+   * Custom undo for wall creation while chaining is active.
+   * @param {object} event
+   * @returns {Promise<Document[]>}
+   * @protected
+   */
+  async _onUndoCreate(event) {
+    const deleted = await super._onUndoCreate(event);
+
+    // Nothing to do if not chaining, nothing deleted, or no active preview
+    if ( !this._chain || !deleted.length || !this.hasPreview ) return deleted;
+
+    // Get the points to anchor to
+    const [x0, y0] = deleted[0].c;
+    this._last = {point: [x0, y0]};
+
+    // Re‑anchor the existing preview so it starts from the new last point
+    const preview = this.preview.children[0];
+    if ( !preview._destroyed ) {
+      preview.document.updateSource({c: [x0, y0, x0, y0]});
+      preview.refresh();
+    }
+
+    // If all walls are gone, exit chaining mode entirely
+    if ( this.placeables.length <= 0 ) {
+      this.hover = null;
+      this._chain = false;
+      this._last = {point: null};
+      this.clearPreviewContainer();
+
+      // Cancel current drag workflow
+      if ( canvas.currentMouseManager ) {
+        canvas.currentMouseManager.interactionData.cancelled = true;
+        canvas.currentMouseManager.cancel();
+      }
+    }
+    return deleted;
+  }
+
+  /* -------------------------------------------- */
+
   /** @inheritDoc */
   _onClickRight(event) {
     if ( event.interactionData.wallsState > WallsLayer.CREATION_STATES.NONE ) return this._onDragLeftCancel(event);

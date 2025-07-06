@@ -125,6 +125,16 @@ export default class PlaceablesLayer extends InteractionLayer {
   /* -------------------------------------------- */
 
   /**
+   * To know wheter this layer has a preview object or not.
+   * @returns {boolean}
+   */
+  get hasPreview() {
+    return !!this.preview?.children.length;
+  }
+
+  /* -------------------------------------------- */
+
+  /**
    * If objects on this PlaceablesLayer have a HUD UI, provide a reference to its instance
    * @type {BasePlaceableHUD|null}
    */
@@ -658,28 +668,64 @@ export default class PlaceablesLayer extends InteractionLayer {
     }
     const event = this.history.pop();
 
-    // Undo creation with deletion
-    if ( event.type === "create" ) {
-      const ids = event.data.map(d => d._id);
-      const deleted = await canvas.scene.deleteEmbeddedDocuments(type, ids, {...event.options, isUndo: true});
-      if ( deleted.length !== 1 ) ui.notifications.info("CONTROLS.UndoCreateObjects", {format: {
+    // Routing event to the correct undo method
+    switch ( event.type ) {
+      case "create":
+        return this._onUndoCreate(event);
+      case "update":
+        return this._onUndoUpdate(event);
+      case "delete":
+        return this._onUndoDelete(event);
+      default:
+        return [];
+    }
+  }
+
+  /* -------------------------------------------- */
+
+  /**
+   * Undo creation with deletion workflow
+   * @param {Event} event
+   * @returns {Promise<Document[]>}     An array of documents which were modified by the undo operation
+   * @protected
+   */
+  async _onUndoCreate(event) {
+    const type = this.constructor.documentName;
+    const ids = event.data.map(d => d._id);
+    const deleted = await canvas.scene.deleteEmbeddedDocuments(type, ids, {...event.options, isUndo: true});
+    if ( deleted.length !== 1 ) ui.notifications.info("CONTROLS.UndoCreateObjects", {format: {
         count: deleted.length, type: game.i18n.localize(getDocumentClass(type).metadata.label)}});
-      return deleted;
-    }
+    return deleted;
+  }
 
-    // Undo updates with update
-    else if ( event.type === "update" ) {
-      return canvas.scene.updateEmbeddedDocuments(type, event.data, {...event.options, isUndo: true});
-    }
+  /* -------------------------------------------- */
 
-    // Undo deletion with creation
-    else if ( event.type === "delete" ) {
-      const created = await canvas.scene.createEmbeddedDocuments(type, event.data,
-        {...event.options, isUndo: true, keepId: true});
-      if ( created.length !== 1 ) ui.notifications.info("CONTROLS.UndoDeleteObjects", {format: {
+  /**
+   * Undo updates with update workflow.
+   * @param {Event} event
+   * @returns {Promise<Document[]>}     An array of documents which were modified by the undo operation
+   * @protected
+   */
+  async _onUndoUpdate(event) {
+    const type = this.constructor.documentName;
+    return canvas.scene.updateEmbeddedDocuments(type, event.data, {...event.options, isUndo: true});
+  }
+
+  /* -------------------------------------------- */
+
+  /**
+   * Undo deletion with creation workflow.
+   * @param {Event} event
+   * @returns {Promise<Document[]>}     An array of documents which were modified by the undo operation
+   * @protected
+   */
+  async _onUndoDelete(event) {
+    const type = this.constructor.documentName;
+    const created = await canvas.scene.createEmbeddedDocuments(type, event.data,
+      {...event.options, isUndo: true, keepId: true});
+    if ( created.length !== 1 ) ui.notifications.info("CONTROLS.UndoDeleteObjects", {format: {
         count: created.length, type: game.i18n.localize(getDocumentClass(type).metadata.label)}});
-      return created;
-    }
+    return created;
   }
 
   /* -------------------------------------------- */

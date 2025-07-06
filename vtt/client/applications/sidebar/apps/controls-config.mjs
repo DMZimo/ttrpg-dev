@@ -90,12 +90,13 @@ export default class ControlsConfig extends CategoryBrowser {
    * @returns {string}
    */
   static humanizeBinding(binding) {
+    const key = binding.logicalKey ?? binding.key;
     const stringParts = binding.modifiers?.reduce((parts, part) => {
-      if ( KeyboardManager.MODIFIER_CODES[part]?.includes(binding.key) ) return parts;
+      if ( KeyboardManager.MODIFIER_CODES[part]?.includes(key) ) return parts;
       const display = KeyboardManager.getKeycodeDisplayString(part);
       parts.unshift(display);
       return parts;
-    }, [KeyboardManager.getKeycodeDisplayString(binding.key)]);
+    }, [KeyboardManager.getKeycodeDisplayString(key)]);
     return stringParts.filterJoin(" + ");
   }
 
@@ -459,7 +460,7 @@ export default class ControlsConfig extends CategoryBrowser {
     const bindingIdParts = bindingId.split(".");
     const bindingIndex = Number(bindingIdParts[bindingIdParts.length - 1] ?? NaN);
     const {MODIFIER_KEYS, MODIFIER_CODES} = KeyboardManager;
-    const binding = {index: bindingIndex, key: event.code, modifiers: []};
+    const binding = {index: bindingIndex, key: event.code, logicalKey: KeyboardManager.translateKey(event), modifiers: []};
     if ( context.isAlt && !MODIFIER_CODES[MODIFIER_KEYS.ALT].includes(context.key) ) {
       binding.modifiers.push(MODIFIER_KEYS.ALT);
     }

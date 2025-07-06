@@ -211,6 +211,7 @@ export default class TextEditor {
     }
 
     TextEditor.#wrapSecrets(html);
+    await this._finalizeEnrichedHTML(html, options);
     return html.innerHTML;
   }
 
@@ -330,6 +331,20 @@ export default class TextEditor {
     };
     return this._replaceTextContent(text, pattern, enrich, {replaceParent});
   }
+
+  /* -------------------------------------------- */
+
+  /**
+   * A method that can be extended by subclasses to perform final post-enrichment operations on an HTML fragment.
+   * Final changes should be made in-place, mutating the provided HTML element.
+   * Note: This API is experimental and may be removed in later versions without deprecation.
+   * @param {HTMLDivElement} html             A div element containing the enriched HTML
+   * @param {EnrichmentOptions} options       Provided enrichment options
+   * @returns {Promise<void>}                 A promise which resolves once finalization has completed
+   * @protected
+   * @internal
+   */
+  static async _finalizeEnrichedHTML(html, options) {}
 
   /* -------------------------------------------- */
 

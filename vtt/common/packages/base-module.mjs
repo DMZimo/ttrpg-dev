@@ -3,12 +3,13 @@ import * as fields from "../data/fields.mjs";
 import AdditionalTypesField from "./sub-types.mjs";
 
 /**
+ * @import {ModuleManifestData} from "./_types.mjs";
+ */
+
+/**
  * The data schema used to define Module manifest files.
  * Extends the basic PackageData schema with some additional module-specific fields.
- * @property {boolean} [coreTranslation]         Does this module provide a translation for the core software?
- * @property {boolean} [library]                 A library module provides no user-facing functionality and is solely
- *                                               for use by other modules. Loaded before any system or module scripts.
- * @property {Record<string, string[]>} [documentTypes]  Additional document subtypes provided by this module.
+ * @extends BasePackage<ModuleManifestData>
  */
 export default class BaseModule extends BasePackage {
 

@@ -1,15 +1,20 @@
 /**
  * @import BasePackage from "@common/packages/base-package.mjs";
+ * @import {Constructor} from "@common/_types.mjs";
  * @import {PackageCompatibilityBadge, PackageManifestData} from "./_types.mjs";
  */
 
 /**
  * A client-side mixin used for all Package types.
  * @category Mixins
- * @param {typeof BasePackage} BasePackage    The parent BasePackage class being mixed
+ * @param {Constructor<BasePackage>} Base    The parent BasePackage class being mixed
  */
-export default function ClientPackageMixin(BasePackage) {
-  class ClientPackage extends BasePackage {
+export default function ClientPackageMixin(Base) {
+  /**
+   * The ClientDocument extends the BasePackage class by adding client-specific behaviors to all Package types.
+   * @extends {BasePackage<PackageManifestData>}
+   */
+  class ClientPackage extends Base {
 
     /**
      * Is this package marked as a favorite?

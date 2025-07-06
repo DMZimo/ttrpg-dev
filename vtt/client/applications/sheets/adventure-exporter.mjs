@@ -309,7 +309,17 @@ export default class AdventureExporter extends HandlebarsApplicationMixin(Docume
         if ( this.#removedContent[name].has(id) ) return;
         const doc = collection.get(id) ?? adventure[name].find(d => d.id === id);
         if ( !doc ) return;
-        submitData[name].push(doc.toObject());
+        const data = doc.toCompendium(adventure.collection, {
+          clearSort: false,
+          clearFolder: false,
+          clearFlags: false,
+          clearSource: false,
+          clearOwnership: true,
+          clearState: true,
+          keepId: true
+        });
+        if ( doc.ownership ) data.ownership = {default: doc.ownership.default}; // Specifically keep default ownership
+        submitData[name].push(data);
       };
       for ( const d of adventure[name] ) addDoc(d.id);
       for ( const d of this.#addedContent[name] ) addDoc(d.id);

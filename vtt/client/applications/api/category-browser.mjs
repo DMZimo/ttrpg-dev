@@ -173,14 +173,6 @@ export default class CategoryBrowser extends HandlebarsApplicationMixin(Applicat
   /* -------------------------------------------- */
 
   /** @inheritDoc */
-  _getTabsConfig(group) {
-    if ( group !== "categories" ) return super._getTabsConfig(group);
-    return this.constructor.TABS;
-  }
-
-  /* -------------------------------------------- */
-
-  /** @inheritDoc */
   _tearDown(options) {
     super._tearDown(options);
     this.#search.unbind();
@@ -198,7 +190,7 @@ export default class CategoryBrowser extends HandlebarsApplicationMixin(Applicat
 
   /**
    * Dynamically assemble a tabs configuration from category data.
-   * @param {Record<string, {id:string; label:string}} categoryData
+   * @param {Record<string, {id:string; label:string}>} categoryData
    * @see {@link foundry.applications.types.ApplicationTabsConfiguration}
    */
   #configureTabs(categoryData) {
@@ -207,7 +199,7 @@ export default class CategoryBrowser extends HandlebarsApplicationMixin(Applicat
       .sort(([, a], [, b]) => this._sortCategories(a, b))
       .map(([id, c]) => ({id, label: c.label, scrollable: [""]}));
     const initial = this.options.initialCategory ?? tabs[0]?.id ?? null;
-    this.constructor.TABS = {tabs, initial};
+    this.constructor.TABS = {categories: {tabs, initial}};
   }
 
   /* -------------------------------------------- */

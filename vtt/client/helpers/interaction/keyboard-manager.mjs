@@ -20,6 +20,7 @@ export default class KeyboardManager {
    * @internal
    */
   _activateListeners() {
+    KeyboardManager.#universalMode = game.settings.get("core", "universalKeybindings");
     window.addEventListener("keydown", event => this.#handleKeyboardEvent(event, false));
     window.addEventListener("keyup", event => this.#handleKeyboardEvent(event, true));
     window.addEventListener("visibilitychange", this.#reset.bind(this));
@@ -42,6 +43,17 @@ export default class KeyboardManager {
    * @type {Set<string>}
    */
   moveKeys = new Set();
+
+  /* -------------------------------------------- */
+
+  /**
+   * Is logical keybindings active?
+   * @type {boolean}
+   */
+  static get isUniversalMode() {
+    return this.#universalMode;
+  }
+  static #universalMode;
 
   /* -------------------------------------------- */
 
@@ -118,6 +130,30 @@ export default class KeyboardManager {
       Slash: "/"
     };
   })();
+
+  /**
+   * Matches any single graphic Unicode code-point (letters, digits, punctuation, symbols, including emoji).
+   * Non-printable identifiers like *ArrowLeft*, *ShiftLeft*, *Dead* never match.
+   * @type {RegExp}
+   */
+  static PRINTABLE_CHAR_REGEX = new RegExp('^[\\p{L}\\p{N}\\p{P}\\p{S}]$', 'u');
+
+  /* -------------------------------------------- */
+
+  /**
+   * Canonical identifier for a key press.
+   * @param {KeyboardEvent} event
+   * @returns {string}
+   */
+  static translateKey(event) {
+    const {key="", code} = event;
+
+    // Physical to Logical
+    if ( this.isUniversalMode && (key.length === 1) && KeyboardManager.PRINTABLE_CHAR_REGEX.test(key) ) {
+      return key.toUpperCase();
+    }
+    return code;
+  }
 
   /* -------------------------------------------- */
 
@@ -201,6 +237,7 @@ export default class KeyboardManager {
     const context = {
       event: event,
       key: event.code,
+      logicalKey: KeyboardManager.translateKey(event),
       isShift: event.shiftKey,
       isControl: event.ctrlKey || event.metaKey,
       isAlt: event.altKey,
@@ -242,15 +279,42 @@ export default class KeyboardManager {
   /* ----------------------------------------- */
 
   /**
-   * Given a standardized pressed key, find all matching registered Keybind Actions.
-   * @param {KeyboardEventContext} context  A standardized keyboard event context
-   * @returns {KeybindingAction[]}          The matched Keybind Actions. May be empty.
+   * Given a keyboard-event context, return every registered keybinding that matches it (may be empty).
+   * @param {KeyboardEventContext} context
+   * @returns {KeybindingAction[]}
    * @internal
    */
   static _getMatchingActions(context) {
-    const possibleMatches = game.keybindings.activeKeys.get(context.key) ?? [];
-    if ( CONFIG.debug.keybindings ) console.dir(possibleMatches);
-    return possibleMatches.filter(action => KeyboardManager.#testContext(action, context));
+    const activeKeys = game.keybindings.activeKeys;
+    const debug = CONFIG.debug.keybindings;
+
+    // Helper: perform one Map lookup, filter with #testContext, log the result
+    const lookup = (key, label) => {
+      const list = (activeKeys.get(key) ?? []).filter(a => KeyboardManager.#testContext(a, context));
+      if ( debug ) {
+        console.log(`[Keybinds] ${label}: "${key}" → ${list.length} hit(s)`);
+        console.dir(list);
+      }
+      return list;
+    };
+
+    if ( KeyboardManager.isUniversalMode ) {
+      // Logical mode
+      const k = context.logicalKey;
+      if ( (k.length === 1) && KeyboardManager.PRINTABLE_CHAR_REGEX.test(k) ) {
+        // Test Digit first
+        if ( "0123456789".includes(k) ) {
+          const hits = lookup(`Digit${k}`, "char=>Digit");
+          if ( hits.length ) return hits;
+        }
+        // Then Key
+        const hits = lookup(`Key${k.toUpperCase()}`, "char=>Key");
+        if ( hits.length ) return hits;
+      }
+    }
+
+    // Physical mode (legacy)
+    return lookup(context.key, "direct");
   }
 
   /* -------------------------------------------- */
@@ -335,7 +399,7 @@ export default class KeyboardManager {
 
     // Check against registered Keybindings
     const actions = KeyboardManager._getMatchingActions(context);
-    if (actions.length === 0) {
+    if ( actions.length === 0 ) {
       if ( CONFIG.debug.keybindings ) {
         console.log("No matching keybinds");
         console.groupEnd();

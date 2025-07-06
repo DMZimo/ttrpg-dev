@@ -561,6 +561,11 @@ export default class JournalSheet extends DocumentSheet {
 
   /** @inheritdoc */
   async close(options={}) {
+    for ( const sheet of Object.values(this.#sheets) ) {
+      // noinspection ES6MissingAwait
+      sheet.close({animate: false});
+    }
+
     // Reset any temporarily-granted ownership.
     if ( this.#tempOwnership ) {
       this.object.ownership = foundry.utils.deepClone(this.object._source.ownership);

@@ -421,7 +421,7 @@ export function radioBoxes(name, choices, options) {
  * </select>
  * ```
  *
- * @example Using nameAttr and labelAttr with objects
+ * @example Using valueAttr and labelAttr with objects
  * ```js
  * let choices = {foo: {key: "a", label: "Choice A"}, bar: {key: "b", label: "Choice B"}};
  * let value = "b";
@@ -429,11 +429,11 @@ export function radioBoxes(name, choices, options) {
  * The template HTML structure
  * ```hbs
  * <select name="importantChoice">
- *   {{selectOptions choices selected=value nameAttr="key" labelAttr="label"}}
+ *   {{selectOptions choices selected=value valueAttr="key" labelAttr="label"}}
  * </select>
  * ```
  *
- * @example Using nameAttr and labelAttr with arrays
+ * @example Using valueAttr and labelAttr with arrays
  * ```js
  * let choices = [{key: "a", label: "Choice A"}, {key: "b", label: "Choice B"}];
  * let value = "b";
@@ -441,7 +441,7 @@ export function radioBoxes(name, choices, options) {
  * The template HTML structure
  * ```hbs
  * <select name="importantChoice">
- *   {{selectOptions choices selected=value nameAttr="key" labelAttr="label"}}
+ *   {{selectOptions choices selected=value valueAttr="key" labelAttr="label"}}
  * </select>
  * ```
  */

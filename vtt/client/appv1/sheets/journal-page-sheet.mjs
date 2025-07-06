@@ -71,11 +71,18 @@ export class JournalPageSheet extends DocumentSheet {
 
   /** @inheritdoc */
   getData(options={}) {
-    return foundry.utils.mergeObject(super.getData(options), {
+    const comparator = foundry.documents.JournalEntry.implementation.sortCategories;
+    const categories = this.object.parent.categories.contents.sort(comparator);
+    const context = foundry.utils.mergeObject(super.getData(options), {
       headingLevels: Object.fromEntries(Array.fromRange(3, 1).map(level => {
         return [level, game.i18n.format("JOURNALENTRYPAGE.Level", {level})];
       }))
     });
+    if ( categories.length ) context.categories = [
+      { value: "", label: game.i18n.localize("JOURNAL.Uncategorized") },
+      ...categories.map(({ id, name }) => ({ value: id, label: name }))
+    ];
+    return context;
   }
 
   /* -------------------------------------------- */

@@ -672,7 +672,7 @@ export default class CompendiumCollection extends DirectoryCollectionMixin(Docum
     await foundry.applications.api.DialogV2.wait({
       id: "compendium-ownership",
       window: {
-        title: game.i18n.format("OWNERSHIP.Title", {object: this.metadata.label}), // FIXME: double localization
+        title: game.i18n.format("OWNERSHIP.Title", {object: game.i18n.localize(this.metadata.label)}), // FIXME: double localization
         icon: "fa-solid fa-user-lock"
       },
       position: {width: 480},

@@ -203,7 +203,7 @@ export default class HTMLDocumentTagsElement extends AbstractFormInputElement {
     this.#tags.addEventListener("click", this.#onClickTag.bind(this));
     this.#input.addEventListener("keydown", this.#onKeydown.bind(this));
     this.#input.addEventListener("change", event => event.stopPropagation());
-    this.addEventListener("drop", this.#onDrop.bind(this));
+    this.addEventListener("drop", this.#onDrop.bind(this), { signal: this.abortSignal });
   }
 
   /* -------------------------------------------- */

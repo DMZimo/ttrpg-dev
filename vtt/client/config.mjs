@@ -15,6 +15,7 @@ import {CONST, applications, audio, av, canvas, data, dice, documents, helpers, 
  * @import ParticleEffect from "./canvas/containers/elements/particles/particle-effect.mjs";
  * @import RollResolver from "./applications/dice/roll-resolver.mjs";
  * @import {TokenMovementActionConfig} from "./_types.mjs";
+ * @import {TokenMovementCostAggregator} from "./documents/_types.mjs";
  */
 
 /**
@@ -144,8 +145,6 @@ export const Actor = {
 
 /**
  * Configuration for the Adventure document.
- * Currently for internal use only.
- * @internal
  */
 export const Adventure = {
   documentClass: documents.Adventure,
@@ -1979,6 +1978,15 @@ export const Token = {
     /** @type {typeof data.BaseTerrainData} */
     TerrainData: data.TerrainData,
     /**
+     * The movement cost aggregator.
+     * @type {TokenMovementCostAggregator}
+     */
+    costAggregator: (results, distance, segment) => {
+      results.sort((a, b) => a.cost - b.cost);
+      if ( results.at(-1) === Infinity ) return Infinity;
+      return results[(results.length - 1) >> 1].cost; // Median cost
+    },
+    /**
      * The default movement animation speed in grid spaces per second.
      * @type {number}
      */
@@ -1994,16 +2002,19 @@ export const Token = {
       walk: {
         label: "TOKEN.MOVEMENT.ACTIONS.walk.label",
         icon: "fa-solid fa-person-walking",
+        img: "icons/svg/walk.svg",
         order: 0
       },
       fly: {
         label: "TOKEN.MOVEMENT.ACTIONS.fly.label",
         icon: "fa-solid fa-person-fairy",
+        img: "icons/svg/wing.svg",
         order: 1
       },
       swim: {
         label: "TOKEN.MOVEMENT.ACTIONS.swim.label",
         icon: "fa-solid fa-person-swimming",
+        img: "icons/svg/whale.svg",
         order: 2,
         // eslint-disable-next-line jsdoc/require-description
         /** @type {typeof TokenMovementActionConfig#getAnimationOptions} */
@@ -2012,11 +2023,13 @@ export const Token = {
       burrow: {
         label: "TOKEN.MOVEMENT.ACTIONS.burrow.label",
         icon: "fa-solid fa-person-digging",
+        img: "icons/svg/burrow.svg",
         order: 3
       },
       crawl: {
         label: "TOKEN.MOVEMENT.ACTIONS.crawl.label",
         icon: "fa-solid fa-person-praying",
+        img: "icons/svg/leg.svg",
         order: 4,
         // eslint-disable-next-line jsdoc/require-description
         /** @type {typeof TokenMovementActionConfig#getAnimationOptions} */
@@ -2027,6 +2040,7 @@ export const Token = {
       climb: {
         label: "TOKEN.MOVEMENT.ACTIONS.climb.label",
         icon: "fa-solid fa-person-through-window",
+        img: "icons/svg/ladder.svg",
         order: 5,
         // eslint-disable-next-line jsdoc/require-description
         /** @type {typeof TokenMovementActionConfig#getAnimationOptions} */
@@ -2037,6 +2051,7 @@ export const Token = {
       jump: {
         label: "TOKEN.MOVEMENT.ACTIONS.jump.label",
         icon: "fa-solid fa-person-running-fast",
+        img: "icons/svg/jump.svg",
         order: 6,
         deriveTerrainDifficulty: ({walk, fly}) => Math.max(walk, fly),
         getCostFunction: () => cost => cost * 2
@@ -2044,6 +2059,7 @@ export const Token = {
       blink: {
         label: "TOKEN.MOVEMENT.ACTIONS.blink.label",
         icon: "fa-solid fa-person-from-portal",
+        img: "icons/svg/teleport.svg",
         order: 7,
         teleport: true,
         getAnimationOptions: () => ({duration: 0}),
@@ -2052,6 +2068,7 @@ export const Token = {
       displace: {
         label: "TOKEN.MOVEMENT.ACTIONS.displace.label",
         icon: "fa-solid fa-transporter-1",
+        img: "icons/svg/portal.svg",
         order: 8,
         teleport: true,
         measure: false,

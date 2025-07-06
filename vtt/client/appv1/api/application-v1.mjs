@@ -838,20 +838,27 @@ export default class Application {
       filter.unbind();
     }
 
-    // Animate closing the element
-    return new Promise(resolve => {
-      el.slideUp(200, () => {
-        el.remove();
+    const cleanUp = () => {
+      this._element = null;
+      delete ui.windows[this.appId];
+      this._minimized = false;
+      this._scrollPositions = null;
+      this._state = states.CLOSED;
+    };
 
-        // Clean up data
-        this._element = null;
-        delete ui.windows[this.appId];
-        this._minimized = false;
-        this._scrollPositions = null;
-        this._state = states.CLOSED;
-        resolve();
+    // Animate closing the element
+    if ( options.animate !== false ) {
+      return new Promise(resolve => {
+        el.slideUp(200, () => {
+          el.remove();
+          cleanUp();
+          resolve();
+        });
       });
-    });
+    }
+
+    // Clean up data
+    cleanUp();
   }
 
   /* -------------------------------------------- */

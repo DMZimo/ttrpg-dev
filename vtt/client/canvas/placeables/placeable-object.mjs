@@ -834,7 +834,7 @@ export default class PlaceableObject extends RenderFlagsMixin(PIXI.Container) {
    * @returns {boolean}       Does the User have rights to perform the action?
    */
   can(user, action) {
-    const fn = this[`_can${action.titleCase()}`];
+    const fn = this[`_can${action.titleCase()}`] ?? this[`_can${action}`];
     return fn ? fn.call(this, user) : false;
   }
 

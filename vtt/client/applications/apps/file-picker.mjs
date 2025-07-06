@@ -1,6 +1,7 @@
 import ApplicationV2 from "../api/application.mjs";
 import HandlebarsApplicationMixin from "../api/handlebars-application.mjs";
 import SearchFilter from "../ux/search-filter.mjs";
+import {FILE_PICKER_PUBLIC_DIRS} from "@common/constants.mjs";
 
 /**
  * @import {ApplicationClickAction, ApplicationConfiguration, ApplicationFormSubmission} from "../_types.mjs";
@@ -511,6 +512,26 @@ export default class FilePicker extends HandlebarsApplicationMixin(ApplicationV2
     return this.upload(source, target, file, body, {notify});
   }
 
+  /* -------------------------------------------- */
+
+  /**
+   * Request wildcard token images from the server and return them.
+   * @param {string} actorId         The actor whose prototype token contains the wildcard image path.
+   * @param {object} [options]
+   * @param {string} [options.pack]  The ID of the compendium the actor is in.
+   * @returns {Promise<string[]>}
+   */
+  static requestTokenImages(actorId, options={}) {
+    return new Promise((resolve, reject) => {
+      game.socket.emit("requestTokenImages", actorId, options, result => {
+        if ( result.error ) return reject(new Error(result.error));
+        resolve(result.files);
+      });
+    });
+  }
+
+  /* -------------------------------------------- */
+
   /**
    * Given a current file path, determine the directory to which it belongs.
    * @param {string} target   The currently requested target path
@@ -538,8 +559,7 @@ export default class FilePicker extends HandlebarsApplicationMixin(ApplicationV2
     // Local file matches
     else {
       const p0 = target.split("/").shift();
-      const publicDirs = ["cards", "css", "fonts", "icons", "lang", "scripts", "sounds", "ui"];
-      if ( publicDirs.includes(p0) ) source = "public";
+      if ( FILE_PICKER_PUBLIC_DIRS.includes(p0) ) source = "public";
     }
 
     // If the preferred source is not available, use the next available source.

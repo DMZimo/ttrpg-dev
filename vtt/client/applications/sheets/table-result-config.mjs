@@ -101,8 +101,12 @@ export default class TableResultConfig extends HandlebarsApplicationMixin(Docume
   _onChangeForm(formConfig, event) {
     super._onChangeForm(formConfig, event);
     const elements = this.form.elements;
-    if ( event.target !== elements.type ) return;
-    const isText = event.target.value === "text";
-    elements.documentUuid.closest(".form-group").hidden = isText;
+    if ( event.target === elements.type ) {
+      const isText = event.target.value === "text";
+      elements.documentUuid.closest(".form-group").hidden = isText;
+    }
+    else if ( event.target === elements.description ) {
+      this.submit();
+    }
   }
 }

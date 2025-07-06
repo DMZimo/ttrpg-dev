@@ -237,25 +237,28 @@ export default class ContextMenu {
    * Closes the menu and removes it from the DOM.
    * @param {object} [options]                Options to configure the closing behavior.
    * @param {boolean} [options.animate=true]  Animate the context menu closing.
+   * @param {HTMLElement} [options.target]    The target element to close on.
    * @returns {Promise<void>}
    */
-  async close({animate=true}={}) {
+  async close({animate=true, target}={}) {
     if ( animate ) await this._animate(false);
-    this._close();
+    this._close({ target });
   }
 
   /* -------------------------------------------- */
 
   /**
    * Close the menu and remove it from the DOM.
+   * @param {object} [options]
+   * @param {HTMLElement} [options.target]  The target element to close on.
    * @protected
    */
-  _close() {
+  _close({ target }={}) {
     for ( const item of this.menuItems ) delete item.element;
     this.#element.remove();
     document.querySelectorAll(".context").forEach(el => el.classList.remove("context"));
     if ( ui.context === this ) delete ui.context;
-    this.onClose?.(this.#target);
+    this.onClose?.(target ?? this.#target);
   }
 
   /* -------------------------------------------- */
@@ -485,8 +488,9 @@ export default class ContextMenu {
     if ( this.#target.classList.contains("context") ) return this.close();
 
     // If the menu is already open, call its close handler on its original target.
-    if ( ui.context === this ) this.onClose?.(priorTarget);
-    else ui.context?.close();
+    const closeOptions = { animate: ui.context !== this };
+    if ( ui.context === this ) closeOptions.target = priorTarget;
+    ui.context?.close(closeOptions);
 
     // Render a new context menu.
     event.stopImmediatePropagation();

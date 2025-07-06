@@ -31,10 +31,13 @@ export default class FolderConfig extends HandlebarsApplicationMixin(DocumentShe
   async _prepareContext(options) {
     const context = await super._prepareContext(options);
     const folder = context.document;
-    context.namePlaceholder = folder.constructor.defaultName({pack: folder.pack});
-    const submitText = folder.collection?.has(folder.id) || folder.inCompendium
-      ? "FOLDER.Update"
-      : "SIDEBAR.ACTIONS.CREATE.Folder";
+    const folderExists = !!folder.collection?.has(folder.id) || folder.inCompendium;
+    if ( folderExists ) context.name = context.namePlaceholder = folder._source.name;
+    else {
+      context.name = "";
+      context.namePlaceholder = folder.constructor.defaultName({pack: folder.pack});
+    }
+    const submitText = folderExists ? "FOLDER.Update" : "SIDEBAR.ACTIONS.CREATE.Folder";
     context.buttons = [{type: "submit", icon: "fa-solid fa-floppy-disk", label: submitText}];
     return context;
   }
@@ -56,11 +59,14 @@ export default class FolderConfig extends HandlebarsApplicationMixin(DocumentShe
 
   /** @inheritDoc */
   _processFormData(event, form, formData) {
-    if ( !formData.object.name.trim() ) {
+    const submitData = super._processFormData(event, form, formData);
+    if ( !submitData.name.trim() ) {
       const folder = this.document;
-      formData.object.name = folder.constructor.defaultName({pack: folder.pack});
+      const folderExists = !!folder.collection?.has(folder.id) || folder.inCompendium;
+      if ( folderExists ) delete submitData.name;
+      else submitData.name = form.name.placeholder;
     }
-    return super._processFormData(event, form, formData);
+    return submitData;
   }
 
   /* -------------------------------------------- */

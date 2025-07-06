@@ -202,9 +202,9 @@ export default class CombatTracker extends HandlebarsApplicationMixin(AbstractSi
       combat, hasCombat, nextId, previousId,
       combats: combats.map(({ id }, i) => ({ id, label: i + 1, active: i === currentIdx })),
       control: isPlayerTurn && canControl,
-      css: combats.length > 8 ? "cycle" : combats.length ? "tabbed" : "",
+      css: combats.length > 7 ? "cycle" : combats.length ? "tabbed" : "",
       currentIndex: currentIdx + 1,
-      displayCycle: combats.length > 8,
+      displayCycle: combats.length > 7,
       initiativeIcon: CONFIG.Combat.initiativeIcon,
       linked: combat?.scene !== null,
       labels: {
@@ -289,7 +289,8 @@ export default class CombatTracker extends HandlebarsApplicationMixin(AbstractSi
     this.element.addEventListener("pointerover", this._onCombatantHoverIn.bind(this), { passive: true });
     this.element.addEventListener("pointerout", this._onCombatantHoverOut.bind(this), { passive: true });
     this.element.addEventListener("dblclick", event => {
-      this._onCombatantMouseDown(event, event.target.closest("[data-combatant-id]"));
+      const target = event.target.closest("[data-combatant-id]");
+      if ( target ) this._onCombatantMouseDown(event, target);
     }, { passive: true });
     this.element.addEventListener("change", this._onChangeInput.bind(this), { passive: true });
     this.element.addEventListener("focusin", event => {

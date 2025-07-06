@@ -6,6 +6,7 @@ import {getDocumentClass} from "../utils/helpers.mjs";
  * @import WorldCollection from "./abstract/world-collection.mjs";
  * @import Collection from "@common/utils/collection.mjs";
  * @import CompendiumCollection from "./collections/compendium-collection.mjs";
+ * @import {FolderChildNode} from "./_types.mjs";
  */
 
 /**
@@ -26,10 +27,9 @@ export default class Folder extends ClientDocumentMixin(BaseFolder) {
   depth;
 
   /**
-   * An array of other Folders which are the displayed children of this one. This differs from the results of
-   * {@link Folder.getSubfolders} because reports the subset of child folders which are displayed to the curren User
-   * in the UI.
-   * @type {Folder[]}
+   * An array of nodes representing the children of this one. This differs from the results of
+   * {@link Folder.getSubfolders}, which reports the subset of child Folders displayed to the current User in the UI.
+   * @type {FolderChildNode[]}
    */
   children;
 

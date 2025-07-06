@@ -32,6 +32,12 @@ export default class AbstractFormInputElement extends HTMLElement {
   static observedAttributes = ["disabled"];
 
   /**
+   * The AbortController instance used to manage event listener lifecycle.
+   * @type {AbortController}
+   */
+  #abortController;
+
+  /**
    * Attached ElementInternals which provides form handling functionality.
    * @type {ElementInternals}
    * @protected
@@ -124,7 +130,7 @@ export default class AbstractFormInputElement extends HTMLElement {
    * @type {boolean}
    */
   get disabled() {
-    return this.hasAttribute("disabled");
+    return this.matches(":disabled");
   }
 
   set disabled(value) {
@@ -138,7 +144,7 @@ export default class AbstractFormInputElement extends HTMLElement {
    * @type {boolean}
    */
   get editable() {
-    return !(this.hasAttribute("disabled") || this.hasAttribute("readonly"));
+    return !(this.disabled || this.hasAttribute("readonly"));
   }
 
   /* -------------------------------------------- */
@@ -151,6 +157,17 @@ export default class AbstractFormInputElement extends HTMLElement {
   _toggleDisabled(disabled) {}
 
   /* -------------------------------------------- */
+
+  /**
+   * An AbortSignal that can be passed to event listeners registered in subclasses. The signal will ensure that the
+   * listener is removed when the element is disconnected from the DOM. Not available in the constructor.
+   * @type {AbortSignal}
+   */
+  get abortSignal() {
+    return this.#abortController?.signal;
+  }
+
+  /* -------------------------------------------- */
   /*  Element Lifecycle                           */
   /* -------------------------------------------- */
 
@@ -158,13 +175,44 @@ export default class AbstractFormInputElement extends HTMLElement {
    * Initialize the custom element, constructing its HTML.
    */
   connectedCallback() {
+    this.#abortController = new AbortController();
     const elements = this._buildElements();
     this.replaceChildren(...elements);
     this._refresh();
     this._toggleDisabled(this.disabled);
-    this.addEventListener("click", this._onClick.bind(this));
+    this.addEventListener("click", this._onClick.bind(this), { signal: this.abortSignal });
     this._activateListeners();
   }
+
+  /* -------------------------------------------- */
+
+  /** @override */
+  disconnectedCallback() {
+    this.#abortController.abort();
+    this._disconnect();
+  }
+
+  /* -------------------------------------------- */
+
+  /** @override */
+  formDisabledCallback(disabled) {
+    if ( !this.isConnected ) return; // Internal elements not yet created
+    this._toggleDisabled(disabled);
+  }
+
+  /* -------------------------------------------- */
+
+  /** @override */
+  attributeChangedCallback(attrName, oldValue, newValue) {}
+
+  /* -------------------------------------------- */
+
+  /**
+   * A method provided for subclasses to perform tear-down workflows as an alternative to overriding
+   * disconnectedCallback.
+   * @protected
+   */
+  _disconnect() {}
 
   /* -------------------------------------------- */
 
@@ -210,17 +258,6 @@ export default class AbstractFormInputElement extends HTMLElement {
   _activateListeners() {}
 
   /* -------------------------------------------- */
-
-  /**
-   * Fire a callback on change to an observed attribute.
-   * @param {string} attrName The name of the attribute
-   * @param {string|null} oldValue The old value: null indicates the attribute was not present.
-   * @param {string|null} newValue The new value: null indicates the attribute is removed.
-   */
-  attributeChangedCallback(attrName, oldValue, newValue) {
-    if ( !this.isConnected ) return; // Internal elements not yet created
-    if ( attrName === "disabled" ) this._toggleDisabled(newValue !== null);
-  }
 
   /**
    * Special handling when the custom element is clicked. This should be implemented to transfer focus to an

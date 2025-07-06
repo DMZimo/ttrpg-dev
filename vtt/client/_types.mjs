@@ -280,7 +280,8 @@ export * from "../common/_types.mjs";
 /**
  * @typedef TokenMovementActionConfig
  * @property {string} label          The label of the movement action.
- * @property {string} icon           The icon of the movement action.
+ * @property {string} icon           The FontAwesome icon class.
+ * @property {string} img            An image filename. Takes precedence over the icon if both are supplied.
  * @property {number} order          The number that is used to sort the movement actions / movement action configs.
  *                                   Determines the order in the Token Config/HUD and of cycling. Default: `0`.
  * @property {boolean} teleport      Is teleportation? If true, the movement does not go through all grid spaces
@@ -514,6 +515,7 @@ export * from "../common/_types.mjs";
  * A Client Keybinding Action Binding
  * @property {number} [index]           A numeric index which tracks this bindings position during form rendering
  * @property {string} key               The KeyboardEvent#code value from
+ * @property {string} logicalKey        The Keyboard logical code if universal mode is enable (it is code otherwise)
  *   {@link https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/code/code_values}
  * @property {string[]} [modifiers]     An array of modifiers keys from
  *                                      {@link foundry.helpers.interaction.KeyboardManager.MODIFIER_KEYS}
@@ -540,6 +542,7 @@ export * from "../common/_types.mjs";
  * @typedef KeyboardEventContext
  * A keyboard event context
  * @property {string} key              The normalized string key, such as "KeyA"
+ * @property {string} logicalKey       The logical string key, such as "a"
  * @property {KeyboardEvent} event     The originating keypress event
  * @property {boolean} isShift         Is the Shift modifier being pressed
  * @property {boolean} isControl       Is the Control or Meta modifier being processed

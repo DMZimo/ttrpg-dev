@@ -266,21 +266,25 @@ export default class ActorSheetV2 extends DocumentSheetV2 {
 
   /**
    * Handle a dropped document on the ActorSheet
+   * @template {Document} TDocument
    * @param {DragEvent} event         The initiating drop event
-   * @param {Document} document       The resolved Document class
-   * @returns {Promise<void>}
+   * @param {TDocument} document       The resolved Document class
+   * @returns {Promise<TDocument|null>} A Document of the same type as the dropped one in case of a successful result,
+   *                                    or null in case of failure or no action being taken
    * @protected
    */
   async _onDropDocument(event, document) {
     switch ( document.documentName ) {
       case "ActiveEffect":
-        return this._onDropActiveEffect(event, /** @type ActiveEffect */ document);
+        return (await this._onDropActiveEffect(event, document)) ?? null;
       case "Actor":
-        return this._onDropActor(event, /** @type Actor */ document);
+        return (await this._onDropActor(event, document)) ?? null;
       case "Item":
-        return this._onDropItem(event, /** @type Item */ document);
+        return (await this._onDropItem(event, document)) ?? null;
       case "Folder":
-        return this._onDropFolder(event, /** @type Folder */ document);
+        return (await this._onDropFolder(event, document)) ?? null;
+      default:
+        return null;
     }
   }
 
@@ -291,14 +295,16 @@ export default class ActorSheetV2 extends DocumentSheetV2 {
    * The default implementation creates an Active Effect embedded document on the Actor.
    * @param {DragEvent} event       The initiating drop event
    * @param {ActiveEffect} effect   The dropped ActiveEffect document
-   * @returns {Promise<void>}
+   * @returns {Promise<ActiveEffect|null|undefined>} A Promise resolving to a newly created ActiveEffect, if one was
+   *                                                 created, or otherwise a nullish value
    * @protected
    */
   async _onDropActiveEffect(event, effect) {
-    if ( !this.actor.isOwner ) return;
-    if ( !effect || (effect.target === this.actor) ) return;
+    if ( !this.actor.isOwner ) return null;
+    if ( !effect || (effect.target === this.actor) ) return null;
     const keepId = !this.actor.effects.has(effect.id);
-    await ActiveEffect.implementation.create(effect.toObject(), {parent: this.actor, keepId});
+    const result = await ActiveEffect.implementation.create(effect.toObject(), {parent: this.actor, keepId});
+    return result ?? null;
   }
 
   /* -------------------------------------------- */
@@ -307,10 +313,14 @@ export default class ActorSheetV2 extends DocumentSheetV2 {
    * Handle a dropped Actor on the Actor Sheet.
    * @param {DragEvent} event     The initiating drop event
    * @param {Actor} actor         The dropped Actor document
-   * @returns {Promise<void>}
+   * @returns {Promise<Actor|null|undefined>} A Promise resolving to an Actor identical or related to the dropped Actor
+   *                                          to indicate success, or a nullish value to indicate failure or no action
+   *                                          being taken
    * @protected
    */
-  async _onDropActor(event, actor) {}
+  async _onDropActor(event, actor) {
+    return null;
+  }
 
   /* -------------------------------------------- */
 
@@ -318,14 +328,19 @@ export default class ActorSheetV2 extends DocumentSheetV2 {
    * Handle a dropped Item on the Actor Sheet.
    * @param {DragEvent} event     The initiating drop event
    * @param {Item} item           The dropped Item document
-   * @returns {Promise<void>}
+   * @returns {Promise<Item|null|undefined>} A Promise resolving to the dropped Item (if sorting), a newly created Item,
+   *                                         or a nullish value in case of failure or no action being taken
    * @protected
    */
   async _onDropItem(event, item) {
-    if ( !this.actor.isOwner ) return;
-    if ( this.actor.uuid === item.parent?.uuid ) return this._onSortItem(event, item);
+    if ( !this.actor.isOwner ) return null;
+    if ( this.actor.uuid === item.parent?.uuid ) {
+      const result = await this._onSortItem(event, item);
+      return result?.length ? item : null;
+    }
     const keepId = !this.actor.items.has(item.id);
-    await Item.implementation.create(item.toObject(), {parent: this.actor, keepId});
+    const result = await Item.implementation.create(item.toObject(), {parent: this.actor, keepId});
+    return result ?? null;
   }
 
   /* -------------------------------------------- */
@@ -334,10 +349,13 @@ export default class ActorSheetV2 extends DocumentSheetV2 {
    * Handle a dropped Folder on the Actor Sheet.
    * @param {DragEvent} event     The initiating drop event
    * @param {Folder} folder       The dropped Folder document
-   * @returns {Promise<void>}
+   * @returns {Promise<Folder|null|undefined>} A Promise resolving to the dropped Folder indicate success, or a nullish
+   *                                           value to indicate failure or no action being taken
    * @protected
    */
-  async _onDropFolder(event, folder) {}
+  async _onDropFolder(event, folder) {
+    return null;
+  }
 
   /* -------------------------------------------- */
 
@@ -345,6 +363,7 @@ export default class ActorSheetV2 extends DocumentSheetV2 {
    * Handle a drop event for an existing embedded Item to sort that Item relative to its siblings.
    * @param {DragEvent} event     The initiating drop event
    * @param {Item} item           The dropped Item document
+   * @returns {Promise<Item[]>|void}
    * @protected
    */
   _onSortItem(event, item) {

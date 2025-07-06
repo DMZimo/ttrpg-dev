@@ -5,10 +5,10 @@ export * from "@common/documents/_types.mjs";
  *   TokenShapeType} from "@common/constants.mjs";
  * @import {EffectDurationData,  TokenPosition, TokenMovementWaypoint} from "@client/documents/_types.mjs";
  * @import Roll from "@client/dice/roll.mjs";
- * @import {GridMeasurePathCostFunction3D} from "@common/grid/_types.mjs";
+ * @import {GridMeasurePathCostFunction3D, GridOffset3D} from "@common/grid/_types.mjs";
  * @import {DataModel, Document} from "@common/abstract/_module.mjs";
- * @import {TokenConstrainMovementPathOptions, TokenMovementActionConfig} from "../_types.mjs";
- * @import {Combat, Combatant, RegionDocument, TableResult, TokenDocument, User} from "./_module.mjs";
+ * @import {DeepReadonly, TokenConstrainMovementPathOptions, TokenMovementActionConfig} from "../_types.mjs";
+ * @import {Combat, Combatant, Folder, RegionDocument, TableResult, TokenDocument, User} from "./_module.mjs";
  */
 
 /**
@@ -69,6 +69,17 @@ export * from "@common/documents/_types.mjs";
 
 /**
  * @typedef {EffectDurationData & _ActiveEffectDuration} ActiveEffectDuration
+ */
+
+/**
+ * @typedef FolderChildNode
+ * A node of a Folder-content tree
+ * @property {boolean} root               Whether this is the root node of a tree
+ * @property {Folder} folder              The Folder document represented by this node
+ * @property {number} depth               This node's depth number in the tree
+ * @property {boolean} visible            Whether the Folder is visible to the current User
+ * @property {FolderChildNode[]} children Child nodes of this node
+ * @property {Document[]|CompendiumCollection[]} entries Loose contents in this node
  */
 
 /**
@@ -274,6 +285,16 @@ export * from "@common/documents/_types.mjs";
  */
 
 /**
+ * @callback TokenMovementCostAggregator
+ * @param {Array<DeepReadonly<{from: GridOffset3D, to: GridOffset3D, cost: number}>>} results
+ *                                                           The results of the cost function calls.
+ *                                                           The array may be sorted but otherwise not be mutated.
+ * @param {number} distance                                  The distance between the grid spaces.
+ * @param {DeepReadonly<TokenMovementSegmentData>} segment   The properties of the segment.
+ * @returns {number}                                         The aggregated cost.
+ */
+
+/**
  * @typedef TokenGetCompleteMovementPathWaypoint
  * @property {number} [x]                       The top-left x-coordinate in pixels (integer).
  *                                              Default: the previous or source x-coordinate.
@@ -371,6 +392,7 @@ export * from "@common/documents/_types.mjs";
  * @property {TokenMovementSectionData} passed     The waypoints and measurements of the passed path
  * @property {TokenMovementSectionData} pending    The waypoints and measurements of the pending path
  * @property {TokenMovementHistoryData} history    The waypoints and measurements of the history path
+ * @property {boolean} constrained                 Was the movement constrained?
  * @property {boolean} recorded                    Was the movement recorded in the movement history?
  * @property {TokenMovementMethod} method          The method of movement
  * @property {Omit<TokenConstrainMovementPathOptions, "preview"|"history">} constrainOptions

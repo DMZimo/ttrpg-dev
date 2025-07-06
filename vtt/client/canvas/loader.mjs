@@ -301,16 +301,16 @@ export default class TextureLoader {
    * @param {string[]} sources      The source URLs to load
    * @param {object} [options={}]   Additional options which modify loading
    * @param {string} [options.message=""]        The status message to display in the load bar
-   * @param {string} [options.localize=false]    Whether to localize the message content before displaying it
-   * @param {string} [options.escape=true]       Whether to escape the values of `format`
-   * @param {string} [options.clean=true]        Whether to clean the provided message string as untrusted user input.
+   * @param {boolean} [options.localize=false]   Whether to localize the message content before displaying it
+   * @param {boolean} [options.escape=true]      Whether to escape the values of `format`
+   * @param {boolean} [options.clean=true]       Whether to clean the provided message string as untrusted user input.
    *                                             No cleaning is applied if `format` is passed and `escape` is true or
    *                                             `localize` is true and `format` is not passed.
    * @param {string} [options.format]            A mapping of formatting strings passed to Localization#format
    * @param {boolean} [options.expireCache=false]   Expire other cached textures?
    * @param {number} [options.maxConcurrent]        The maximum number of textures that can be loaded concurrently.
    * @param {boolean} [options.displayProgress]     Display loading progress bar
-   * @returns {Promise<void[]>}     A Promise which resolves once all textures are loaded
+   * @returns {Promise<void>}     A Promise which resolves once all textures are loaded
    */
   async load(sources, {message="", localize=false, escape=true, clean=true, format, expireCache=false, maxConcurrent,
     displayProgress=true}={}) {
@@ -510,7 +510,7 @@ export default class TextureLoader {
   /**
    * Retrieve a texture or a sprite sheet from the assets cache
    * @param {string} src                                     The source URL
-   * @returns {PIXI.BaseTexture|PIXI.Spritesheet|null}       The cached texture, a sprite sheet or undefined
+   * @returns {PIXI.BaseTexture|PIXI.Spritesheet|null}       The cached texture, a sprite sheet or null
    */
   getCache(src) {
     if ( !src ) return null;

@@ -491,7 +491,7 @@ export default class CompendiumDirectory extends HandlebarsApplicationMixin(Abst
     const warning = game.i18n.localize("COMPENDIUM.Delete.Warning");
     const result = await DialogV2.confirm({
       window: {
-        title: game.i18n.format("COMPENDIUM.Delete.Title", { compendium: pack.title }), // FIXME: double localization
+        title: game.i18n.format("COMPENDIUM.Delete.Title", { compendium: game.i18n.localize(pack.title) }), // FIXME: double localization
         icon: "fa-solid fa-trash"
       },
       position: {
@@ -524,7 +524,7 @@ export default class CompendiumDirectory extends HandlebarsApplicationMixin(Abst
         name: "label"
       }).outerHTML,
       window: {
-        title: game.i18n.format("COMPENDIUM.Duplicate.Title", { compendium: pack.title }), // FIXME: double localization
+        title: game.i18n.format("COMPENDIUM.Duplicate.Title", { compendium: game.i18n.localize(pack.title) }), // FIXME: double localization
         icon: "fa-solid fa-copy"
       },
       position: {
@@ -942,7 +942,13 @@ export default class CompendiumDirectory extends HandlebarsApplicationMixin(Abst
     if ( event.type === "dragenter" ) {
       for ( const el of this.element.querySelectorAll(".droptarget") ) el.classList.remove("droptarget");
     }
-    if ( (event.type === "dragleave") && event.currentTarget.contains(event.target) ) return;
+    else if ( event.type === "dragleave" ) {
+
+      // Look up the hovered element (event.target is the element that was left)
+      const el = document.elementFromPoint(event.clientX, event.clientY);
+      const parent = el.closest(".folder");
+      if ( parent === event.currentTarget ) return;
+    }
     event.currentTarget.classList.toggle("droptarget", event.type === "dragenter");
   }
 

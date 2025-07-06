@@ -289,38 +289,32 @@ export default class TokenRingSamplerShader extends PrimaryBaseSamplerShader {
 
     %forloop%
 
-    if ( vStates == 0U ) {
-      // If no states, apply basic color modulation
-      result = color * vColor;
-    } 
-    else {
-      // Compute distances for further processing
-      vec2 scaledDistVec = (vOrigTextureCoord - 0.5) * 2.0 * vScaleCorrection;
-      float dist = length(scaledDistVec);  // Euclidean distance
-      
-      // Rectangular mask to not bleed over other spritesheet assets
-      float rectangularMask = step(max(abs(scaledDistVec.x), abs(scaledDistVec.y)), 1.0);
-      
-      // Clip token texture to handle padding on X/Y axis
-      color *= getTokenTextureClip();
-      
-      // Precompute alpha-adjusted color
-      vec4 alphaAdjustedColor = color * (vColor / vColor.a);
-      
-      // Process token color using a custom function
-      vec4 processedColor = processTokenColor(alphaAdjustedColor);
-      
-      // Blend token texture, token ring, and token background
-      vec4 ringColor = colorizeTokenRing(texture(tokenRingTexture, vRingTextureCoord), dist);
-      vec4 backgroundColor = colorizeTokenBackground(texture(tokenRingTexture, vBackgroundTextureCoord), dist);
-      vec4 blendedResult = blend(processedColor, blend(ringColor, backgroundColor) * rectangularMask);
-      
-      // Apply color overlay if the state is active
-      if ( hasState(STATE_COLOR_OVER_SUBJECT) ) blendedResult = blend(colorOverlay * rectangularMask, blendedResult);
-      
-      // Apply final alpha adjustment
-      result = blendedResult * vColor.a;
-    }
+    // Compute distances for further processing
+    vec2 scaledDistVec = (vOrigTextureCoord - 0.5) * 2.0 * vScaleCorrection;
+    float dist = length(scaledDistVec);  // Euclidean distance
+    
+    // Rectangular mask to not bleed over other spritesheet assets
+    float rectangularMask = step(max(abs(scaledDistVec.x), abs(scaledDistVec.y)), 1.0);
+    
+    // Clip token texture to handle padding on X/Y axis
+    color *= getTokenTextureClip();
+    
+    // Precompute alpha-adjusted color
+    vec4 alphaAdjustedColor = color * (vColor / vColor.a);
+    
+    // Process token color using a custom function
+    vec4 processedColor = processTokenColor(alphaAdjustedColor);
+    
+    // Blend token texture, token ring, and token background
+    vec4 ringColor = colorizeTokenRing(texture(tokenRingTexture, vRingTextureCoord), dist);
+    vec4 backgroundColor = colorizeTokenBackground(texture(tokenRingTexture, vBackgroundTextureCoord), dist);
+    vec4 blendedResult = blend(processedColor, blend(ringColor, backgroundColor) * rectangularMask);
+    
+    // Apply color overlay if the state is active
+    if ( hasState(STATE_COLOR_OVER_SUBJECT) ) blendedResult = blend(colorOverlay * rectangularMask, blendedResult);
+    
+    // Apply final alpha adjustment
+    result = blendedResult * vColor.a;
   `;
 
   /* ---------------------------------------- */

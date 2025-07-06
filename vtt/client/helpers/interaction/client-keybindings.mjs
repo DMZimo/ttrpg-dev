@@ -266,7 +266,7 @@ export default class ClientKeybindings {
     for ( const binding of values ) {
       if ( !binding.key ) throw new Error("Each KeybindingActionBinding must contain a valid key designation");
       if ( KeyboardManager.PROTECTED_KEYS.includes(binding.key) ) {
-        throw new Error(game.i18n.format("KEYBINDINGS.ErrorProtectedKey", { key: binding.key }));
+        throw new Error(game.i18n.format("KEYBINDINGS.ErrorProtectedKey", {key: binding.key}));
       }
       binding.modifiers = this.#validateModifiers(binding.modifiers ?? []);
     }

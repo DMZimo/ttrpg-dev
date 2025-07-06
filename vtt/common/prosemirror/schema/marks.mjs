@@ -65,6 +65,6 @@ export const font = {
   attrs: {
     family: {}
   },
-  parseDOM: [{style: "font-family", getAttrs: family => ({family})}],
+  parseDOM: [{tag: '*[style*="font-family:"]', getAttrs: el => ({ family: el.style.fontFamily })}],
   toDOM: node => ["span", {style: `font-family: ${node.attrs.family.replaceAll('"', "'")}`}]
 };

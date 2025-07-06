@@ -395,48 +395,32 @@ export default class RollTable extends ClientDocumentMixin(BaseRollTable) {
     const rollable = config.rollable || config.values.includes("rollable");
     const results = this.results.toObject();
     results.sort((a, b) => a.range[0] - b.range[0]);
-    const table = document.createElement("table");
-    let rollHeader = rangeLabel ?? game.i18n.localize("TABLE_RESULT.FIELDS.range.label");
-    if ( rollable ) {
-      rollHeader = `<button type="button" class="icon fa-solid fa-dice-d20" data-action="rollTable"
-                            data-tooltip="TABLE.ACTIONS.DrawResult"
-                            aria-label="${game.i18n.localize("TABLE.ACTIONS.DrawResult")}"></button>`;
-    }
-    table.classList.add("roll-table-embed");
-    table.classList.toggle("roll-table-rollable", rollable);
-    table.innerHTML = `
-      <thead>
-        <tr>
-          <th>${rollHeader}</th>
-          <th>${resultLabel ?? foundry.utils.escapeHTML(this.name)}</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    `;
-    const tbody = table.querySelector("tbody");
-    for ( const {range, type, name, description, documentUuid, drawn} of results ) {
-      const row = document.createElement("tr");
-      row.classList.toggle("drawn", drawn);
-      const [lo, hi] = range;
-      row.innerHTML += `<td>${lo === hi ? lo : `${lo}&mdash;${hi}`}</td>`;
-      let result;
-      if ( type === "text" ) {
-        const header = name ? `<h4>${foundry.utils.escapeHTML(name)}</h4>\n` : "";
-        result = await TextEditor.implementation.enrichHTML(`${header}${description}`,
-          {...options, secrets: options.secrets ?? this.isOwner});
-      }
-      else {
-        const document = await fromUuid(documentUuid);
-        result ??= document
-          ? document.toAnchor().outerHTML
-          : TextEditor.implementation.createAnchor({
-            label: name, icon: "fa-solid fa-link-slash", classes: ["content-link", "broken"]
-          }).outerHTML;
-      }
-      row.innerHTML += `<td>${result}</td>`;
-      tbody.append(row);
-    }
-    return table;
+    const context = {
+      rollable,
+      labels: {
+        range: rangeLabel ?? game.i18n.localize("TABLE_RESULT.FIELDS.range.label"),
+        result: resultLabel ?? foundry.utils.escapeHTML(this.name)
+      },
+      results: await Promise.all(results.map(async ({ range, type, name, description, documentUuid, drawn }) => {
+        const [lo, hi] = range;
+        const doc = await fromUuid(documentUuid);
+        return {
+          drawn, type,
+          range: lo === hi ? lo : `${lo}—${hi}`,
+          name: foundry.utils.escapeHTML(name ?? ""),
+          description: await TextEditor.implementation.enrichHTML(description ?? "", {
+            ...options, secrets: options.secrets ?? this.isOwner
+          }),
+          result: doc
+            ? doc.toAnchor().outerHTML
+            : TextEditor.implementation.createAnchor({
+              label: name, icon: "fa-solid fa-link-slash", classes: ["content-link", "broken"]
+            }).outerHTML
+        };
+      }))
+    };
+    const html = await foundry.applications.handlebars.renderTemplate("templates/tables/embed.hbs", context);
+    return foundry.utils.parseHTML(html);
   }
 
   /* -------------------------------------------- */

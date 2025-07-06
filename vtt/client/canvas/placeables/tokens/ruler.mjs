@@ -2,6 +2,7 @@ import BaseTokenRuler from "./base-ruler.mjs";
 import Ray from "../../geometry/shapes/ray.mjs";
 import DashLineShader from "../../rendering/shaders/graphics/dash-line.mjs";
 import {getTemplate, renderTemplate} from "@client/applications/handlebars.mjs";
+import TokenDocument from "@client/documents/token.mjs";
 
 /**
  * @import {GridMeasurePathResultWaypoint, GridOffset3D} from "../../../../common/grid/_types.mjs";
@@ -790,8 +791,7 @@ export default class TokenRuler extends BaseTokenRuler {
       const w1 = path1[i];
       for ( let j = 0; j < path2.length; j++ ) {
         const w2 = path2[j];
-        if ( !((w1.x === w2.x) && (w1.y === w2.y) && (w1.elevation === w2.elevation) && (w1.width === w2.width)
-          && (w1.height === w2.height) && (w1.shape === w2.shape) && (w1.unreachable === w2.unreachable)) ) {
+        if ( !(TokenDocument.arePositionsEqual(w1, w2) && (w1.unreachable === w2.unreachable)) ) {
           n1[j] = 0;
           d1[j] = -Infinity;
         } else {

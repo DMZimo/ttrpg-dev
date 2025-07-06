@@ -6,7 +6,7 @@
     "generation": 13,
     "channel": "stable",
     "suffix": "Stable",
-    "build": 345,
+    "build": 346,
     "node_version": 20
   },
   "author": {
@@ -88,5 +88,5 @@
   "overrides": {
     "typescript": "5.6.3"
   },
-  "version": "13.345.0"
+  "version": "13.346.0"
 }

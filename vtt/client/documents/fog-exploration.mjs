@@ -22,21 +22,24 @@ export default class FogExploration extends ClientDocumentMixin(BaseFogExplorati
   static async load({scene, user}={}, options={}) {
     const collection = game.collections.get("FogExploration");
     const sceneId = (scene || canvas.scene)?.id || null;
-    const userId = (user || game.user)?.id;
-    if ( !sceneId || !userId ) return null;
-    if ( !(game.user.isGM || (userId === game.user.id)) ) {
+    user ??= game.user;
+    if ( !sceneId || !user ) return null;
+    if ( !(game.user.isGM || user.isSelf) ) {
       throw new Error("You do not have permission to access the FogExploration object of another user");
     }
+    let exploration;
 
     // Return cached exploration
-    let exploration = collection.find(x => (x.user === userId) && (x.scene === sceneId));
-    if ( exploration ) return exploration;
+    if ( user.isSelf ) {
+      exploration = collection.find(x => (x.user === user) && (x.scene === scene));
+      if ( exploration ) return exploration;
+    }
 
     // Return persisted exploration
-    const query = {scene: sceneId, user: userId};
+    const query = {scene: sceneId, user: user.id};
     const response = await this.database.get(this, {query, ...options});
     exploration = response.length ? response.shift() : null;
-    if ( exploration ) collection.set(exploration.id, exploration);
+    if ( exploration && user.isSelf ) collection.set(exploration.id, exploration);
     return exploration;
   }
 

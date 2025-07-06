@@ -52,7 +52,7 @@
  * @property {string} name                The name of this Actor
  * @property {string} type                An Actor subtype which configures the system data model applied
  * @property {string} [img]               An image file path which provides the artwork for this Actor
- * @property {object} system              The system data object which is defined by the system template.json model
+ * @property {object} system              Data for an Actor subtype, defined by a System or Module
  * @property {PrototypeTokenData} prototypeToken Default Token settings which are used for Tokens created from
  *                                               this Actor
  * @property {ItemData[]} items           A Collection of Item embedded Documents
@@ -142,11 +142,11 @@
  * @typedef CardData
  * @property {string|null} _id            The _id which uniquely identifies this Card document
  * @property {string} name                The text name of this card
- * @property {string} [description]       A text description of this card which applies to all faces
+ * @property {string} description         A text description of this card which applies to all faces
  * @property {string} type                A category of card (for example, a suit) to which this card belongs
- * @property {object} [system]            Game system data which is defined by the system template.json model
- * @property {string} [suit]              An optional suit designation which is used by default sorting
- * @property {number} [value]             An optional numeric value of the card which is used by default sorting
+ * @property {object} system              Data for a Card subtype, defined by a System or Module
+ * @property {string} suit                An optional suit designation which is used by default sorting
+ * @property {number|null} value          An optional numeric value of the card which is used by default sorting
  * @property {CardFaceData} back          An object of face data which describes the back of this card
  * @property {CardFaceData[]} faces       An array of face data which represent displayable faces of this card
  * @property {number|null} face           The index of the currently displayed face, or null if the card is face-down
@@ -171,17 +171,17 @@
  * @property {string|null} _id            The _id which uniquely identifies this stack of Cards document
  * @property {string} name                The text name of this stack
  * @property {string} type                The type of this stack, in BaseCards.metadata.types
- * @property {object} [system]            Game system data which is defined by the system template.json model
- * @property {string} [description]       A text description of this stack
- * @property {string} [img]               An image or video which is used to represent the stack of cards
+ * @property {object} system              Data for a Cards subtype, defined by a System or Module
+ * @property {string} description         A text description of this stack
+ * @property {string|null} img            An image or video which is used to represent the stack of cards
  * @property {CardData[]} cards A collection of Card documents which currently belong to this stack
  * @property {number} width               The visible width of this stack
  * @property {number} height              The visible height of this stack
  * @property {number} rotation            The angle of rotation of this stack
- * @property {boolean} [displayCount]     Whether or not to publicly display the number of cards in this stack
+ * @property {boolean} displayCount       Whether or not to publicly display the number of cards in this stack
  * @property {string|null} folder         The _id of a Folder which contains this document
  * @property {number} sort                The sort order of this stack relative to others in its parent collection
- * @property {object} [ownership]         An object which configures ownership of this Cards
+ * @property {object} ownership           An object which configures ownership of this Cards
  * @property {DocumentFlags} flags        An object of optional key/value flags
  * @property {DocumentStats} _stats       An object of creation and access information
  */
@@ -190,7 +190,7 @@
  * @typedef ChatMessageData
  * @property {string|null} _id            The _id which uniquely identifies this ChatMessage document
  * @property {string} type                The type of this chat message, in BaseChatMessage.metadata.types
- * @property {object} [system]            Game system data which is defined by the system template.json model
+ * @property {object} system              Data for a ChatMessage subtype, defined by a System or Module
  * @property {ChatMessageStyle} [style=0] The message style from {@link CONST.CHAT_MESSAGE_STYLES}
  * @property {string} user                The _id of the User document who generated this message
  * @property {number} timestamp           The timestamp at which point this message was generated
@@ -323,7 +323,7 @@
  * @property {string} name                The name of this Item
  * @property {string} type                An Item subtype which configures the system data model applied
  * @property {string} [img]               An image file path which provides the artwork for this Item
- * @property {object} [system]            The system data object which is defined by the system template.json model
+ * @property {object} system              Data for an Item subtype, defined by a System or Module
  * @property {ActiveEffectData[]} effects A collection of ActiveEffect embedded Documents
  * @property {string|null} folder         The _id of a Folder which contains this Item
  * @property {number} [sort]              The numeric sort value which orders this Item relative to its siblings
@@ -369,13 +369,14 @@
 
 /**
  * @typedef JournalEntryPageVideoData
- * @property {boolean} [loop]             Automatically loop the video?
- * @property {boolean} [autoplay]         Should the video play automatically?
- * @property {number} [volume]            The volume level of any audio that the video file contains.
- * @property {number} [timestamp]         The starting point of the video, in seconds.
- * @property {number} [width]             The width of the video, otherwise it will fill the available container width.
- * @property {number} [height]            The height of the video, otherwise it will use the aspect ratio of the source
- *                                        video, or 16:9 if that aspect ratio is not available.
+ * @property {boolean} controls         Show player controls for this video?
+ * @property {boolean} loop             Automatically loop the video?
+ * @property {boolean} autoplay         Should the video play automatically?
+ * @property {number}  volume           The volume level of any audio that the video file contains.
+ * @property {number}  timestamp        The starting point of the video, in seconds.
+ * @property {number}  width            The width of the video, otherwise it will fill the available container width.
+ * @property {number}  height           The height of the video, otherwise it will use the aspect ratio of the source
+ *                                      video, or 16:9 if that aspect ratio is not available.
  */
 
 /**
@@ -527,29 +528,31 @@
  * @property {string|null} [foreground]   An image or video file path providing foreground media for the scene
  * @property {number} [foregroundElevation=20] The elevation of the foreground image
  *
- * @property {string|null} [thumb]        A thumbnail image which depicts the scene at lower resolution
+ * @property {string|null} thumb          A thumbnail image which depicts the scene at lower resolution
  * @property {number} [width=4000]        The width of the scene canvas, normally the width of the background media
  * @property {number} [height=3000]       The height of the scene canvas, normally the height of the background media
  * @property {number} [padding=0.25]      The proportion of canvas padding applied around the outside of the scene
  *                                        dimensions to provide additional buffer space
- * @property {{x: number, y: number, scale: number}|null} [initial=null] The initial view coordinates for the scene
+ * @property {{x: number|null, y: number|null, scale: number|null}} initial The initial view coordinates for the scene
  * @property {string|null} [backgroundColor="#999999"] The color of the canvas displayed behind the scene background
- * @property {GridData} [grid]            Grid configuration for the scene
+ * @property {GridData} grid              Grid configuration for the scene
  * @property {boolean} [tokenVision=true] Do Tokens require vision in order to see the Scene environment?
  * @property {number} [darkness=0]        The ambient darkness level in this Scene, where 0 represents midday
  *                                        (maximum illumination) and 1 represents midnight (maximum darkness)
  *
- * @property {boolean} [fogExploration=true] Should fog exploration progress be tracked for this Scene?
- * @property {number} [fogReset]          The timestamp at which fog of war was last reset for this Scene.
- * @property {string|null} [fogOverlay]   A special overlay image or video texture which is used for fog of war
- * @property {string|null} [fogExploredColor]   A color tint applied to explored regions of fog of war
- * @property {string|null} [fogUnexploredColor] A color tint applied to unexplored regions of fog of war
+ * @property {object} fog                        Fog-exploration settings and other data
+ * @property {boolean} fog.exploration           Should fog exploration progress be tracked for this Scene?
+ * @property {number|null|undefined}  fog.reset  The timestamp at which fog of war was last reset for this Scene.
+ * @property {string|null} fog.overlay           A special overlay image or video texture which is used for fog of war
+ * @property {object} fog.colors                 Fog-exploration coloration data
+ * @property {string|null} fog.colors.explored   A color tint applied to explored regions of fog of war
+ * @property {string|null} fog.colors.unexplored A color tint applied to unexplored regions of fog of war
  *
- * @property {SceneEnvironmentData} [environment] The environment data applied to the Scene.
- * @property {boolean} [environment.cycle]        If cycling is activated for the Scene, between base and darkness
- *                                                environment data.
- * @property {EnvironmentData} [environment.base] The base ambience values pertaining to the Scene.
- * @property {EnvironmentData} [environment.darkness] The darkness ambience values pertaining to the Scene.
+ * @property {SceneEnvironmentData} environment The environment data applied to the Scene.
+ * @property {boolean} environment.cycle        If cycling is activated for the Scene, between base and darkness
+ *                                              environment data.
+ * @property {EnvironmentData} environment.base     The base ambience values pertaining to the Scene.
+ * @property {EnvironmentData} environment.darkness The darkness ambience values pertaining to the Scene.
  *
  * @property {DrawingData[]} [drawings=[]]   A collection of embedded Drawing objects.
  * @property {TileData[]} [tiles=[]]         A collection of embedded Tile objects.
@@ -576,12 +579,14 @@
 
 /**
  * @typedef GridData
- * @property {number} [type=1]            The type of grid, a number from CONST.GRID_TYPES.
- * @property {number} [size=100]          The grid size which represents the width (or height) of a single grid space.
- * @property {string} [color="#000000"]   A string representing the color used to render the grid lines.
- * @property {number} [alpha=0.2]         A number between 0 and 1 for the opacity of the grid lines.
- * @property {number} [distance]          The number of distance units which are represented by a single grid space.
- * @property {string} [units]             A label for the units of measure which are used for grid distance.
+ * @property {number} [type=1]             The type of grid, a number from CONST.GRID_TYPES.
+ * @property {number} [size=100]           The grid size which represents the width (or height) of a single grid space.
+ * @property {string} [style="solidLines"] The line style of the grid.
+ * @property {number} [thickness=1]        The thickness of the grid lines.
+ * @property {string} [color="#000000"]    A string representing the color used to render the grid lines.
+ * @property {number} [alpha=0.2]          A number between 0 and 1 for the opacity of the grid lines.
+ * @property {number} [distance]           The number of distance units which are represented by a single grid space.
+ * @property {string} [units]              A label for the units of measure which are used for grid distance.
  */
 
 /**
@@ -641,7 +646,7 @@
  * @property {string|null} _id            The _id which uniquely identifies this RegionBehavior document
  * @property {string} [name=""]           The name used to describe the RegionBehavior
  * @property {string} type                An RegionBehavior subtype which configures the system data model applied
- * @property {object} [system]            The system data object which is defined by the system template.json model
+ * @property {object} system              Data for a RegionBehavior subtype, defined by a System or Module
  * @property {boolean} [disabled=false]   Is the RegionBehavior currently disabled?
  * @property {DocumentFlags} flags        An object of optional key/value flags
  * @property {DocumentStats} _stats       An object of creation and access information
@@ -846,11 +851,12 @@
  * @typedef UserData
  * @property {string|null} _id            The _id which uniquely identifies this User document.
  * @property {string} name                The user's name.
- * @property {string} [password]          The user's password. Available only on the Server side for security.
- * @property {string} [passwordSalt]      The user's password salt. Available only on the Server side for security.
- * @property {string|null} [avatar]       The user's avatar image.
- * @property {ActorData} [character]      A linked Actor document that is this user's impersonated character.
+ * @property {string} password            The user's password. Available only on the Server side for security.
+ * @property {string} passwordSalt        The user's password salt. Available only on the Server side for security.
+ * @property {string|null} avatar         The user's avatar image.
+ * @property {ActorData}  character       A linked Actor document that is this user's impersonated character.
  * @property {string} color               A color to represent this user.
+ * @property {string} pronouns            The user's personal pronouns.
  * @property {object} hotbar              A mapping of hotbar slot number to Macro id for the user.
  * @property {object} permissions         The user's individual permission configuration, see CONST.USER_PERMISSIONS.
  * @property {number} role                The user's role, see CONST.USER_ROLES.

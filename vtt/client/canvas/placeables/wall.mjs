@@ -863,7 +863,7 @@ export default class Wall extends PlaceableObject {
   _canControl(user, event) {
     if ( !this.layer.active || this.isPreview ) return false;
     // If the User is chaining walls, we don't want to control the last one
-    const isChain = this.hover && (game.keyboard.downKeys.size === 1) && game.keyboard.isModifierActive("CONTROL");
+    const isChain = this.hover && game.keyboard.isModifierActive("CONTROL");
     return !isChain;
   }
 

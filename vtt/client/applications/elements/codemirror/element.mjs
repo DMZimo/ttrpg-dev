@@ -304,6 +304,7 @@ export default class HTMLCodeMirrorElement extends AbstractFormInputElement {
    */
   disconnectedCallback() {
     this.#view?.destroy();
+    super.disconnectedCallback();
   }
 
   /* -------------------------------------------- */

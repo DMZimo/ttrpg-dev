@@ -94,7 +94,7 @@ export default class EmbeddedCollection extends Collection {
     const typeName = this.documentClass.metadata.name;
     const types = Object.fromEntries(game.documentTypes[typeName].map(t => [t, []]));
     for ( const document of this.values() ) {
-      types[document._source.type ?? "base"].push(document);
+      types[document._source.type ?? "base"]?.push(document);
     }
     return this.#documentsByType = types;
   }

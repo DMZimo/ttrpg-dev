@@ -32,6 +32,7 @@ export default class PermissionConfig extends HandlebarsApplicationMixin(Applica
     permissions: {
       id: "permissions",
       template: "templates/apps/permission-config.hbs",
+      root: true,
       scrollable: [".permissions-list"]
     },
     footer: {

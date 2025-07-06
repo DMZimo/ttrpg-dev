@@ -86,7 +86,6 @@ export default class FogManager extends EventEmitterMixin() {
    *   pixels: Uint8ClampedArray,
    *   width: number,
    *   height: number,
-   *   resolution: number,
    *   offset: number,
    *   stride: number,
    *   buffer: ArrayBuffer,
@@ -97,7 +96,6 @@ export default class FogManager extends EventEmitterMixin() {
     pixels: new Uint8ClampedArray(0),
     width: 0,
     height: 0,
-    resolution: 1,
     offset: 0,
     stride: 1,
     buffer: new ArrayBuffer(0),
@@ -158,15 +156,14 @@ export default class FogManager extends EventEmitterMixin() {
   isPointExplored({x, y}) {
     if ( !this.#initialized ) return false;
     if ( !this.tokenVision ) return true;
-    const d = canvas.dimensions;
-    if ( !d.sceneRect.contains(x, y) ) return false;
-    x -= d.sceneX;
-    y -= d.sceneY;
-    const {pixels, width, height, resolution, offset, stride} = this.#explored;
-    const x1 = (x * resolution) | 0;
+    x = (x - this.#explorationSprite.x) / this.#explorationSprite.width;
+    y = (y - this.#explorationSprite.y) / this.#explorationSprite.height;
+    if ( (x < 0) || (x >= 1) || (y < 0) || (y >= 1) ) return false;
+    const {pixels, width, height, offset, stride} = this.#explored;
+    const x1 = (x * width) | 0;
     const x0 = x1 > 0 ? x1 - 1 : 0;
     const x2 = x1 < width ? x1 + 2 : width;
-    const y1 = (y * resolution) | 0;
+    const y1 = (y * height) | 0;
     const y0 = y1 > 0 ? y1 - 1 : 0;
     const y2 = y1 < height ? y1 + 2 : height;
     for ( let y = y0; y < y2; y++ ) {
@@ -195,7 +192,7 @@ export default class FogManager extends EventEmitterMixin() {
       return;
     }
     this.#explored.extracting = true;
-    const {realWidth, realHeight, resolution} = texture.baseTexture;
+    const {realWidth, realHeight} = texture.baseTexture;
     const size = this.#extractor.format === PIXI.FORMATS.RED ? 1 : 4;
     const minBufferSize = realWidth * realHeight * size;
     if ( this.#explored.buffer.byteLength < minBufferSize ) {
@@ -205,14 +202,15 @@ export default class FogManager extends EventEmitterMixin() {
       const {pixels, width, height, out} = await this.#extractor.extract(
         {texture, compression: TextureExtractor.COMPRESSION_MODES.NONE, out: this.#explored.buffer});
       this.#explored.extracting = false;
-      if ( pixels ) {
+
+      // Only update explored data only if no new fog has been loaded
+      if ( pixels && (this.#explorationSprite?.texture === texture) ) {
         this.#explored.buffer = this.#explored.pixels.buffer; // Swap buffers
         this.#explored.pixels = pixels;
         this.#explored.width = width;
         this.#explored.height = height;
         this.#explored.offset = size - 1;
         this.#explored.stride = size;
-        this.#explored.resolution = resolution;
         this.#onExploredChanged();
       } else {
         this.#explored.buffer = out;
@@ -285,7 +283,6 @@ export default class FogManager extends EventEmitterMixin() {
 
     // Load the initial fog texture
     await this.load();
-    await this.#extractPixels();
     this.#initialized = true;
   }
 
@@ -409,12 +406,13 @@ export default class FogManager extends EventEmitterMixin() {
     this.exploration = await fogExplorationCls.load();
 
     // Extract and assign the fog data image
-    const assign = (tex, resolve) => {
+    const assign = async (tex, resolve) => {
       if ( this.#explorationSprite?.texture === tex ) return resolve(tex);
       this.#explorationSprite?.destroy(true);
       this.#explorationSprite = this._createExplorationObject(tex);
       canvas.visibility.resetExploration();
       canvas.perception.initialize();
+      await this.#extractPixels();
       resolve(tex);
     };
 
@@ -602,10 +600,10 @@ export default class FogManager extends EventEmitterMixin() {
       this.#explored.pixels = new Uint8ClampedArray(0);
       this.#explored.width = 0;
       this.#explored.height = 0;
-      this.#explored.resolution = 1;
       this.#explored.offset = 0;
       this.#explored.stride = 1;
       this.#explored.buffer = new ArrayBuffer(0);
+      this.#explored.extracting = false;
       this.#onExploredChanged();
     }
   }

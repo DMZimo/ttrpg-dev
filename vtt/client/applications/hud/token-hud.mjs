@@ -65,7 +65,7 @@ export default class TokenHUD extends HandlebarsApplicationMixin(BasePlaceableHU
       targetClass: this.object.targeted.has(game.user) ? "active" : "",
       statusEffects: this._getStatusEffectChoices(),
       movementActions: this._getMovementActionChoices(),
-      movementActionsIcon: CONFIG.Token.movement.actions[this.document.movementAction].icon
+      movementActionsConfig: CONFIG.Token.movement.actions[this.document.movementAction]
     });
   }
 
@@ -133,11 +133,12 @@ export default class TokenHUD extends HandlebarsApplicationMixin(BasePlaceableHU
   /* -------------------------------------------- */
 
   /**
-   * Get teh valid movement action choices.
+   * Get the valid movement action choices.
    * @returns {{[id: string]: {
    *   id: string;
    *   label: string;
-   *   icon: string;
+   *   [icon]: string;
+   *   [img]: string;
    *   isActive: boolean;
    *   cssClass: string;
    * }}}
@@ -151,7 +152,6 @@ export default class TokenHUD extends HandlebarsApplicationMixin(BasePlaceableHU
       "": {
         id: "",
         label: `${game.i18n.localize("Default")} (${game.i18n.localize(CONFIG.Token.movement.actions[defaultAction].label)})`,
-        icon: "",
         isActive: currentAction === null,
         cssClass: currentAction === null ? "active" : ""
       }
@@ -163,6 +163,7 @@ export default class TokenHUD extends HandlebarsApplicationMixin(BasePlaceableHU
         id: action,
         label: game.i18n.localize(config.label),
         icon: config.icon,
+        img: config.img,
         isActive,
         cssClass: isActive ? "active" : ""
       };

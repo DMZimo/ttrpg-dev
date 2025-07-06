@@ -559,6 +559,15 @@ export default class ApplicationV2 extends EventEmitterMixin() {
       if ( position.width === "auto" ) options.position = Object.assign({width: "auto"}, options.position);
       if ( position.height === "auto" ) options.position = Object.assign({height: "auto"}, options.position);
     }
+
+    // Tabs
+    if ( options.tab ) {
+      const tabType = foundry.utils.getType(options.tab);
+      if ( tabType === "string" ) this.tabGroups[Object.keys(this.constructor.TABS)[0]] = options.tab;
+      else if ( tabType === "Object" ) {
+        for ( const [tabGroup, tabId] of Object.entries(options.tab) ) this.tabGroups[tabGroup] = tabId;
+      }
+    }
   }
 
   /* -------------------------------------------- */
@@ -1010,10 +1019,7 @@ export default class ApplicationV2 extends EventEmitterMixin() {
     if ( animate ) {
       const transitionClass = expanded ? "expanding" : "collapsing";
       dropdown.classList.add(transitionClass);
-      await Promise.race([
-        new Promise(resolve => dropdown.addEventListener("transitionend", resolve, {once: true})),
-        new Promise(resolve => window.setTimeout(resolve, 1000))
-      ]);
+      await this._awaitTransition(dropdown, 1000);
       dropdown.classList.remove(transitionClass);
     }
     if ( expanded ) dropdown.classList.add("expanded");
@@ -1140,7 +1146,7 @@ export default class ApplicationV2 extends EventEmitterMixin() {
     if ( !formConfig?.handler ) throw new Error(`The ${this.constructor.name} Application does not support a`
       + " single top-level form element.");
     const form = this.form;
-    const event = new Event("submit", {cancelable: true});
+    const event = new SubmitEvent("submit", {cancelable: true});
     const formData = new FormDataExtended(form);
     return formConfig.handler.call(this, event, form, formData, submitOptions);
   }
@@ -1665,10 +1671,15 @@ export default class ApplicationV2 extends EventEmitterMixin() {
    * @internal
    */
   async _awaitTransition(element, timeout) {
-    return Promise.race([
-      new Promise(resolve => element.addEventListener("transitionend", resolve, {once: true})),
+    let listener;
+    await Promise.race([
+      new Promise(resolve => {
+        listener = event => { if ( event.target === element ) resolve(); };
+        element.addEventListener("transitionend", listener);
+      }),
       new Promise(resolve => window.setTimeout(resolve, timeout))
     ]);
+    element.removeEventListener("transitionend", listener);
   }
 
   /* -------------------------------------------- */

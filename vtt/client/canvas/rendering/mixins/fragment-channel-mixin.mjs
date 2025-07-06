@@ -1,5 +1,5 @@
 /**
- * A mixin wich decorates a shader or filter and construct a fragment shader according to a choosen channel.
+ * A mixin that decorates a shader or filter and construct a fragment shader according to a chosen channel.
  * @category Mixins
  * @param {typeof PIXI.Shader|PIXI.Filter} ShaderClass The parent ShaderClass class being mixed.
  */

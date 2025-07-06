@@ -177,7 +177,7 @@ export default class Cards extends ClientDocumentMixin(BaseCards) {
     const toUpdate = [];
     const fromUpdate = [];
     const fromDelete = [];
-    let maxSort = Math.max(...to.cards.contents.map(c => c.sort || 0));
+    let maxSort = to.cards.size ? Math.max(...to.cards.contents.map(c => c.sort || 0)) : 0;
 
     // Validate the provided cards
     for ( const id of ids ) {

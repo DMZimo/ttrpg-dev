@@ -1,8 +1,8 @@
 import BaseSamplerShader from "./base-sampler.mjs";
 
 /**
- * A simple shader which purpose is to make the original texture red channel the alpha channel,
- * and still keeping channel informations. Used in cunjunction with the AlphaBlurFilterPass and Fog of War.
+ * A simple shader that makes the original texture's red channel the alpha channel while still keeping channel
+ * information. Used in conjunction with the AlphaBlurFilterPass and Fog of War.
  */
 export default class FogSamplerShader extends BaseSamplerShader {
   /** @override */

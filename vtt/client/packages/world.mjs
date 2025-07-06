@@ -3,7 +3,9 @@ import ClientPackageMixin from "@client/packages/client-package.mjs";
 
 /**
  * @extends BaseWorld
- * @mixes ClientPackageMixin
+ * @mixes {@link ClientPackageMixin}
+ * @see {@link foundry.packages.types.WorldManifestData} For the world.json schema
+ * @see {@link foundry.ClientPackage}
  * @category Packages
  */
 export default class World extends ClientPackageMixin(BaseWorld) {

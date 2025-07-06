@@ -925,8 +925,8 @@ export default class Combat extends ClientDocumentMixin(BaseCombat) {
       if ( changeCombatant ) {
         const prior = this.combatants.get(previous.combatantId);
         const next = this.combatant;
-        if ( prior ) await this.#onEndTurn(prior, current.round, current.turn, false);
-        if ( next ) await this.#onStartTurn(next, current.round, current.turn, false);
+        if ( prior ) await this.#onEndTurn(prior, { round: current.round, turn: current.turn, skipped: false });
+        if ( next ) await this.#onStartTurn(next, { round: current.round, turn: current.turn, skipped: false });
       }
     }
   }

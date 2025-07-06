@@ -158,8 +158,9 @@ export default class ImagePopout extends HandlebarsApplicationMixin(ApplicationV
   async _prepareContext(options) {
     if ( options.isFirstRender ) {
       this.#related = this.options.uuid ? await foundry.utils.fromUuid(this.options.uuid) : null;
+      options.window.title = this.options.window.title = this.title.trim();
     }
-    const title = this.options.window.title.trim();
+    const title = this.options.window.title;
     return {
       caption: this.options.caption,
       image: this.options.src,

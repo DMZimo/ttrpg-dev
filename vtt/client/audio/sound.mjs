@@ -301,7 +301,7 @@ export default class Sound extends EventEmitterMixin() {
 
   /**
    * An internal reference to some object which is managing this Sound instance.
-   * @type {Object|null}
+   * @type {AmbientSound|null}
    * @internal
    */
   _manager = null;

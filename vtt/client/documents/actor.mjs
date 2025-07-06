@@ -186,6 +186,19 @@ export default class Actor extends ClientDocumentMixin(BaseActor) {
   /*  Methods                                     */
   /* -------------------------------------------- */
 
+  /** @inheritDoc */
+  clone(data, context) {
+    const cloned = super.clone(data, context);
+    if ( context?.keepId && !context.save ) {
+      for ( const [scene, tokens] of this._dependentTokens.entries() ) {
+        cloned._dependentTokens.set(scene, new foundry.utils.IterableWeakSet(tokens));
+      }
+    }
+    return cloned;
+  }
+
+  /* -------------------------------------------- */
+
   /**
    * Apply any transformations to the Actor data which are caused by ActiveEffects.
    */
@@ -332,7 +345,7 @@ export default class Actor extends ClientDocumentMixin(BaseActor) {
     if ( !this.prototypeToken.randomImg ) return [this.prototypeToken.texture.src];
     if ( this.#tokenImages ) return this.#tokenImages;
     try {
-      this.#tokenImages = await Actor.#requestTokenImages(this.id, {pack: this.pack});
+      this.#tokenImages = await CONFIG.ux.FilePicker.requestTokenImages(this.id, {pack: this.pack});
     } catch(err) {
       this.#tokenImages = [];
       Hooks.onError("Actor#getTokenImages", err, {
@@ -505,24 +518,6 @@ export default class Actor extends ClientDocumentMixin(BaseActor) {
     const effect = await ActiveEffect.fromStatusEffect(statusId);
     if ( overlay ) effect.updateSource({"flags.core.overlay": true});
     return ActiveEffect.implementation.create(effect, {parent: this, keepId: true});
-  }
-
-  /* -------------------------------------------- */
-
-  /**
-   * Request wildcard token images from the server and return them.
-   * @param {string} actorId         The actor whose prototype token contains the wildcard image path.
-   * @param {object} [options]
-   * @param {string} [options.pack]  The name of the compendium the actor is in.
-   * @returns {Promise<string[]>}    The list of filenames to token images that match the wildcard search.
-   */
-  static #requestTokenImages(actorId, options={}) {
-    return new Promise((resolve, reject) => {
-      game.socket.emit("requestTokenImages", actorId, options, result => {
-        if ( result.error ) return reject(new Error(result.error));
-        resolve(result.files);
-      });
-    });
   }
 
   /* -------------------------------------------- */

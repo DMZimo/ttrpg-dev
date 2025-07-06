@@ -142,7 +142,8 @@ export default class AbstractSidebarTab extends ApplicationV2 {
       id: `${this.tabName}-popout`,
       window: {
         frame: true,
-        positioned: true
+        positioned: true,
+        minimizable: true
       }
     }, { inplace: false });
     options.classes.push("sidebar-popout");

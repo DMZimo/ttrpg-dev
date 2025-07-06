@@ -228,6 +228,8 @@ export default class HexagonalGrid extends BaseGrid {
       {q, r: r - 1, s: s + 1, k: k - 1},
       {q, r: r - 1, s: s + 1, k},
       {q, r: r - 1, s: s + 1, k: k + 1},
+      {q, r, s, k: k - 1},
+      {q, r, s, k: k + 1},
       {q, r: r + 1, s: s - 1, k: k - 1},
       {q, r: r + 1, s: s - 1, k},
       {q, r: r + 1, s: s - 1, k: k + 1},

@@ -114,7 +114,7 @@ export default class FormDataExtended extends FormData {
       if ( (element.tagName === "BUTTON") || mceEditorIds.includes(name) ) continue;
 
       // Skip disabled or read-only fields
-      if ( !disabled && (element.disabled || element.closest("fieldset")?.disabled) ) continue;
+      if ( !disabled && element.matches(":disabled") ) continue;
       if ( !readonly && element.readOnly ) continue;
 
       // Extract and process the value of the field

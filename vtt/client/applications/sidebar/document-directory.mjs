@@ -764,7 +764,7 @@ export default class DocumentDirectory extends HandlebarsApplicationMixin(Abstra
       if ( matchedFolderIds.has(entry.folder?._id ?? entry.folder) ) entryIds.add(entryId);
 
       // Otherwise, if we are searching by name, match the entry name.
-      else if ( nameOnlySearch && query.test(foundry.applications.ux.SearchFilter.cleanQuery(entry.name)) ) {
+      if ( nameOnlySearch && query.test(foundry.applications.ux.SearchFilter.cleanQuery(entry.name)) ) {
         entryIds.add(entryId);
         this.#onMatchFolder(entry.folder, folderIds, autoExpandIds);
       }
@@ -1059,7 +1059,13 @@ export default class DocumentDirectory extends HandlebarsApplicationMixin(Abstra
     if ( event.type === "dragenter" ) {
       for ( const el of this.element.querySelectorAll(".droptarget") ) el.classList.remove("droptarget");
     }
-    if ( (event.type === "dragleave") && event.currentTarget.contains(event.target) ) return;
+    else if ( event.type === "dragleave" ) {
+
+      // Look up the hovered element (event.target is the element that was left)
+      const el = document.elementFromPoint(event.clientX, event.clientY);
+      const parent = el.closest(".folder");
+      if ( parent === event.currentTarget ) return;
+    }
     event.currentTarget.classList.toggle("droptarget", event.type === "dragenter");
   }
 

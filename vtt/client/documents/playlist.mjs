@@ -131,7 +131,7 @@ export default class Playlist extends ClientDocumentMixin(BasePlaylist) {
    * @param {string} [soundId]      The currently playing sound ID, if known
    * @param {object} [options={}]   Additional options which configure the next track
    * @param {number} [options.direction=1] Whether to advance forward (if 1) or backwards (if -1)
-   * @returns {Promise<Playlist>}   The updated Playlist document
+   * @returns {Promise<this|null|undefined>} If successfully updated, this Playlist document
    */
   async playNext(soundId, {direction=1}={}) {
     if ( ![PLAYLIST_MODES.SEQUENTIAL, PLAYLIST_MODES.SHUFFLE].includes(this.mode) ) return null;
@@ -390,7 +390,7 @@ export default class Playlist extends ClientDocumentMixin(BasePlaylist) {
   async _onSoundStart(sound) {
     if ( ![PLAYLIST_MODES.SEQUENTIAL, PLAYLIST_MODES.SHUFFLE].includes(this.mode) ) return;
     const apl = CONFIG.Playlist.autoPreloadSeconds;
-    if ( !Number.isNumeric(apl) || !Number.isFinite(sound.sound.duration) ) return
+    if ( !Number.isNumeric(apl) || !Number.isFinite(sound.sound.duration) ) return;
 
     // If active timeout, clear it
     clearTimeout(sound._preloadTimer);

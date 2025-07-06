@@ -15,6 +15,8 @@ import {DataModelValidationFailure} from "../data/validation-failure.mjs";
 /**
  * @import {PackageCompendiumData, PackageCompatibilityData, PackageManifestData,
  *   RelatedPackageData, PackageRelationshipsData} from "./_types.mjs";
+ * @import Collection from "../utils/collection.mjs";
+ * @import {Module, System} from "../../client/packages/_module.mjs";
  */
 
 /**
@@ -216,6 +218,8 @@ export class PackageCompendiumPacks extends fields.SetField {
 /**
  * The data schema used to define a Package manifest.
  * Specific types of packages extend this schema with additional fields.
+ * @template {PackageManifestData} PackageSchema The source data from the package manifest
+ * @extends DataModel<PackageSchema>
  */
 export default class BasePackage extends DataModel {
   /**
@@ -610,7 +614,11 @@ export default class BasePackage extends DataModel {
 
   /* -------------------------------------------- */
 
-  /** @internal */
+  /**
+   * Migrate to v13-schema styles array from string array
+   * @param {PackageManifestData} data
+   * @internal
+   */
   static _migrateStyles(data) {
     if ( !Array.isArray(data.styles) ) return;
     data.styles = data.styles.map(src => {
@@ -621,7 +629,12 @@ export default class BasePackage extends DataModel {
 
   /* -------------------------------------------- */
 
-  /** @internal */
+  /**
+   * Adjust pack names to conform to a slugified version
+   * @param {PackageManifestData} data
+   * @param {object} logOptions
+   * @internal
+   */
   static _migratePackIDs(data, logOptions) {
     if ( !data.packs ) return;
     for ( const pack of data.packs ) {

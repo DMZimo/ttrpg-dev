@@ -194,7 +194,7 @@ export default class BaseSamplerShader extends AbstractBaseShader {
   static batchGeometry = PIXI.BatchGeometry;
 
   /**
-   * The size of a vertice with all its packed attributes.
+   * The size of a vertex with all its packed attributes.
    * @type {number}
    */
   static batchVertexSize = 6;

@@ -995,8 +995,9 @@ export default class RegionDocument extends CanvasDocumentMixin(BaseRegion) {
     const destinationTokenData = destinationToken.toObject();
     if ( destinationScene.tokens.has(token.id) ) delete destinationTokenData._id;
     else destinationTokenData._id = token.id;
-    destinationToken = await foundry.documents.TokenDocument.implementation.create(destinationToken,
+    destinationToken = await foundry.documents.TokenDocument.implementation.create(destinationTokenData,
       {parent: destinationScene, keepId: true});
+    if ( !destinationToken ) throw new Error("Failed to create Token in destination Scene");
 
     // Delete the old token
     await token.delete({replacements: {[token.id]: destinationToken.uuid}});

@@ -9,7 +9,7 @@ import {LightData, TextureData} from "../data/data.mjs";
 /**
  * @import {Point, ElevatedPoint, DeepReadonly} from "../_types.mjs";
  * @import {TokenShapeType} from "../constants.mjs";
- * @import {TokenHexagonalOffsetsData, TokenHexagonalShapeData, TokenDimensions} from "./_types.mjs";
+ * @import {TokenHexagonalOffsetsData, TokenHexagonalShapeData, TokenDimensions, TokenPosition} from "./_types.mjs";
  * @import {GridOffset2D, GridOffset3D} from "../grid/_types.mjs";
  * @import {TokenData} from "./_types.mjs";
  * @import {SquareGrid} from "../grid/_module.mjs";
@@ -175,10 +175,22 @@ export default class BaseToken extends Document {
 
   /**
    * The fields of the data model for which changes count as a movement action.
-   * @type {Readonly<string[]>}
+   * @type {Readonly<["x", "y", "elevation", "width", "height", "shape"]>}
    * @readonly
    */
   static MOVEMENT_FIELDS = Object.freeze(["x", "y", "elevation", "width", "height", "shape"]);
+
+  /* -------------------------------------------- */
+
+  /**
+   * Are the given positions equal?
+   * @param {TokenPosition} position1
+   * @param {TokenPosition} position2
+   * @returns {boolean}
+   */
+  static arePositionsEqual(position1, position2) {
+    return (position1 === position2) || this.MOVEMENT_FIELDS.every(k => position1[k] === position2[k]);
+  }
 
   /* -------------------------------------------- */
 
@@ -209,11 +221,13 @@ export default class BaseToken extends Document {
   /* -------------------------------------------- */
 
   /**
-   * Is a user able to update an existing Token?
+   * Is a User able to update an existing Token? One can update a Token embedded in a World Scene if they own the
+   * corresponding Actor.
    * @type {DocumentPermissionTest}
    */
   static #canUpdate(user, doc, data) {
     if ( user.isGM ) return true;                     // GM users can do anything
+    if ( doc.inCompendium ) return doc.testUserPermission(user, "OWNER");
     if ( doc.actor ) {                                // You can update Tokens for Actors you control
       return doc.actor.testUserPermission(user, "OWNER");
     }
@@ -231,7 +245,7 @@ export default class BaseToken extends Document {
    * @internal
    */
   _prepareDeltaUpdate(changes={}, options={}) {
-    if ( ("delta" in changes) && this.delta ) this.delta._prepareDeltaUpdate(changes.delta, options);
+    if ( changes.delta && this.delta ) this.delta._prepareDeltaUpdate(changes.delta, options);
   }
 
   /* -------------------------------------------- */
@@ -240,6 +254,19 @@ export default class BaseToken extends Document {
   updateSource(changes={}, options={}) {
     this._prepareDeltaUpdate(changes, options);
     return super.updateSource(changes, options);
+  }
+
+  /* -------------------------------------------- */
+
+  /** @inheritDoc */
+  clone(data={}, context={}) {
+    const clone = super.clone(data, context);
+    if ( (clone instanceof Promise) || clone.actorLink ) return clone;
+    // Extra care needs to be taken when temporarily cloning an unlinked TokenDocument.
+    // Preparation of the clone's synthetic Actor using the embedded ActorDelta can easily enter an infinite loop.
+    // In this case we need to eagerly evaluate the clone ActorDelta instance so it is available immediately.
+    clone.delta; // Resolve lazy getter
+    return clone;
   }
 
   /* -------------------------------------------- */
@@ -957,7 +984,7 @@ export default class BaseToken extends Document {
   /** @inheritdoc */
   toObject(source=true) {
     const obj = super.toObject(source);
-    obj.delta = this.delta ? this.delta.toObject(source) : null;
+    obj.delta = obj.actorLink ? null : this.delta.toObject(source);
     return obj;
   }
 

@@ -1,24 +1,69 @@
 /**
- * A module which provides documentation for the various hook events which are dispatched throughout the Foundry
- * Virtual Tabletop client-side software.
+ * A module which provides documentation for the various hook events which are dispatched throughout the Foundry Virtual
+ * Tabletop client-side software. Packages can respond to these events by using the
+ * {@linkcode foundry.helpers.Hooks.on | Hooks.on} method.
+ *
+ * Systems and modules can add their own hooks by using {@linkcode foundry.helpers.Hooks.call | Hooks.call} or
+ * {@linkcode foundry.helpers.Hooks.callAll | Hooks.callAll}; This page is only a listing of the hooks called
+ * by core. See package pages for information about the hooks they provide.
+ *
+ * @see {@link foundry.helpers.Hooks | Hooks} - The class responsible for managing hook events
+ *
+ * ## Once Hooks
+ *
+ * Every time a client connects to the server, either from logging in or refreshing the page, it always goes through the
+ * following hooks in order and never calls them again. Other hooks may fire during this time, such as canvas drawing
+ * hooks, but those other hooks will also fire when relevant changes happen in world (such as switching scenes).
+ * 1. {@link init}
+ * 2. {@link i18nInit}
+ * 3. {@link setup}
+ * 4. {@link initializeDynamicTokenRingConfig}
+ * 5. {@link initializeCombatConfiguration}
+ * 6. {@link canvasConfig} (if the Canvas is enabled)
+ * 7. {@link ready}
+ *
+ * ## Generic Hooks
+ *
+ * Many of the commonly used hooks in Foundry are "generic", which is to say the actual name of the hook is dynamic
+ * based on the class that is calling the hook. While looking for the appropriate hook to use for your code, keep
+ * these in mind as possible candidates.
+ * - {@link renderApplicationV1}
+ * - {@link renderApplicationV2}
+ * - {@link preCreateDocument}
+ * - {@link createDocument}
+ * - {@link preUpdateDocument}
+ * - {@link updateDocument}
+ * - {@link preDeleteDocument}
+ * - {@link deleteDocument}
+ *
+ * ## Cancellable Hooks
+ *
+ * Some hooks, such as {@link preCreateDocument}, can be cancelled by returning an explicit `false`. These hooks
+ * mention this capability and note that they return `boolean | void`. Hooks are never awaited, which means that an
+ * async function will always return a Promise, which is not a boolean. This is an important limitation to keep in
+ * mind while working with these kinds of hooks.
+ *
  * @module hookEvents
  */
 
 /**
- * @import {CanvasViewPosition, HotReloadData, TokenMovementOperation} from "./_types.mjs";
- * @import {CombatHistoryData, EffectChangeData} from "./documents/_types.mjs";
+ * @import {CanvasViewPosition, HotReloadData} from "./_types.mjs";
+ * @import {CombatHistoryData, EffectChangeData, TokenMovementOperation} from "./documents/_types.mjs";
+ * @import CombatConfiguration from "./data/combat-config.mjs";
  * @import Canvas from "./canvas/board.mjs";
  * @import Application, {ApplicationV1HeaderButton} from "./appv1/api/application-v1.mjs";
  * @import JournalSheet from "./appv1/sheets/journal-sheet.mjs";
  * @import ApplicationV2 from "./applications/api/application.mjs";
  * @import {ApplicationHeaderControlsEntry, ApplicationRenderContext,
  *   ApplicationRenderOptions} from "./applications/_types.mjs";
+ * @import DocumentSheetConfig from "./applications/apps/document-sheet-config.mjs";
  * @import {SceneControl} from "./applications/ui/scene-controls.mjs";
  * @import {ContextMenuEntry} from "./applications/ux/context-menu.mjs";
  * @import {DatabaseCreateOperation, DatabaseDeleteOperation,
  *   DatabaseUpdateOperation} from "@common/abstract/_types.mjs";
  * @import {ChatBubbleOptions} from "./canvas/animation/chat-bubbles.mjs";
  * @import {CompendiumArtInfo} from "./helpers/_types.mjs";
+ * @import ClientSettings from "./helpers/client-settings.mjs";
  * @import {CanvasEnvironmentConfig} from "./canvas/groups/environment.mjs";
  * @import {ProseMirrorMenuItem, ProseMirrorDropDownConfig} from "@common/prosemirror/_types.mjs";
  * @import Document from "@common/abstract/document.mjs";
@@ -48,8 +93,10 @@
 /* -------------------------------------------- */
 
 /**
- * A hook event that fires as Foundry is initializing, right before any
- * initialization tasks have begun.
+ * A hook event that fires once as Foundry is initializing, right before any
+ * initialization tasks have begun. Most package registration calls should go in here,
+ * such as {@linkcode DocumentSheetConfig.registerSheet}, adjusting {@linkcode CONFIG},
+ * and registering settings with {@link ClientSettings.register | `game.settings.register`}.
  * @event
  * @category Game
  */
@@ -58,7 +105,8 @@ export function init() {}
 /* -------------------------------------------- */
 
 /**
- * A hook event that fires once Localization translations have been loaded and are ready for use.
+ * A hook event that fires once after Localization translations have been loaded and are ready for use.
+ * Runs after {@linkcode init} but before {@linkcode setup}.
  * @event
  * @category Game
  */
@@ -67,9 +115,10 @@ export function i18nInit() {}
 /* -------------------------------------------- */
 
 /**
- * A hook event that fires when Foundry has finished initializing but
- * before the game state has been set up. Fires before any Documents, UI
- * applications, or the Canvas have been initialized.
+ * A hook event that fires once when Foundry has finished initializing but before the game state has been set up.
+ * Fires after all Documents are initialized, including Settings (you cannot read settings prior to this hook),
+ * but before the UI applications or Canvas have been initialized.
+ * Runs after {@linkcode i18nInit} but before {@linkcode ready}.
  * @event
  * @category Game
  */
@@ -78,11 +127,20 @@ export function setup() {}
 /* -------------------------------------------- */
 
 /**
- * A hook event that fires when the game is fully ready.
+ * A hook event that fires once when the game is fully ready. Runs after {@linkcode setup}.
  * @event
  * @category Game
  */
 export function ready() {}
+
+/* -------------------------------------------- */
+
+/**
+ * A hook event that fires when the stream view is fully ready.
+ * @event
+ * @category Game
+ */
+export function streamReady() {}
 
 /* -------------------------------------------- */
 
@@ -211,6 +269,15 @@ export function dropCanvasData(canvas, data, event) {}
  * @param {boolean} active    Is the highlight state now active
  */
 export function highlightObjects(active) {}
+
+/* -------------------------------------------- */
+
+/**
+ * A hook event that fires when canvas edges are being initialized.
+ * @event
+ * @category Canvas
+ */
+export function initializeEdges() {}
 
 /* -------------------------------------------- */
 /*  Application                                 */
@@ -856,13 +923,23 @@ export function dropActorSheetData(actor, sheet, data) {}
 /* -------------------------------------------- */
 
 /**
- * A hook event that fires with a {@link foundry.canvas.layers.InteractionLayer} becomes active.
+ * A hook event that fires when a {@link foundry.canvas.layers.InteractionLayer} becomes active.
  * The dispatched event name replaces "Layer" with the named InteractionLayer subclass, i.e. "activateTokensLayer".
  * @event
  * @category InteractionLayer
  * @param {InteractionLayer} layer    The layer becoming active
  */
 export function activateLayer(layer) {}
+
+/* -------------------------------------------- */
+
+/**
+ * A hook event that fires when a {@link foundry.canvas.layers.InteractionLayer} becomes active.
+ * @event
+ * @category InteractionLayer
+ * @param {InteractionLayer} layer  The layer becoming active.
+ */
+export function activateCanvasLayer(layer) {}
 
 /* -------------------------------------------- */
 
@@ -1092,6 +1169,16 @@ export function combatTurn(combat, updateData, updateOptions) {}
 export function combatRound(combat, updateData, updateOptions) {}
 
 /* -------------------------------------------- */
+
+/**
+ * A hook event that fires when combat tracker settings are initialized.
+ * @event
+ * @category Combat
+ * @param {CombatConfiguration} config  The CombatConfiguration instance.
+ */
+export function initializeCombatConfiguration(config) {}
+
+/* -------------------------------------------- */
 /*  ProseMirror                                 */
 /* -------------------------------------------- */
 
@@ -1167,6 +1254,23 @@ export function hotReload(data) {}
  * @returns {boolean|void}                      Returning false will prevent default chat input behavior.
  */
 export function chatInput(event, options) {}
+
+/* -------------------------------------------- */
+
+/**
+ * @typedef RenderChatInputContext
+ * @property {HTMLElement} previousParent  The element the chat input was moved out of.
+ */
+
+/**
+ * A hook event that fires when the chat input element is adopted by a different DOM element.
+ * @event
+ * @category ChatLog
+ * @param {ChatLog} app                           The application that performed the adoption.
+ * @param {Record<string, HTMLElement>} elements  A mapping of CSS selectors to the elements that were moved.
+ * @param {RenderChatInputContext} context        Additional hook context.
+ */
+export function renderChatInput(app, elements, context) {}
 
 /* -------------------------------------------- */
 

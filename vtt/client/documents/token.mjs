@@ -12,7 +12,8 @@ import Hooks from "../helpers/hooks.mjs";
  *   TokenMeasureMovementPathWaypoint, TokenResumeMovementCallback, TokenMovementContinuationData,
  *   TokenMovementCostFunction, TokenMovementData, TokenMovementOperation, TokenMovementSegmentData,
  *   TokenMovementWaypoint, TokenRegionMovementSegment, TokenSegmentizeMovementWaypoint,
- *   TrackedAttributesDescription, TokenMovementContinuationHandle, TokenMovementMethod
+ *   TrackedAttributesDescription, TokenMovementContinuationHandle, TokenMovementMethod,
+ TokenMovementCostAggregator
  * } from "./_types.mjs";
  * @import {TokenData, TokenDimensions, TokenPosition} from "@common/documents/_types.mjs";
  * @import {Actor, Combat, Combatant, RegionDocument, User} from "./_module.mjs";
@@ -163,6 +164,7 @@ export default class TokenDocument extends CanvasDocumentMixin(BaseToken) {
    */
   get isOwner() {
     if ( game.user.isGM ) return true;
+    if ( this.inCompendium ) return super.isOwner;
     return this.actor?.isOwner ?? false;
   }
 
@@ -484,7 +486,8 @@ export default class TokenDocument extends CanvasDocumentMixin(BaseToken) {
     if ( this.movement.state === "completed" ) return false;
     this.#resetMovementContinuation();
     this.movement.user.movingTokens.delete(this);
-    this.#movement = Object.freeze({...this.movement, state: "stopped"});
+    this.#movement = Object.freeze({...this.movement, state: "stopped", pending: Object.freeze({waypoints: Object.freeze([]),
+      distance: 0, cost: 0, spaces: 0, diagonals: 0})});
     this._onMovementStopped();
     Hooks.callAll("stopToken", this);
     const movementId = this.movement.id;
@@ -713,13 +716,16 @@ export default class TokenDocument extends CanvasDocumentMixin(BaseToken) {
 
   /**
    * Measure the movement path for this Token.
-   * @param {TokenMeasureMovementPathWaypoint[]} waypoints    The waypoints of movement
-   * @param {object} [options]                                Additional measurement options
-   * @param {TokenMovementCostFunction} [options.cost]        The function that returns the cost
+   * @param {TokenMeasureMovementPathWaypoint[]} waypoints     The waypoints of movement
+   * @param {object} [options]                                 Additional measurement options
+   * @param {TokenMovementCostFunction} [options.cost]         The function that returns the cost
    *   for a given move between grid spaces (default is the distance travelled along the direct path)
+   * @param {TokenMovementCostAggregator} [options.aggregator] The cost aggregator.
+   *                                                           Default: `CONFIG.Token.movement.costAggregator`.
    * @returns {GridMeasurePathResult}
    */
-  measureMovementPath(waypoints, {cost}={}) {
+  measureMovementPath(waypoints, {cost, aggregator}={}) {
+    aggregator ??= CONFIG.Token.movement.costAggregator;
     const grid = this.parent?.grid ?? foundry.documents.BaseScene.defaultGrid;
     const path = [];
     let {x: previousX, y: previousY, elevation: previousElevation,
@@ -785,7 +791,7 @@ export default class TokenDocument extends CanvasDocumentMixin(BaseToken) {
       waypoint.measure = actionConfig.measure;
       waypoint.terrain = terrain;
       // TODO: optimize (use the same function for same size)
-      waypoint.cost = TokenDocument.#createMovementCostFunction(grid, c ?? cost, width, height, shape);
+      waypoint.cost = TokenDocument.#createMovementCostFunction(grid, c ?? cost, aggregator, width, height, shape);
 
       path.push(waypoint);
 
@@ -841,12 +847,13 @@ export default class TokenDocument extends CanvasDocumentMixin(BaseToken) {
    * ({@link foundry.documents.BaseToken##getTopLeftGridOffset}).
    * @param {BaseGrid} grid                                    The grid
    * @param {TokenMovementCostFunction|number|undefined} cost  The cost function for a single step or predetermined cost
+   * @param {TokenMovementCostAggregator} aggregator           The cost aggregator
    * @param {number} width                                     The width in grid spaces (positive)
    * @param {number} height                                    The height in grid spaces (positive)
    * @param {TokenShapeType} shape                             The shape (one of {@link CONST.TOKEN_SHAPES})
    * @returns {TokenMovementCostFunction|number|undefined}     The cost function for measuring
    */
-  static #createMovementCostFunction(grid, cost, width, height, shape) {
+  static #createMovementCostFunction(grid, cost, aggregator, width, height, shape) {
     if ( cost === undefined ) return undefined;
 
     // Predetermined cost
@@ -859,47 +866,44 @@ export default class TokenDocument extends CanvasDocumentMixin(BaseToken) {
     if ( (width === height) && (width <= 1) ) return cost;
 
     // Square grid
-    if ( grid.isSquare ) return TokenDocument.#createSquareMovementCostFunction(cost, width, height);
+    if ( grid.isSquare ) return TokenDocument.#createSquareMovementCostFunction(cost, aggregator, width, height);
 
     // Hexagonal grid
-    return TokenDocument.#createHexagonalMovementCostFunction(grid, cost, width, height, shape);
+    return TokenDocument.#createHexagonalMovementCostFunction(grid, cost, aggregator, width, height, shape);
   }
 
   /* -------------------------------------------- */
 
   /**
    * Create the cost function for {@link foundry.grid.SquareGrid#measurePath}.
-   * @param {TokenMovementCostFunction} cost        The cost function for a single step
-   * @param {number} width                          The width in grid spaces (positive)
-   * @param {number} height                         The height in grid spaces (positive)
-   * @returns {TokenMovementCostFunction}           The combined cost function
+   * @param {TokenMovementCostFunction} cost         The cost function for a single step
+   * @param {TokenMovementCostAggregator} aggregator The cost aggregator
+   * @param {number} width                           The width in grid spaces (positive)
+   * @param {number} height                          The height in grid spaces (positive)
+   * @returns {TokenMovementCostFunction}            The combined cost function
    */
-  static #createSquareMovementCostFunction(cost, width, height) {
+  static #createSquareMovementCostFunction(cost, aggregator, width, height) {
     const w = Math.ceil(width);
     const h = Math.ceil(height);
-    const o0 = {i: 0, j: 0, k: 0};
-    const o1 = {i: 0, j: 0, k: 0};
-    const costs = [];
-    for ( let l = w * h; l > 0; l-- ) costs.push(0);
+    const results = [];
+    for ( let l = w * h; l > 0; l-- ) {
+      results.push({from: {i: 0, j: 0, k: 0}, to: {i: 0, j: 0, k: 0}, cost: 0});
+    }
     return (from, to, distance, segment) => {
       const {i: i0, j: j0} = from;
-      o0.k = from.k;
       const {i: i1, j: j1} = to;
-      o1.k = to.k;
       for ( let di = 0, l = 0; di < height; di++ ) {
-        o0.i = i0 + di;
-        o1.i = i1 + di;
         for ( let dj = 0; dj < width; dj++, l++ ) {
+          const result = results[l];
+          const {from: o0, to: o1} = result;
+          o0.i = i0 + di;
           o0.j = j0 + dj;
+          o1.i = i1 + di;
           o1.j = j1 + dj;
-          const c = cost(o0, o1, distance, segment);
-          if ( c === Infinity ) return Infinity;
-          costs[l] = c;
+          result.cost = cost(o0, o1, distance, segment);
         }
       }
-      // TODO: consider supporting min, max, average, ....
-      costs.sort((a, b) => a - b);
-      return costs[(costs.length - 1) >> 1]; // Median cost
+      return aggregator(results, distance, segment);
     };
   }
 
@@ -909,41 +913,38 @@ export default class TokenDocument extends CanvasDocumentMixin(BaseToken) {
    * Create the cost function for {@link foundry.grid.HexagonalGrid#measurePath}.
    * @param {HexagonalGrid} grid                       The hexagonal grid
    * @param {TokenMovementCostFunction} cost           The cost function for a single step
+   * @param {TokenMovementCostAggregator} aggregator   The cost aggregator
    * @param {number} width                             The width in grid spaces (positive)
    * @param {number} height                            The height in grid spaces (positive)
    * @param {TokenShapeType} shape                     The shape type (one of {@link CONST.TOKEN_SHAPES})
    * @returns {TokenMovementCostFunction}              The combined cost function
    */
-  static #createHexagonalMovementCostFunction(grid, cost, width, height, shape) {
+  static #createHexagonalMovementCostFunction(grid, cost, aggregator, width, height, shape) {
     const {columns, even} = grid;
     const {even: offsetsEven, odd: offsetsOdd} = BaseToken._getHexagonalOffsets(width, height, shape, columns);
-    const o0 = {i: 0, j: 0, k: 0};
-    const o1 = {i: 0, j: 0, k: 0};
-    const costs = [];
-    for ( let l = offsetsEven.length; l > 0; l-- ) costs.push(0);
+    const results = [];
+    for ( let l = offsetsEven.length; l > 0; l-- ) {
+      results.push({from: {i: 0, j: 0, k: 0}, to: {i: 0, j: 0, k: 0}, cost: 0});
+    }
     return (from, to, distance, segment) => {
       const {i: i0, j: j0} = from;
-      o0.k = from.k;
       const isEven0 = ((columns ? j0 : i0) % 2 === 0) === even;
       const offsets0 = isEven0 ? offsetsEven : offsetsOdd;
       const {i: i1, j: j1} = to;
-      o1.k = to.k;
       const isEven1 = ((columns ? j1 : i1) % 2 === 0) === even;
       const offsets1 = isEven1 ? offsetsEven : offsetsOdd;
-      for ( let l = costs.length - 1; l >= 0; l-- ) {
+      for ( let l = results.length - 1; l >= 0; l-- ) {
+        const result = results[l];
+        const {from: o0, to: o1} = result;
         const {i: di0, j: dj0} = offsets0[l];
         o0.i = i0 + di0;
         o0.j = j0 + dj0;
         const {i: di1, j: dj1} = offsets1[l];
         o1.i = i1 + di1;
         o1.j = j1 + dj1;
-        const c = cost(o0, o1, distance, segment);
-        if ( c === Infinity ) return Infinity;
-        costs[l] = c;
+        result.cost = cost(o0, o1, distance, segment);
       }
-      // TODO: consider supporting min, max, average, ....
-      costs.sort((a, b) => a - b);
-      return costs[(costs.length - 1) >> 1]; // Median cost
+      return aggregator(results, distance, segment);
     };
   }
 
@@ -1231,7 +1232,7 @@ export default class TokenDocument extends CanvasDocumentMixin(BaseToken) {
 
     // Add the initial waypoint or a teleport waypoint if there's a gap if we previously moved without recording
     const previous = combined.at(-1);
-    if ( !previous || TokenDocument.MOVEMENT_FIELDS.some(k => previous[k] !== origin[k]) ) {
+    if ( !previous || !TokenDocument.arePositionsEqual(previous, origin) ) {
       const {x, y, elevation, width, height, shape} = origin;
       combined.push({x, y, elevation, width, height, shape, action: previous ? "displace" : waypoints[0].action,
         terrain: null, snapped: false, explicit: false, checkpoint: true, intermediate: false,
@@ -1244,6 +1245,7 @@ export default class TokenDocument extends CanvasDocumentMixin(BaseToken) {
     // Split the path of movement at the first checkpoint
     let passed;
     let pending;
+    let constrained = false;
     if ( options.isPaste || options.isUndo ) [passed, pending] = [waypoints, []];
     else ({passed, pending} = this.#splitMovementPath(origin, waypoints));
 
@@ -1261,6 +1263,7 @@ export default class TokenDocument extends CanvasDocumentMixin(BaseToken) {
         constrainedPath.shift();
         passed = constrainedPath;
         pending.length = 0;
+        constrained = true;
       }
     }
 
@@ -1399,6 +1402,7 @@ export default class TokenDocument extends CanvasDocumentMixin(BaseToken) {
         spaces: recordedHistorySpaces + unrecordedHistorySpaces,
         diagonals: recordedHistoryDiagonals + unrecordedHistoryDiagonals
       },
+      constrained,
       recorded,
       method,
       constrainOptions,
@@ -1549,12 +1553,15 @@ export default class TokenDocument extends CanvasDocumentMixin(BaseToken) {
       // Freeze movement data
       foundry.utils.deepFreeze(movement);
 
+      // Stop current movement unless chained
+      if ( this.movement.id !== movement.chain.at(-1) ) this.#stopMovement(false);
+
       // Update movement data
       this.#resetMovementContinuation();
       this._movementContinuation.postWorkflowPromise = options._movement._postWorkflow.promise;
       this.movement.user.movingTokens.delete(this);
       const user = game.users.get(userId);
-      const state = movement.pending.waypoints.length > 0 ? "pending" : "completed";
+      const state = movement.constrained ? "stopped" : (movement.pending.waypoints.length > 0 ? "pending" : "completed");
       if ( state === "pending" ) user.movingTokens.add(this);
       const {animate, animation, diff, noHook, pan, render, renderSheet, isPaste, isUndo} = options;
       const updateOptions = foundry.utils.deepFreeze({animate, animation, diff, noHook, pan, render, renderSheet,
@@ -1884,14 +1891,16 @@ export default class TokenDocument extends CanvasDocumentMixin(BaseToken) {
         // Find region waypoint
         let t0 = Infinity;
         let regionCheckpoint;
+        const previousCenter = this.getCenterPoint(previous);
         const segment = [previous, current];
         for ( const data of regions ) {
           const {region, mask} = data;
           for ( const {type, to} of this.segmentizeRegionMovementPath(region, segment) ) {
             if ( mask & (1 << (type + 1)) ) {
-              const dx = to.x - previous.x;
-              const dy = to.y - previous.y;
-              const dz = (to.elevation - previous.elevation) * distancePixels;
+              const center = this.getCenterPoint(to);
+              const dx = center.x - previousCenter.x;
+              const dy = center.y - previousCenter.y;
+              const dz = (center.elevation - previousCenter.elevation) * distancePixels;
               const t = (dx * dx) + (dy * dy) + (dz * dz);
               if ( t < t0 ) {
                 t0 = t;
@@ -1905,15 +1914,13 @@ export default class TokenDocument extends CanvasDocumentMixin(BaseToken) {
         if ( regionCheckpoint ) {
 
           // Skip the region waypoint if it matches the previous movement waypoint
-          if ( (regionCheckpoint.x === previous.x) && (regionCheckpoint.y === previous.y)
-            && (regionCheckpoint.elevation === previous.elevation) ) {
+          if ( TokenDocument.arePositionsEqual(regionCheckpoint, previous) && (previous !== origin) ) {
             previous.checkpoint = true;
             pending.push(current);
           }
 
           // Skip the region waypoint if it matches the current movement waypoint
-          else if ( (regionCheckpoint.x === current.x) && (regionCheckpoint.y === current.y)
-            && (regionCheckpoint.elevation === current.elevation) ) {
+          else if ( TokenDocument.arePositionsEqual(regionCheckpoint, current) ) {
             current.checkpoint = true;
             passed.push(current);
           }
@@ -2134,6 +2141,10 @@ export default class TokenDocument extends CanvasDocumentMixin(BaseToken) {
       if ( !movement ) continue;
       document._onUpdateMovement(movement, operation, user);
       Hooks.callAll("moveToken", document, movement, operation, user);
+      if ( (document.movement.id === movement.id) && movement.constrained ) {
+        document._onMovementStopped();
+        Hooks.callAll("stopToken", document);
+      }
     }
   }
 

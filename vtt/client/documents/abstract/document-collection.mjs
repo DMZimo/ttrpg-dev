@@ -371,8 +371,8 @@ export default class DocumentCollection extends Collection {
    * @internal
    */
   _onModifyContents(action, documents, result, operation, user) {
-    if ( operation.render && !operation.parent ) {
-      this.render(false, {renderContext: `${action}${this.documentName}`, renderData: result});
+    if ( operation.render && !operation.parent && documents.length ) {
+      this.render(false, {renderContext: `${action}${documents[0].documentName}`, renderData: result});
     }
   }
 }

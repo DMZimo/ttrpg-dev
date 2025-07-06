@@ -182,7 +182,7 @@ export default class PrototypeTokenConfig extends TokenApplicationMixin(Applicat
     submitData.detectionModes ??= []; // Clear detection modes array
     this._processChanges(submitData);
     const changes = {prototypeToken: submitData};
-    this.actor.validate({update: changes, clean: true, fallback: false});
+    this.actor.validate({changes, clean: true, fallback: false});
     await this.actor.update(changes);
   }
 

@@ -1064,6 +1064,16 @@ export default class Game {
    */
   registerSettings() {
 
+    // Experimental: Universal Keybindings
+    game.settings.register("core", "universalKeybindings", {
+      name: "SETTINGS.UniversalKeybindingsN",
+      hint: "SETTINGS.UniversalKeybindingsL",
+      scope: "client",
+      config: true,
+      type: new foundry.data.fields.BooleanField({initial: false}),
+      requiresReload: true
+    });
+
     // UI Configuration
     game.settings.registerMenu("core", "uiConfigMenu", {
       name: "SETTINGS.UI.MENU.name",
@@ -1468,7 +1478,10 @@ export default class Game {
       scope: "client",
       config: false,
       type: Object,
-      default: {"data-/": {source: "data", path: "/", label: "root"}}
+      default: {
+        "data-/": {source: "data", path: "/", label: "root"},
+        "data-assets/": {source: "data", path: "assets/", label: "assets"}
+      }
     });
 
     // Top level collection sorting

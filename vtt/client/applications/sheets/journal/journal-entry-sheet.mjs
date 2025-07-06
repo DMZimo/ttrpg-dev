@@ -510,9 +510,13 @@ export default class JournalEntrySheet extends HandlebarsApplicationMixin(Docume
       const sheet = this.getPageSheet(page);
       const cssClasses = [type, `level${title.level}`, "page"];
       const [ownership] = levels.find(([, level]) => level === page.ownership.default);
+      let editable = sheet.isEditable;
+      if ( !sheet.isV2 ) {
+        editable = page.isOwner;
+        if ( page.parent.pack ) editable &&= !game.packs.get(page.parent.pack)?.locked;
+      }
       const descriptor = {
-        category, id, hidden, name, sort,
-        editable: sheet.isEditable,
+        category, id, editable, hidden, name, sort,
         tocClass: cssClasses.join(" "),
         viewClass: cssClasses.concat(sheet.options.viewClasses || []).join(" "),
         icon: this.constructor.OWNERSHIP_ICONS[page.ownership.default],
@@ -903,6 +907,7 @@ export default class JournalEntrySheet extends HandlebarsApplicationMixin(Docume
   /** @inheritDoc */
   _onClose(options) {
     super._onClose(options);
+    for ( const sheet of Object.values(this.#sheets) ) sheet.close({ animate: false });
 
     // Reset any temporarily-granted ownership.
     if ( !this.#tempOwnership ) return;

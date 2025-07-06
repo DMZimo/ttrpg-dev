@@ -946,6 +946,7 @@ export function mergeObject(original, other={}, {insertKeys=true, insertValues=t
 
 /**
  * A helper function for merging objects when the target key does not exist in the original.
+ * @ignore
  */
 function _mergeInsert(original, k, v, _d, {insertKeys, insertValues, performDeletions}={}) {
 
@@ -975,6 +976,7 @@ function _mergeInsert(original, k, v, _d, {insertKeys, insertValues, performDele
 
 /**
  * A helper function for merging objects when the target key exists in the original.
+ * @ignore
  */
 function _mergeUpdate(original, k, v, _d, {insertKeys, insertValues, enforceTypes, overwrite, recursive,
   performDeletions}={}) {

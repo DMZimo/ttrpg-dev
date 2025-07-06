@@ -28,7 +28,13 @@ export default class BasePlaylistSound extends Document {
     label: "DOCUMENT.PlaylistSound",
     labelPlural: "DOCUMENT.PlaylistSounds",
     compendiumIndexFields: ["name", "sort"],
-    schemaVersion: "13.341"
+    schemaVersion: "13.341",
+    permissions: {
+      ...super.metadata.permissions,
+      create: "OWNER",
+      update: "OWNER",
+      delete: "OWNER"
+    }
   }, {inplace: false}));
 
   /** @inheritdoc */

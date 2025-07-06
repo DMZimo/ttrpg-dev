@@ -2915,7 +2915,7 @@ export default class Token extends PlaceableObject {
     const previous = history.at(-1);
     if ( previous ) {
       const origin = result.path[0];
-      if ( TokenDocument.MOVEMENT_FIELDS.some(k => previous[k] !== origin[k]) ) {
+      if ( !TokenDocument.arePositionsEqual(previous, origin) ) {
         const {x, y, elevation, width, height, shape} = origin;
         history = [...history, {x, y, elevation, width, height, shape, action: "displace", cost: 0}];
       }
@@ -3060,6 +3060,7 @@ export default class Token extends PlaceableObject {
             const dz = (center.elevation - previousCenter.elevation) * distancePixels;
             const t = (dx * dx) + (dy * dy) + (dz * dz);
             regionWaypoints.push({t, x: from.x, y: from.y, elevation: from.elevation,
+              width: from.width, height: from.height, shape: from.shape,
               crosses: type !== REGION_MOVEMENT_SEGMENTS.MOVE, state, terrain: null});
           }
         }
@@ -3077,7 +3078,7 @@ export default class Token extends PlaceableObject {
             const w1 = regionWaypoints[j + 1];
 
             // Same position: combine them
-            if ( (w0.x === w1.x) && (w0.y === w1.y) && (w0.elevation === w1.elevation) ) {
+            if ( TokenDocument.arePositionsEqual(w0, w1) ) {
               k++;
               d++;
               continue;
@@ -3130,11 +3131,11 @@ export default class Token extends PlaceableObject {
 
           // Skip the first region waypoint if it matches the previous movement waypoint
           const first = regionWaypoints[0];
-          if ( (first.x === from.x) && (first.y === from.y) && (first.elevation === from.elevation) ) j = 1;
+          if ( TokenDocument.arePositionsEqual(first, from) ) j = 1;
 
           // Skip the last region waypoint if it matches the current movement waypoint
           const last = regionWaypoints[n - 1];
-          if ( (last.x === to.x) && (last.y === to.y) && (last.elevation === to.elevation) ) {
+          if ( TokenDocument.arePositionsEqual(last, to) ) {
             n -= 1;
             terrain = last.terrain;
           }
@@ -3142,7 +3143,7 @@ export default class Token extends PlaceableObject {
 
         // Add the region waypoints between the previous and the current movement waypoint
         while ( j < n ) {
-          const {x, y, elevation, terrain} = regionWaypoints[j++];
+          const {x, y, elevation, width, height, shape, terrain} = regionWaypoints[j++];
 
           // Remove redundant region waypoints
           if ( (previousTerrain !== undefined) && (!previousTerrain === !terrain)
@@ -3150,8 +3151,8 @@ export default class Token extends PlaceableObject {
             path.pop();
           }
 
-          path.push({x, y, elevation, width: to.width, height: to.height, shape: to.shape, action,
-            terrain, snapped: false, explicit: true, checkpoint: false, intermediate: true});
+          path.push({x, y, elevation, width, height, shape, action, terrain, snapped: false,
+            explicit: true, checkpoint: false, intermediate: true});
           previousTerrain = terrain;
         }
 
@@ -3212,7 +3213,6 @@ export default class Token extends PlaceableObject {
       }
     }
 
-    let previousRegions = initialRegions;
     const distancePixels = this.scene.dimensions.distancePixels;
     for ( let i = 0; i < passedWaypoints.length; i++ ) {
       const to = passedWaypoints[i];
@@ -3229,6 +3229,7 @@ export default class Token extends PlaceableObject {
           const dz = (center.elevation - previousCenter.elevation) * distancePixels;
           const t = (dx * dx) + (dy * dy) + (dz * dz);
           regionWaypoints.push({t, x: from.x, y: from.y, elevation: from.elevation,
+            width: from.width, height: from.height, shape: from.shape,
             crosses: type !== REGION_MOVEMENT_SEGMENTS.MOVE, state, regions: null});
         }
       }
@@ -3246,7 +3247,7 @@ export default class Token extends PlaceableObject {
           const w1 = regionWaypoints[j + 1];
 
           // Same position: combine them
-          if ( (w0.x === w1.x) && (w0.y === w1.y) && (w0.elevation === w1.elevation) ) {
+          if ( TokenDocument.arePositionsEqual(w0, w1) ) {
             k++;
             d++;
             continue;
@@ -3295,25 +3296,26 @@ export default class Token extends PlaceableObject {
 
         // Skip the first region waypoint if it matches the previous movement waypoint
         const first = regionWaypoints[0];
-        if ( (first.x === from.x) && (first.y === from.y) && (first.elevation === from.elevation) ) j = 1;
+        if ( TokenDocument.arePositionsEqual(first, from) ) j = 1;
 
         // Skip the last region waypoint if it matches the current movement waypoint
         const last = regionWaypoints[n - 1];
-        if ( (last.x === to.x) && (last.y === to.y) && (last.elevation === to.elevation) ) {
+        if ( TokenDocument.arePositionsEqual(last, to) ) {
           n -= 1;
           regions = last.regions;
         }
       }
 
+      let previousRegions;
+
       // Add the region waypoints between the previous and the current movement waypoint
       while ( j < n ) {
-        const {x, y, elevation, regions} = regionWaypoints[j++];
+        const {x, y, elevation, width, height, shape, regions} = regionWaypoints[j++];
 
         // Remove redundant region waypoints
-        if ( previousRegions.equals(regions) ) path.pop();
+        if ( previousRegions?.equals(regions) ) path.pop();
 
-        path.push({x, y, elevation, width: to.width, height: to.height, shape: to.shape, action: to.action,
-          terrain: to.terrain, regions, ray: null});
+        path.push({x, y, elevation, width, height, shape, action: to.action, terrain: to.terrain, regions, ray: null});
         previousRegions = regions;
       }
 
@@ -3325,12 +3327,11 @@ export default class Token extends PlaceableObject {
       }
 
       // Remove redundant region waypoint
-      if ( previousRegions.equals(regions) ) path.pop();
+      if ( previousRegions?.equals(regions) ) path.pop();
 
       // Add the current movement waypoint
       path.push({x: to.x, y: to.y, elevation: to.elevation, width: to.width, height: to.height, shape: to.shape,
         action: to.action, terrain: to.terrain, regions, ray: null});
-      previousRegions = regions;
 
       if ( !to.intermediate ) {
         const center = this.document.getCenterPoint(to);
@@ -3968,7 +3969,7 @@ export default class Token extends PlaceableObject {
           });
         }
       };
-      const promiseIn = runningAnimations[i].end;
+      const promiseIn = i > 0 ? runningAnimations[i - 1].end : undefined;
       if ( promiseIn ) promiseIn.finally(handleRegionEventsIn);
       else handleRegionEventsIn();
       from = to;
@@ -4574,7 +4575,7 @@ export default class Token extends PlaceableObject {
       context.waypoints.push(waypoint);
 
       const lastWaypoint = context.waypoints.at(-2) ?? context.origin;
-      if ( TokenDocument.MOVEMENT_FIELDS.some(k => lastWaypoint[k] !== waypoint[k]) ) {
+      if ( !TokenDocument.arePositionsEqual(lastWaypoint, waypoint) ) {
         Token.#recalculatePlannedMovementPath(context);
         redundantWaypoint = false;
       } else if ( lastWaypoint.snapped !== waypoint.snapped ) {
@@ -4660,7 +4661,7 @@ export default class Token extends PlaceableObject {
       // Recalculate path if the waypoints change
       const previousWaypoint = context.waypoints.at(-2) ?? context.origin;
       const lastWaypoint = context.waypoints.pop();
-      if ( TokenDocument.MOVEMENT_FIELDS.some(k => lastWaypoint[k] !== previousWaypoint[k]) ) {
+      if ( !TokenDocument.arePositionsEqual(lastWaypoint, previousWaypoint) ) {
         Token.#recalculatePlannedMovementPath(context);
       }
     }
@@ -4766,7 +4767,7 @@ export default class Token extends PlaceableObject {
       const elevation = (context.destination.elevation + (delta * interval)).toNearest(interval, delta > 0 ? "floor" : "ceil");
       const destination = context.token._getDragWaypointPosition(context.destination, {elevation},
         {snap: context.destination.snap});
-      if ( TokenDocument.MOVEMENT_FIELDS.every(k => context.destination[k] === destination[k]) ) continue;
+      if ( TokenDocument.arePositionsEqual(context.destination, destination) ) continue;
       for ( const k of TokenDocument.MOVEMENT_FIELDS ) context.destination[k] = destination[k];
 
       // Update the destination of the preview token
@@ -4892,7 +4893,7 @@ export default class Token extends PlaceableObject {
       action, snapped, explicit, checkpoint} of [...context.waypoints, destination] ) {
       const waypoint = {x, y, elevation, width, height, shape, action, snapped, explicit, checkpoint};
       const lastWaypoint = explicitWaypoints.at(-1);
-      if ( TokenDocument.MOVEMENT_FIELDS.every(k => lastWaypoint[k] === waypoint[k]) ) continue;
+      if ( TokenDocument.arePositionsEqual(lastWaypoint, waypoint) ) continue;
       explicitWaypoints.push(waypoint);
     }
 
@@ -4902,7 +4903,7 @@ export default class Token extends PlaceableObject {
     for ( let i = 0; (i < context.foundPath.length) && (reachableWaypoints < explicitWaypoints.length); i++ ) {
       const waypoint = context.foundPath[i];
       const explicitWaypoint = explicitWaypoints[reachableWaypoints];
-      if ( TokenDocument.MOVEMENT_FIELDS.every(k => explicitWaypoint[k] === waypoint[k]) ) {
+      if ( TokenDocument.arePositionsEqual(explicitWaypoint, waypoint) ) {
         reachableWaypoints++;
         lastReachedWaypointIndex = i;
       }
@@ -4956,7 +4957,7 @@ export default class Token extends PlaceableObject {
       let reachableWaypoints = 0;
       for ( const waypoint of foundPath ) {
         const explicitWaypoint = explicitWaypoints[reachableWaypoints];
-        if ( TokenDocument.MOVEMENT_FIELDS.every(k => explicitWaypoint[k] === waypoint[k]) ) reachableWaypoints++;
+        if ( TokenDocument.arePositionsEqual(explicitWaypoint, waypoint) ) reachableWaypoints++;
       }
       context.foundPath = foundPath;
       context.unreachableWaypoints = explicitWaypoints.slice(reachableWaypoints);
@@ -5012,7 +5013,7 @@ export default class Token extends PlaceableObject {
     // Configure the origin of the found path based on the last recorded waypoint
     const current = this.document.movementHistory.at(-1);
     const origin = foundPath[0];
-    origin.action = (current !== undefined) && TokenDocument.MOVEMENT_FIELDS.some(k => current[k] !== origin[k])
+    origin.action = (current !== undefined) && !TokenDocument.arePositionsEqual(current, origin)
       ? "displace" : (current?.action ?? foundPath[0].action);
     origin.terrain = null;
     origin.snapped = false;

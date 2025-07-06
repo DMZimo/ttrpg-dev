@@ -71,6 +71,12 @@ export default class HTMLProseMirrorElement extends AbstractFormInputElement {
   #content;
 
   /**
+   * The child element that is currently the target of a pointerdown event.
+   * @type {HTMLElement|null}
+   */
+  #pointerdown = null;
+
+  /**
    * Does this editor function via a toggle button? Or is it always active?
    * @type {boolean}
    */
@@ -127,6 +133,7 @@ export default class HTMLProseMirrorElement extends AbstractFormInputElement {
       this.#save();
       if ( !this.#toggled ) this.#editor?.destroy();
     }
+    super.disconnectedCallback();
   }
 
   /* -------------------------------------------- */
@@ -162,7 +169,13 @@ export default class HTMLProseMirrorElement extends AbstractFormInputElement {
 
   /** @override */
   _activateListeners() {
-    if ( this.#toggled ) this.#button.addEventListener("click", this.#onClickButton.bind(this));
+    if ( this.#toggled ) {
+      const { abortSignal: signal } = this;
+      this.#button.addEventListener("click", this.#onClickButton.bind(this), { signal });
+      this.addEventListener("pointerdown", this.#onPointerDown.bind(this), { signal, passive: true });
+      this.addEventListener("pointerup", this.#onPointerUp.bind(this), { signal, passive: true });
+      this.addEventListener("dragend", this.#onDragEnd.bind(this), { signal, passive: true });
+    }
     else this.open = true;
   }
 
@@ -238,6 +251,46 @@ export default class HTMLProseMirrorElement extends AbstractFormInputElement {
   #onClickButton(event) {
     event.preventDefault();
     this.open = true;
+  }
+
+  /* -------------------------------------------- */
+
+  /**
+   * Handle the conclusion of a drag event for some child.
+   */
+  #onDragEnd() {
+    this.#pointerdown = null;
+  }
+
+  /* -------------------------------------------- */
+
+  /**
+   * Handle a pointerdown event on some child.
+   * @param {PointerEvent} event  The triggering event.
+   */
+  #onPointerDown(event) {
+    this.#pointerdown = event.target;
+  }
+
+  /* -------------------------------------------- */
+
+  /**
+   * Handle a pointerup event on some child.
+   * @param {PointerEvent} event  The triggering event.
+   */
+  async #onPointerUp(event) {
+    const inactiveEditor = this.disabled && !this.#active;
+    const isClick = this.#pointerdown && this.#pointerdown.contains(event.target);
+    const isContentLink = this.#pointerdown.closest("a[data-link]");
+
+    // If this editor is in an untoggled state and is disabled, simulate click events on child content links, as they
+    // otherwise fail to bubble up to the global content link listener.
+    if ( inactiveEditor && isClick && isContentLink ) {
+      const doc = await foundry.utils.fromUuid(event.target.closest("a[data-link]").dataset.uuid);
+      doc?._onClickDocumentLink(event);
+    }
+
+    this.#pointerdown = null;
   }
 
   /* -------------------------------------------- */

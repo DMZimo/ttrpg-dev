@@ -157,8 +157,10 @@ export default class BasePlaceableHUD extends ApplicationV2 {
   _insertElement(element) {
     const existing = document.getElementById(element.id);
     if ( existing ) existing.replaceWith(element);
-    const hud = document.getElementById("hud");
-    hud.append(element);
+    else {
+      const parent = document.getElementById("hud");
+      parent.append(element);
+    }
   }
 
   /* -------------------------------------------- */

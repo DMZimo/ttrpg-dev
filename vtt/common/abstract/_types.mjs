@@ -10,10 +10,15 @@
  */
 
 /**
- * @typedef DocumentConstructionContext
+ * @typedef _DocumentConstructionContext
  * @property {Document|null} [parent=null]    The parent Document of this one, if this one is embedded
  * @property {string|null} [pack=null]        The compendium collection ID which contains this Document, if any
  * @property {boolean} [strict=true]          Whether to validate initial data strictly?
+ * @property {string|null} [parentCollection] The name of the parent Document's collection that would contain this one
+ */
+
+/**
+ * @typedef {DataModelConstructionContext & _DocumentConstructionContext} DocumentConstructionContext
  */
 
 /**

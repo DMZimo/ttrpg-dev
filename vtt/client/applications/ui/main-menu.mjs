@@ -91,6 +91,18 @@ export default class MainMenu extends HandlebarsApplicationMixin(ApplicationV2) 
   /* -------------------------------------------- */
 
   /** @override */
+  _insertElement(element) {
+    const existing = document.getElementById(element.id);
+    if ( existing ) existing.replaceWith(element);
+    else {
+      const parent = document.getElementById("interface");
+      parent.append(element);
+    }
+  }
+
+  /* -------------------------------------------- */
+
+  /** @override */
   async _onFirstRender(context, options) {
     this.element.showModal();
   }

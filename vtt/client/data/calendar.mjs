@@ -195,12 +195,33 @@ export default class CalendarData extends DataModel {
     let season;
     for ( season=0; season<this.seasons.values.length; season++ ) {
       const s = this.seasons.values[season];
+      let {dayStart, dayEnd, monthStart, monthEnd} = s;
       const od = day + 1;
       const om = this.months.values[month].ordinal;
-      if ( (typeof s.dayEnd === "number") && (s.dayEnd < od) ) continue;
-      if ( (typeof s.monthEnd === "number") && (s.monthEnd < om) ) continue;
-      if ( (typeof s.dayStart === "number") && (s.dayStart <= od) ) break;
-      if ( (typeof s.monthStart === "number") && (s.monthStart <= om) ) break;
+
+      // Match on days
+      if ( (typeof dayStart === "number") && (typeof dayEnd === "number") ) {
+        if ( dayEnd < dayStart ) {
+          if ( od <= dayEnd ) dayStart -= daysPerYear;
+          else if ( od >= dayStart ) dayEnd += daysPerYear;
+        }
+        if ( od.between(dayStart, dayEnd) ) break;
+      }
+
+      // Match on months
+      else if ( (typeof monthStart === "number") && (typeof monthEnd === "number") ) {
+        if ( monthEnd < monthStart ) {
+          if ( om <= monthEnd ) monthStart -= this.months.values.length;
+          else if ( om >= monthStart ) monthEnd += this.months.values.length;
+        }
+        if ( om.between(monthStart, monthEnd) ) break;
+      }
+
+      // No match
+      else {
+        season = undefined;
+        break;
+      }
     }
     return {day, dayOfMonth, dayOfWeek, hour, leapYear, minute, month, season, second, year};
   }

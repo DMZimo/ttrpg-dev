@@ -83,6 +83,9 @@
  *                                              Application HTML.
  * @property {boolean} [isFirstRender]          Is this render the first one for the application? This property is
  *                                              populated automatically.
+ * @property {Record<string, string>|string} [tab]  A tab to activate. Either the tab's ID for applications with only
+ *                                                  one tab group, or an object of tab groups to tab IDs. Re-rendering
+ *                                                  an Application with this option will not trigger changeTab.
  */
 
 /**
