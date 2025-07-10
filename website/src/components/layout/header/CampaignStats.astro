@@ -1,0 +1,187 @@
+---
+import { calculateCampaignStats } from "../../../utils/campaignUtils.ts";
+
+// Calculate campaign stats or use defaults
+let campaignStats;
+try {
+  campaignStats = await calculateCampaignStats();
+} catch (error) {
+  // Fallback stats
+  campaignStats = {
+    totalSessions: 4,
+    totalCharacters: 4,
+    totalNPCs: 12,
+    totalQuests: 8,
+    activeQuests: 3,
+    completedQuests: 5,
+    totalMysteries: 2,
+    activeMysteries: 1,
+    totalRumors: 6,
+    activePlayers: 4,
+    currentLevel: 3,
+    totalPlayTime: 14.5,
+    averageSessionLength: 3.6,
+    combatEncounters: 6,
+    deathSaves: 2,
+    criticalHits: 15,
+    questCompletionRate: 62.5,
+    mysteryResolutionRate: 50,
+  };
+}
+---
+
+<div class="campaign-stats-widget">
+  <!-- Slim inline stats display -->
+  <a
+    href="/campaign"
+    class="flex items-center gap-3 text-sm group transition-all duration-200 hover:bg-surface-elevated/30 rounded-lg px-3 py-1.5"
+    title="View campaign dashboard"
+  >
+    <!-- Sessions -->
+    <div class="flex items-center gap-2">
+      <span class="text-base">📝</span>
+      <div class="flex flex-col">
+        <span class="font-semibold text-text-primary text-sm leading-none">
+          {campaignStats.totalSessions}
+        </span>
+        <span class="text-xs text-muted leading-none">Sessions</span>
+      </div>
+    </div>
+
+    <div class="w-px h-4 bg-border-primary/50"></div>
+
+    <!-- Level -->
+    <div class="flex items-center gap-2">
+      <span class="text-base">⭐</span>
+      <div class="flex flex-col">
+        <span class="font-semibold text-gold-400 text-sm leading-none">
+          L{campaignStats.currentLevel}
+        </span>
+        <span class="text-xs text-muted leading-none">Level</span>
+      </div>
+    </div>
+
+    <div class="w-px h-4 bg-border-primary/50"></div>
+
+    <!-- Active Quests -->
+    <div class="flex items-center gap-2">
+      <span class="text-base">🎯</span>
+      <div class="flex flex-col">
+        <span class="font-semibold text-accent-400 text-sm leading-none">
+          {campaignStats.activeQuests}
+        </span>
+        <span class="text-xs text-muted leading-none">Quests</span>
+      </div>
+    </div>
+
+    <!-- Hover indicator -->
+    <div
+      class="opacity-0 group-hover:opacity-60 transition-opacity text-xs text-muted ml-1"
+    >
+      →
+    </div>
+  </a>
+
+  <!-- Tooltip (appears on hover via CSS) -->
+  <div class="tooltip">
+    <div
+      class="bg-surface-elevated/95 backdrop-blur-md border border-primary/20 rounded-xl p-4 min-w-[280px] shadow-card"
+    >
+      <div class="text-center mb-3">
+        <h3 class="text-sm font-bold text-text-primary">Campaign Overview</h3>
+        <p class="text-xs text-muted">Dessarin Valley Chronicles</p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 text-xs">
+        <div class="space-y-2">
+          <div class="flex justify-between">
+            <span class="text-muted">Play Time:</span>
+            <span class="text-text-primary font-medium"
+              >{campaignStats.totalPlayTime.toFixed(1)}h</span
+            >
+          </div>
+          <div class="flex justify-between">
+            <span class="text-muted">NPCs Met:</span>
+            <span class="text-text-primary font-medium"
+              >{campaignStats.totalNPCs}</span
+            >
+          </div>
+          <div class="flex justify-between">
+            <span class="text-muted">Battles:</span>
+            <span class="text-text-primary font-medium"
+              >{campaignStats.combatEncounters}</span
+            >
+          </div>
+        </div>
+        <div class="space-y-2">
+          <div class="flex justify-between">
+            <span class="text-muted">Mysteries:</span>
+            <span class="text-text-primary font-medium"
+              >{campaignStats.activeMysteries}/{
+                campaignStats.totalMysteries
+              }</span
+            >
+          </div>
+          <div class="flex justify-between">
+            <span class="text-muted">Rumors:</span>
+            <span class="text-text-primary font-medium"
+              >{campaignStats.totalRumors}</span
+            >
+          </div>
+          <div class="flex justify-between">
+            <span class="text-muted">Completion:</span>
+            <span class="text-text-primary font-medium"
+              >{campaignStats.questCompletionRate.toFixed(0)}%</span
+            >
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-3 pt-3 border-t border-primary/20 text-center">
+        <span class="text-xs text-muted">Click to view full dashboard</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .campaign-stats-widget {
+    position: relative;
+  }
+
+  .tooltip {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 0.5rem;
+    z-index: 50;
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      opacity 0.2s ease-in-out,
+      transform 0.2s ease-in-out;
+    transform: translateX(-50%) translateY(-4px);
+  }
+
+  .campaign-stats-widget:hover .tooltip {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* Tooltip arrow */
+  .tooltip::before {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 6px solid rgb(var(--surface-elevated));
+    filter: drop-shadow(0 -1px 0 rgb(var(--border-primary) / 0.2));
+  }
+</style>

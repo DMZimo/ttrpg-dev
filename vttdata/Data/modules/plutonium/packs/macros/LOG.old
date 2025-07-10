@@ -1,0 +1,15 @@
+2025/07/07-19:00:37.575130 72ec47fff6c0 Recovering log #3
+2025/07/07-19:00:37.575263 72ec47fff6c0 Level-0 table #5: started
+2025/07/07-19:00:37.576042 72ec47fff6c0 Level-0 table #5: 833 bytes OK
+2025/07/07-19:00:37.577865 72ec47fff6c0 Delete type=3 #2
+2025/07/07-19:00:37.577898 72ec47fff6c0 Delete type=0 #3
+2025/07/08-01:21:31.270251 72ec45bff6c0 Level-0 table #8: started
+2025/07/08-01:21:31.270259 72ec45bff6c0 Level-0 table #8: 0 bytes OK
+2025/07/08-01:21:31.271045 72ec45bff6c0 Delete type=0 #6
+2025/07/08-01:21:31.278864 72ec45bff6c0 Manual compaction at level-0 from '!macros!3uodczsxlchv0ao4' @ 72057594037927935 : 1 .. '!macros!jrv77q94idjuglaf' @ 0 : 0; will stop at '!macros!jrv77q94idjuglaf' @ 3 : 1
+2025/07/08-01:21:31.278869 72ec45bff6c0 Compacting 1@0 + 0@1 files
+2025/07/08-01:21:31.279615 72ec45bff6c0 Generated table #9@0: 3 keys, 761 bytes
+2025/07/08-01:21:31.279632 72ec45bff6c0 Compacted 1@0 + 0@1 files => 761 bytes
+2025/07/08-01:21:31.280442 72ec45bff6c0 compacted to: files[ 0 1 0 0 0 0 0 ]
+2025/07/08-01:21:31.280489 72ec45bff6c0 Delete type=2 #5
+2025/07/08-01:21:31.283249 72ec45bff6c0 Manual compaction at level-0 from '!macros!jrv77q94idjuglaf' @ 3 : 1 .. '!macros!jrv77q94idjuglaf' @ 0 : 0; will stop at (end)

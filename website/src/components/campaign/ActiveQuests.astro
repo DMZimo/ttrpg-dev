@@ -1,11 +1,9 @@
 ---
 import { getCollection } from 'astro:content';
 
-// Get active quests from content collection
-const allPartyContent = await getCollection('party');
-const activeQuests = allPartyContent.filter(entry => 
-  entry.data.type === 'quest' && entry.data.status === 'active'
-);
+// Get active quests from the quests collection
+const allQuests = await getCollection('quests').catch(() => []);
+const activeQuests = allQuests.filter(quest => quest.data.status === 'active');
 
 // Utility functions for styling based on quest data
 const getStatusColor = (status: string) => {
@@ -71,7 +69,7 @@ const getDifficultyColor = (difficulty: string) => {
 
 <div class="mb-6">
   <div class="flex items-center justify-between mb-4">
-    <h2 class="text-xl md:text-2xl font-bold text-primary flex items-center">
+    <h2 class="text-xl md:text-2xl font-bold text-text-primary flex items-center">
       🎯 Active Quests
     </h2>
     <div class="text-sm text-secondary">
@@ -80,8 +78,16 @@ const getDifficultyColor = (difficulty: string) => {
   </div>
   
   <div class="space-y-5">
-    {activeQuests.map((quest) => (
-      <div class={`hero-card bg-surface-elevated rounded-xl shadow-card border-l-4 ${getBorderColor(quest.data.priority || 'medium')} p-6 hover:shadow-card-hover transition-all duration-300 group relative overflow-hidden`}>
+    {activeQuests.length === 0 ? (
+      <div class="text-center py-8 text-secondary">
+        <p>No active quests found. Create quest files in <code>src/content/campaign/quests/</code> to see them here.</p>
+      </div>
+    ) : (
+      activeQuests.map((quest) => (
+        <a 
+          href={`/campaign/quests/${quest.id}`}
+          class={`hero-card bg-surface-elevated rounded-xl shadow-card border-l-4 ${getBorderColor(quest.data.priority || 'medium')} p-6 hover:shadow-card-hover transition-all duration-300 group relative overflow-hidden block cursor-pointer`}
+        >
         <!-- Priority indicator gradient -->
         <div class={`absolute top-0 right-0 w-20 h-20 opacity-10 group-hover:opacity-20 transition-opacity duration-300 ${
           quest.data.priority === 'high' ? 'bg-gradient-to-bl from-red-500' :
@@ -91,37 +97,37 @@ const getDifficultyColor = (difficulty: string) => {
         }`}></div>
         
         <div class="relative z-10">
-          <!-- Quest Header -->
+          {/* <!-- Quest Header --> */}
           <div class="flex items-start justify-between mb-4">
             <div class="flex items-center gap-3">
               <span class="text-xl animate-pulse">{getPriorityIcon(quest.data.priority || 'medium')}</span>
-              <h3 class="text-xl font-bold text-primary group-hover:text-accent-400 transition-colors duration-200">{quest.data.title}</h3>
+              <h3 class="text-xl font-bold text-text-primary group-hover:text-accent-400 transition-colors duration-200">{quest.data.title}</h3>
             </div>
             <span class={`${getStatusColor(quest.data.status)} text-sm font-semibold px-3 py-1.5 rounded-full border shadow-sm`}>
               {formatStatusText(quest.data.status)}
             </span>
           </div>
 
-          <!-- Progress Bar with enhanced styling -->
+          {/* <!-- Progress Bar with enhanced styling --> */}
           <div class="mb-4">
             <div class="flex items-center justify-between text-sm text-secondary mb-2">
               <span class="font-medium">Progress</span>
-              <span class="font-bold text-accent-400">{quest.data.progress || 0}%</span>
+              <span class="font-bold text-accent-400">In Progress</span>
             </div>
             <div class="w-full bg-surface-secondary rounded-full h-3 shadow-inner">
               <div 
                 class="bg-gradient-to-r from-accent-500 to-accent-600 h-3 rounded-full transition-all duration-500 ease-out shadow-sm relative overflow-hidden" 
-                style={`width: ${quest.data.progress || 0}%`}
+                style="width: 60%"
               >
                 <div class="absolute inset-0 bg-white/20 animate-pulse"></div>
               </div>
             </div>
           </div>
 
-          <!-- Description -->
+          {/* <!-- Description --> */}
           <p class="text-secondary text-sm mb-4 leading-relaxed">{quest.data.description}</p>
           
-          <!-- Tags and Difficulty -->
+          {/* <!-- Tags and Difficulty --> */}
           <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
             <div class="flex flex-wrap gap-2">
               {quest.data.tags?.map((tag: string) => (
@@ -140,7 +146,7 @@ const getDifficultyColor = (difficulty: string) => {
             )}
           </div>
           
-          <!-- Details with icons -->
+          {/* <!-- Details with icons --> */}
           <div class="text-sm text-tertiary pt-3 border-t border-primary/20">
             <div class="flex flex-wrap gap-4">
               {quest.data.location && (
@@ -149,10 +155,10 @@ const getDifficultyColor = (difficulty: string) => {
                   <span>Location: <span class="font-medium">{quest.data.location}</span></span>
                 </div>
               )}
-              {quest.data.questGiver && (
+              {quest.data.giver && (
                 <div class="flex items-center gap-2">
                   <span>👤</span>
-                  <span>Giver: <span class="font-medium">{quest.data.questGiver}</span></span>
+                  <span>Giver: <span class="font-medium">{quest.data.giver}</span></span>
                 </div>
               )}
               {quest.data.reward && (
@@ -164,7 +170,8 @@ const getDifficultyColor = (difficulty: string) => {
             </div>
           </div>
         </div>
-      </div>
-    ))}
+      </a>
+      ))
+    )}
   </div>
 </div>

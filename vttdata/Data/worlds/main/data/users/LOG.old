@@ -1,3 +1,22 @@
-2025/07/03-19:46:17.308013 7313a61fa6c0 Recovering log #162
-2025/07/03-19:46:17.309975 7313a61fa6c0 Delete type=0 #162
-2025/07/03-19:46:17.309985 7313a61fa6c0 Delete type=3 #159
+2025/07/07-19:00:37.004112 72ec47fff6c0 Recovering log #170
+2025/07/07-19:00:37.006051 72ec47fff6c0 Delete type=0 #170
+2025/07/07-19:00:37.006076 72ec47fff6c0 Delete type=3 #168
+2025/07/08-01:21:31.331125 72ec45bff6c0 Level-0 table #174: started
+2025/07/08-01:21:31.331805 72ec45bff6c0 Level-0 table #174: 28012 bytes OK
+2025/07/08-01:21:31.332515 72ec45bff6c0 Delete type=0 #172
+2025/07/08-01:21:31.339246 72ec45bff6c0 Manual compaction at level-0 from '!users!0K4kuwYUBJWq9sYy' @ 72057594037927935 : 1 .. '!users!VlSCuCGMOGfUlEKB' @ 0 : 0; will stop at '!users!VlSCuCGMOGfUlEKB' @ 341 : 1
+2025/07/08-01:21:31.339252 72ec45bff6c0 Compacting 2@0 + 0@1 files
+2025/07/08-01:21:31.340007 72ec45bff6c0 Generated table #175@0: 4 keys, 4799 bytes
+2025/07/08-01:21:31.340014 72ec45bff6c0 Compacted 2@0 + 0@1 files => 4799 bytes
+2025/07/08-01:21:31.340766 72ec45bff6c0 compacted to: files[ 1 1 1 0 0 0 0 ]
+2025/07/08-01:21:31.340801 72ec45bff6c0 Delete type=2 #169
+2025/07/08-01:21:31.340842 72ec45bff6c0 Delete type=2 #174
+2025/07/08-01:21:31.343034 72ec45bff6c0 Manual compaction at level-0 from '!users!VlSCuCGMOGfUlEKB' @ 341 : 1 .. '!users!VlSCuCGMOGfUlEKB' @ 0 : 0; will stop at (end)
+2025/07/08-01:21:31.369400 72ec45bff6c0 Manual compaction at level-1 from '!users!0K4kuwYUBJWq9sYy' @ 72057594037927935 : 1 .. '!users!VlSCuCGMOGfUlEKB' @ 0 : 0; will stop at '!users!VlSCuCGMOGfUlEKB' @ 379 : 1
+2025/07/08-01:21:31.369403 72ec45bff6c0 Compacting 1@1 + 1@2 files
+2025/07/08-01:21:31.370031 72ec45bff6c0 Generated table #176@1: 7 keys, 6815 bytes
+2025/07/08-01:21:31.370034 72ec45bff6c0 Compacted 1@1 + 1@2 files => 6815 bytes
+2025/07/08-01:21:31.370731 72ec45bff6c0 compacted to: files[ 1 0 1 0 0 0 0 ]
+2025/07/08-01:21:31.370745 72ec45bff6c0 Delete type=2 #175
+2025/07/08-01:21:31.370764 72ec45bff6c0 Delete type=2 #165
+2025/07/08-01:21:31.379350 72ec45bff6c0 Manual compaction at level-1 from '!users!VlSCuCGMOGfUlEKB' @ 379 : 1 .. '!users!VlSCuCGMOGfUlEKB' @ 0 : 0; will stop at (end)

@@ -3,11 +3,14 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 import PartyHeader from "@/components/campaign/PartyHeader.astro";
 import PartyStats from "@/components/campaign/PartyStats.astro";
 import PartyMembers from "@/components/campaign/PartyMembers.astro";
+import PartyResources from "@/components/campaign/PartyResources.astro";
 import ActiveQuests from "@/components/campaign/ActiveQuests.astro";
 import CompletedQuests from "@/components/campaign/CompletedQuests.astro";
 import RumorsAndAdventures from "@/components/campaign/RumorsAndAdventures.astro";
 import CampaignTimeline from "@/components/campaign/CampaignTimeline.astro";
 import OngoingMysteries from "@/components/campaign/OngoingMysteries.astro";
+import NPCRelationships from "@/components/campaign/NPCRelationships.astro";
+import PlayerDashboard from "@/components/campaign/PlayerDashboard.astro";
 ---
 
 <BaseLayout
@@ -36,6 +39,7 @@ import OngoingMysteries from "@/components/campaign/OngoingMysteries.astro";
         <div class="lg:col-span-3">
           <div class="lg:sticky lg:top-8 space-y-6">
             <PartyMembers />
+            <PartyResources />
           </div>
         </div>
 
@@ -47,6 +51,8 @@ import OngoingMysteries from "@/components/campaign/OngoingMysteries.astro";
 
         <!-- Right Column - Secondary Content -->
         <div class="lg:col-span-3 space-y-6">
+          <PlayerDashboard />
+          <NPCRelationships />
           <CompletedQuests />
           <OngoingMysteries />
           <RumorsAndAdventures />

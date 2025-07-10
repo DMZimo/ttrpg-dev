@@ -171,7 +171,7 @@ class DiceRowSettings extends HandlebarsApplicationMixin$1(ApplicationV2$1) {
 				const row = this.diceRows.findIndex((r) => r[key]);
 				delete this.diceRows[row][key];
 				if (!Object.keys(this.diceRows[row]).length) {
-					this.diceRows.splice(1, row);
+					this.diceRows.splice(row, 1);
 				}
 				this.render(false);
 			});
@@ -184,9 +184,6 @@ class DiceRowSettings extends HandlebarsApplicationMixin$1(ApplicationV2$1) {
 	}
 
 	static #add() {
-		if (this.element.querySelector("input[name=compactMode]").checked && Object.keys(this.diceRows[0]).length >= 7) {
-			return ui.notifications.notify("You're in Compact Mode and have too many dice. Edit or delete an existing dice before adding any more.");
-		}
 		new DiceCreator({
 			form: this,
 			diceRows: this.diceRows,
@@ -1391,12 +1388,15 @@ class DiceTrayPopOut extends HandlebarsApplicationMixin(ApplicationV2) {
 		return ui.sidebar.popouts.chat?.element || ui.chat.element;
 	}
 
-	async _onFirstRender(context, options) {
-		await super._onFirstRender(context, options);
-		const position = game.settings.get("dice-calculator", "popoutPosition");
-		const left = position.left ?? ui.nav?.element.getBoundingClientRect().left;
-		const top = position.top ?? ui.controls?.element.getBoundingClientRect().top;
-		options.position = {...options.position, left, top};
+	_configureRenderOptions(options) {
+		super._configureRenderOptions(options);
+		if ( options.isFirstRender && ui.nav ) {
+			const position = game.settings.get("dice-calculator", "popoutPosition");
+			const {right, top} = ui.nav.element.getBoundingClientRect();
+			const uiScale = game.settings.get("core", "uiConfig").uiScale;
+			options.position.left ??= position.left ?? right + (16 * uiScale);
+			options.position.top ??= position.top ?? top;
+		}
 	}
 
 	_onRender(context, options) {

@@ -1,0 +1,302 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import RelatedContent from "@/components/ui/RelatedContent.astro";
+import { getCollection, type CollectionEntry, render } from "astro:content";
+import { generateBreadcrumbs } from "@/utils/crossLinking";
+
+export async function getStaticPaths() {
+  const quests = await getCollection("quests");
+  return quests.map((quest) => ({
+    params: { id: quest.id },
+    props: { quest },
+  }));
+}
+
+interface Props {
+  quest: CollectionEntry<"quests">;
+}
+
+const { quest } = Astro.props as Props;
+const { Content } = await render(quest);
+
+const breadcrumbs = generateBreadcrumbs(Astro.url.pathname, quest.data.title);
+
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case "active":
+      return "text-green-600 bg-green-100 dark:bg-green-900/30";
+    case "completed":
+      return "text-blue-600 bg-blue-100 dark:bg-blue-900/30";
+    case "failed":
+      return "text-red-600 bg-red-100 dark:bg-red-900/30";
+    case "abandoned":
+      return "text-gray-600 bg-gray-100 dark:bg-gray-900/30";
+    case "planned":
+      return "text-yellow-600 bg-yellow-100 dark:bg-yellow-900/30";
+    default:
+      return "text-gray-600 bg-gray-100 dark:bg-gray-900/30";
+  }
+};
+
+const getPriorityColor = (priority: string) => {
+  switch (priority) {
+    case "critical":
+      return "text-red-700 bg-red-200 dark:bg-red-900/50";
+    case "high":
+      return "text-orange-700 bg-orange-200 dark:bg-orange-900/50";
+    case "medium":
+      return "text-yellow-700 bg-yellow-200 dark:bg-yellow-900/50";
+    case "low":
+      return "text-green-700 bg-green-200 dark:bg-green-900/50";
+    default:
+      return "text-gray-700 bg-gray-200 dark:bg-gray-900/50";
+  }
+};
+
+const getDifficultyColor = (difficulty: string) => {
+  switch (difficulty) {
+    case "easy":
+      return "text-green-600";
+    case "medium":
+      return "text-yellow-600";
+    case "hard":
+      return "text-orange-600";
+    case "deadly":
+      return "text-red-600";
+    default:
+      return "text-gray-600";
+  }
+};
+---
+
+<BaseLayout title={quest.data.title} description={quest.data.description}>
+  <div class="max-w-4xl mx-auto px-4 py-8">
+    <!-- Breadcrumb Navigation -->
+    <nav class="flex items-center gap-2 text-sm text-muted mb-6">
+      {
+        breadcrumbs.map((crumb, index) => (
+          <div class="flex items-center gap-2">
+            {index > 0 && <span class="text-text-primary/40">›</span>}
+            {index === breadcrumbs.length - 1 ? (
+              <span class="text-text-primary font-medium">{crumb.name}</span>
+            ) : (
+              <a
+                href={crumb.url}
+                class="hover:text-accent-500 transition-colors"
+              >
+                {crumb.name}
+              </a>
+            )}
+          </div>
+        ))
+      }
+    </nav>
+
+    <!-- Quest Header -->
+    <div
+      class="bg-surface-elevated rounded-xl shadow-card border border-primary/20 p-8 mb-8"
+    >
+      <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
+        <div class="flex-1 min-w-0">
+          <h1 class="text-3xl font-bold text-text-primary mb-3">
+            {quest.data.title}
+          </h1>
+          <p class="text-lg text-secondary leading-relaxed">
+            {quest.data.description}
+          </p>
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <span
+            class={`px-3 py-1.5 rounded-full text-sm font-semibold border ${getStatusColor(quest.data.status)}`}
+          >
+            {
+              quest.data.status.charAt(0).toUpperCase() +
+                quest.data.status.slice(1)
+            }
+          </span>
+          <span
+            class={`px-3 py-1.5 rounded-full text-sm font-semibold ${getPriorityColor(quest.data.priority)}`}
+          >
+            {
+              quest.data.priority.charAt(0).toUpperCase() +
+                quest.data.priority.slice(1)
+            } Priority
+          </span>
+        </div>
+      </div>
+
+      <!-- Quest Details Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {
+          quest.data.giver && (
+            <div class="flex items-center gap-3">
+              <span class="text-2xl">👤</span>
+              <div>
+                <div class="text-sm text-muted">Quest Giver</div>
+                <div class="font-semibold text-text-primary">
+                  {quest.data.giver}
+                </div>
+              </div>
+            </div>
+          )
+        }
+
+        {
+          quest.data.location && (
+            <div class="flex items-center gap-3">
+              <span class="text-2xl">📍</span>
+              <div>
+                <div class="text-sm text-muted">Location</div>
+                <div class="font-semibold text-text-primary">
+                  {quest.data.location}
+                </div>
+              </div>
+            </div>
+          )
+        }
+
+        {
+          quest.data.difficulty && (
+            <div class="flex items-center gap-3">
+              <span class="text-2xl">⚔️</span>
+              <div>
+                <div class="text-sm text-muted">Difficulty</div>
+                <div
+                  class={`font-semibold ${getDifficultyColor(quest.data.difficulty)}`}
+                >
+                  {quest.data.difficulty.charAt(0).toUpperCase() +
+                    quest.data.difficulty.slice(1)}
+                </div>
+              </div>
+            </div>
+          )
+        }
+
+        {
+          quest.data.experience_reward && (
+            <div class="flex items-center gap-3">
+              <span class="text-2xl">⭐</span>
+              <div>
+                <div class="text-sm text-muted">Experience</div>
+                <div class="font-semibold text-text-primary">
+                  {quest.data.experience_reward} XP
+                </div>
+              </div>
+            </div>
+          )
+        }
+
+        {
+          quest.data.gold_reward && (
+            <div class="flex items-center gap-3">
+              <span class="text-2xl">💰</span>
+              <div>
+                <div class="text-sm text-muted">Gold Reward</div>
+                <div class="font-semibold text-gold-500">
+                  {quest.data.gold_reward} gp
+                </div>
+              </div>
+            </div>
+          )
+        }
+
+        {
+          quest.data.started_date && (
+            <div class="flex items-center gap-3">
+              <span class="text-2xl">📅</span>
+              <div>
+                <div class="text-sm text-muted">Started</div>
+                <div class="font-semibold text-text-primary">
+                  {new Date(quest.data.started_date).toLocaleDateString()}
+                </div>
+              </div>
+            </div>
+          )
+        }
+      </div>
+
+      <!-- Requirements -->
+      {
+        quest.data.requirements && quest.data.requirements.length > 0 && (
+          <div class="mt-6 pt-6 border-t border-primary/20">
+            <h3 class="text-lg font-bold text-text-primary mb-3">
+              Requirements
+            </h3>
+            <ul class="space-y-2">
+              {quest.data.requirements.map((req: string) => (
+                <li class="flex items-center gap-3">
+                  <span class="text-accent-500">•</span>
+                  <span class="text-secondary">{req}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
+
+      <!-- Tags -->
+      {
+        quest.data.tags && quest.data.tags.length > 0 && (
+          <div class="mt-6 pt-6 border-t border-primary/20">
+            <h3 class="text-lg font-bold text-text-primary mb-3">Tags</h3>
+            <div class="flex flex-wrap gap-2">
+              {quest.data.tags.map((tag: string) => (
+                <span class="text-xs px-3 py-1 bg-accent-100 dark:bg-accent-900/30 text-accent-700 dark:text-accent-300 rounded-full border">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
+        )
+      }
+    </div>
+
+    <!-- Quest Content -->
+    <div
+      class="bg-surface-elevated rounded-xl shadow-card border border-primary/20 p-8 mb-8"
+    >
+      <div class="prose prose-slate dark:prose-invert max-w-none">
+        <Content />
+      </div>
+    </div>
+
+    <!-- Related Content -->
+    <RelatedContent
+      currentPageId={quest.id}
+      currentTitle={quest.data.title}
+      contentType="quest"
+      content={quest.body}
+      relatedCharacters={quest.data.related_characters}
+      relatedLocations={quest.data.related_locations}
+      tags={quest.data.tags}
+    />
+  </div>
+</BaseLayout>
+
+<style>
+  .prose h1,
+  .prose h2,
+  .prose h3,
+  .prose h4,
+  .prose h5,
+  .prose h6 {
+    @apply text-text-primary;
+  }
+
+  .prose p {
+    @apply text-secondary;
+  }
+
+  .prose strong {
+    @apply text-text-primary font-semibold;
+  }
+
+  .prose ul li {
+    @apply text-secondary;
+  }
+
+  .prose ul li::marker {
+    @apply text-accent-500;
+  }
+</style>

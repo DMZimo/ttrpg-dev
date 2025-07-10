@@ -1,28 +1,22 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState } from "react";
+import {
+  calculateCampaignStats,
+  type CampaignStatsData,
+} from "@/utils/campaignUtils";
 
 interface CampaignStatsProps {
-  // Props for dynamic data - these would be passed from parent component
-  totalSessions?: number;
-  totalCharacters?: number;
-  totalNPCs?: number;
-  totalQuests?: number;
-  activePlayers?: number;
-  currentLevel?: number;
-  totalPlayTime?: number; // in hours
-  combatEncounters?: number;
-  deathSaves?: number;
-  criticalHits?: number;
+  campaignStats?: CampaignStatsData;
 }
 
 interface StatItem {
   value: number | string;
   label: string;
   icon: string;
-  description: string;
-  color: string;
+  color?: string;
 }
 
 export const CampaignStats: React.FC<CampaignStatsProps> = ({
+  campaignStats,
   totalSessions = 4,
   totalCharacters = 4,
   totalNPCs = 12,
@@ -34,27 +28,78 @@ export const CampaignStats: React.FC<CampaignStatsProps> = ({
   deathSaves = 2,
   criticalHits = 15,
 }) => {
+  // Use campaignStats if provided, otherwise fallback to individual props
+  const stats = campaignStats || {
+    totalSessions,
+    totalCharacters,
+    totalNPCs,
+    totalQuests,
+    activePlayers,
+    currentLevel,
+    totalPlayTime,
+    combatEncounters,
+    deathSaves,
+    criticalHits,
+    activeQuests: 0,
+    completedQuests: 0,
+    totalMysteries: 0,
+    activeMysteries: 0,
+    totalRumors: 0,
+    averageSessionLength: 0,
+    questCompletionRate: 0,
+    mysteryResolutionRate: 0,
+    sessionPacing: {
+      averageCombatPerSession: 0,
+      averageNPCEncounters: 0,
+      sessionLengthTrend: "stable" as const,
+      combatToRoleplayRatio: 0,
+      paceVariability: 0,
+    },
+    characterDevelopment: {
+      sessionParticipation: {},
+      characterProgressionRate: 0,
+      mostActiveCharacter: "Unknown",
+      characterEngagementScore: 0,
+    },
+    npcInteractions: {
+      mostEncounteredNPCs: [],
+      npcDiversity: 0,
+      newNPCsPerSession: 0,
+      recurringNPCRate: 0,
+    },
+    locationVisits: {
+      mostVisitedLocations: [],
+      locationDiversity: 0,
+      explorationRate: 0,
+    },
+    campaignMomentum: {
+      questProgressionRate: 0,
+      mysteryResolutionEfficiency: 0,
+      storyAdvancementScore: 0,
+      playerEngagementTrend: "stable" as const,
+    },
+  };
   const [showTooltip, setShowTooltip] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Primary stats (always visible)
+  // Primary stats (always visible) - using real campaign data
   const primaryStats: StatItem[] = [
     {
-      value: totalSessions,
+      value: stats.totalSessions,
       label: "Sessions",
       icon: "📝",
       description: "Total campaign sessions played",
       color: "text-blue-600 dark:text-blue-400",
     },
     {
-      value: `Lvl ${currentLevel}`,
+      value: `Lvl ${stats.currentLevel}`,
       label: "Party Level",
       icon: "⭐",
       description: "Current average party level",
       color: "text-yellow-600 dark:text-yellow-400",
     },
     {
-      value: `${totalPlayTime}h`,
+      value: `${stats.totalPlayTime.toFixed(1)}h`,
       label: "Play Time",
       icon: "⏱️",
       description: "Total hours played",
@@ -62,49 +107,49 @@ export const CampaignStats: React.FC<CampaignStatsProps> = ({
     },
   ];
 
-  // Extended stats (shown in tooltip)
+  // Extended stats (shown in tooltip) - enhanced with real data
   const extendedStats: StatItem[] = [
     {
-      value: activePlayers,
+      value: stats.activePlayers,
       label: "Active Players",
       icon: "👥",
       description: "Current active party members",
       color: "text-purple-600 dark:text-purple-400",
     },
     {
-      value: totalNPCs,
+      value: stats.totalNPCs,
       label: "NPCs Met",
       icon: "🎭",
       description: "Non-player characters encountered",
       color: "text-indigo-600 dark:text-indigo-400",
     },
     {
-      value: totalQuests,
+      value: `${stats.activeQuests}/${stats.totalQuests}`,
       label: "Quests",
       icon: "📜",
-      description: "Total quests (active & completed)",
+      description: "Active quests vs total quests",
       color: "text-amber-600 dark:text-amber-400",
     },
     {
-      value: combatEncounters,
+      value: stats.combatEncounters,
       label: "Battles",
       icon: "⚔️",
       description: "Combat encounters survived",
       color: "text-red-600 dark:text-red-400",
     },
     {
-      value: criticalHits,
-      label: "Crits",
-      icon: "🎯",
-      description: "Critical hits landed",
-      color: "text-orange-600 dark:text-orange-400",
+      value: stats.activeMysteries,
+      label: "Mysteries",
+      icon: "🔍",
+      description: "Active ongoing mysteries",
+      color: "text-purple-600 dark:text-purple-400",
     },
     {
-      value: deathSaves,
-      label: "Death Saves",
-      icon: "💀",
-      description: "Successful death saving throws",
-      color: "text-gray-600 dark:text-gray-400",
+      value: `${stats.questCompletionRate.toFixed(0)}%`,
+      label: "Quest Rate",
+      icon: "�",
+      description: "Quest completion percentage",
+      color: "text-green-600 dark:text-green-400",
     },
   ];
 
@@ -136,8 +181,8 @@ export const CampaignStats: React.FC<CampaignStatsProps> = ({
   };
 
   const handleClick = () => {
-    // Navigate to dedicated stats page
-    window.location.href = "/campaign-stats";
+    // Navigate to campaign portal
+    window.location.href = "/campaign";
   };
 
   return (
@@ -189,7 +234,7 @@ export const CampaignStats: React.FC<CampaignStatsProps> = ({
                 Campaign Statistics
               </h3>
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                Click to view detailed breakdown
+                Click to view party portal
               </p>
             </div>
 
@@ -225,13 +270,13 @@ export const CampaignStats: React.FC<CampaignStatsProps> = ({
                   onClick={handleClick}
                   className="px-3 py-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors font-medium"
                 >
-                  View Details
+                  Party Portal
                 </button>
                 <button
-                  onClick={() => (window.location.href = "/journal")}
+                  onClick={() => (window.location.href = "/campaign")}
                   className="px-3 py-1.5 bg-gray-100 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
                 >
-                  Sessions
+                  Campaign
                 </button>
               </div>
             </div>

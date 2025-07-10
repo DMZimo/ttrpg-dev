@@ -1,0 +1,285 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import RelatedContent from "@/components/ui/RelatedContent.astro";
+import { getCollection, type CollectionEntry, render } from "astro:content";
+import { generateBreadcrumbs } from "@/utils/crossLinking";
+
+export async function getStaticPaths() {
+  const mysteries = await getCollection("mysteries");
+  return mysteries.map((mystery) => ({
+    params: { id: mystery.id },
+    props: { mystery },
+  }));
+}
+
+interface Props {
+  mystery: CollectionEntry<"mysteries">;
+}
+
+const { mystery } = Astro.props as Props;
+const { Content } = await render(mystery);
+
+const breadcrumbs = generateBreadcrumbs(Astro.url.pathname, mystery.data.title);
+
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case "active":
+      return "text-green-600 bg-green-100 dark:bg-green-900/30";
+    case "solved":
+      return "text-blue-600 bg-blue-100 dark:bg-blue-900/30";
+    case "abandoned":
+      return "text-gray-600 bg-gray-100 dark:bg-gray-900/30";
+    default:
+      return "text-gray-600 bg-gray-100 dark:bg-gray-900/30";
+  }
+};
+
+const getPriorityColor = (priority: string) => {
+  switch (priority) {
+    case "critical":
+      return "text-red-700 bg-red-200 dark:bg-red-900/50";
+    case "high":
+      return "text-orange-700 bg-orange-200 dark:bg-orange-900/50";
+    case "medium":
+      return "text-yellow-700 bg-yellow-200 dark:bg-yellow-900/50";
+    case "low":
+      return "text-green-700 bg-green-200 dark:bg-green-900/50";
+    default:
+      return "text-gray-700 bg-gray-200 dark:bg-gray-900/50";
+  }
+};
+
+const getSignificanceColor = (significance: string) => {
+  switch (significance) {
+    case "breakthrough":
+      return "text-green-600 bg-green-100";
+    case "major":
+      return "text-blue-600 bg-blue-100";
+    case "minor":
+      return "text-gray-600 bg-gray-100";
+    default:
+      return "text-gray-600 bg-gray-100";
+  }
+};
+---
+
+<BaseLayout title={mystery.data.title} description={mystery.data.description}>
+  <div class="max-w-4xl mx-auto px-4 py-8">
+    <!-- Breadcrumb Navigation -->
+    <nav class="flex items-center gap-2 text-sm text-muted mb-6">
+      {
+        breadcrumbs.map((crumb, index) => (
+          <div class="flex items-center gap-2">
+            {index > 0 && <span class="text-text-primary/40">›</span>}
+            {index === breadcrumbs.length - 1 ? (
+              <span class="text-text-primary font-medium">{crumb.name}</span>
+            ) : (
+              <a
+                href={crumb.url}
+                class="hover:text-accent-500 transition-colors"
+              >
+                {crumb.name}
+              </a>
+            )}
+          </div>
+        ))
+      }
+    </nav>
+
+    <!-- Mystery Header -->
+    <div
+      class="bg-surface-elevated rounded-xl shadow-card border border-primary/20 p-8 mb-8"
+    >
+      <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
+        <div class="flex-1 min-w-0">
+          <h1
+            class="text-3xl font-bold text-text-primary mb-3 flex items-center gap-3"
+          >
+            <span class="text-4xl">🔍</span>
+            {mystery.data.title}
+          </h1>
+          <p class="text-lg text-secondary leading-relaxed">
+            {mystery.data.description}
+          </p>
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <span
+            class={`px-3 py-1.5 rounded-full text-sm font-semibold border ${getStatusColor(mystery.data.status)}`}
+          >
+            {
+              mystery.data.status.charAt(0).toUpperCase() +
+                mystery.data.status.slice(1)
+            }
+          </span>
+          <span
+            class={`px-3 py-1.5 rounded-full text-sm font-semibold ${getPriorityColor(mystery.data.priority)}`}
+          >
+            {
+              mystery.data.priority.charAt(0).toUpperCase() +
+                mystery.data.priority.slice(1)
+            } Priority
+          </span>
+        </div>
+      </div>
+
+      <!-- Investigation Progress -->
+      {
+        mystery.data.clues_found && mystery.data.clues_found.length > 0 && (
+          <div class="mb-6">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-lg font-bold text-text-primary">
+                Investigation Progress
+              </h3>
+              <div class="flex items-center gap-2 text-sm text-muted">
+                <span class="font-semibold text-text-primary">
+                  {mystery.data.clues_found.length}
+                </span>
+                <span>clues discovered</span>
+              </div>
+            </div>
+
+            <div class="space-y-3">
+              {mystery.data.clues_found.map((clue: any) => (
+                <div class="p-4 bg-surface-secondary rounded-lg border border-primary/10">
+                  <div class="flex items-start justify-between gap-4">
+                    <div class="flex-1">
+                      <p class="text-secondary font-medium mb-2">{clue.clue}</p>
+                      <div class="flex flex-wrap gap-4 text-sm text-muted">
+                        {clue.session && (
+                          <span class="flex items-center gap-1">
+                            <span class="text-accent-500">📅</span>
+                            Session {clue.session}
+                          </span>
+                        )}
+                        {clue.location && (
+                          <span class="flex items-center gap-1">
+                            <span class="text-accent-500">📍</span>
+                            {clue.location}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <span
+                      class={`px-3 py-1 rounded-full text-xs font-semibold ${getSignificanceColor(clue.significance)}`}
+                    >
+                      {clue.significance}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )
+      }
+
+      <!-- Theories -->
+      {
+        mystery.data.theories && mystery.data.theories.length > 0 && (
+          <div class="mt-6 pt-6 border-t border-primary/20">
+            <h3 class="text-lg font-bold text-text-primary mb-4">
+              Current Theories
+            </h3>
+            <div class="space-y-4">
+              {mystery.data.theories.map((theory: any) => (
+                <div class="p-4 bg-surface-secondary rounded-lg border border-primary/10">
+                  <div class="flex items-start justify-between gap-4 mb-2">
+                    <h4 class="font-semibold text-text-primary">
+                      {theory.theory}
+                    </h4>
+                    <span
+                      class={`px-3 py-1 rounded-full text-xs font-semibold ${
+                        theory.likelihood === "confirmed"
+                          ? "bg-green-100 text-green-700"
+                          : theory.likelihood === "probable"
+                            ? "bg-blue-100 text-blue-700"
+                            : theory.likelihood === "possible"
+                              ? "bg-yellow-100 text-yellow-700"
+                              : "bg-gray-100 text-gray-700"
+                      }`}
+                    >
+                      {theory.likelihood}
+                    </span>
+                  </div>
+                  {theory.evidence && theory.evidence.length > 0 && (
+                    <div class="mt-2">
+                      <span class="text-sm text-muted">Evidence:</span>
+                      <ul class="list-disc list-inside text-sm text-secondary mt-1 ml-4">
+                        {theory.evidence.map((evidence: string) => (
+                          <li>{evidence}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )
+      }
+
+      <!-- Tags -->
+      {
+        mystery.data.tags && mystery.data.tags.length > 0 && (
+          <div class="mt-6 pt-6 border-t border-primary/20">
+            <h3 class="text-lg font-bold text-text-primary mb-3">Tags</h3>
+            <div class="flex flex-wrap gap-2">
+              {mystery.data.tags.map((tag: string) => (
+                <span class="text-xs px-3 py-1 bg-accent-100 dark:bg-accent-900/30 text-accent-700 dark:text-accent-300 rounded-full border">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
+        )
+      }
+    </div>
+
+    <!-- Mystery Content -->
+    <div
+      class="bg-surface-elevated rounded-xl shadow-card border border-primary/20 p-8 mb-8"
+    >
+      <div class="prose prose-slate dark:prose-invert max-w-none">
+        <Content />
+      </div>
+    </div>
+
+    <!-- Related Content -->
+    <RelatedContent
+      currentPageId={mystery.id}
+      currentTitle={mystery.data.title}
+      contentType="mystery"
+      content={mystery.body}
+      relatedCharacters={mystery.data.related_characters}
+      relatedLocations={mystery.data.related_locations}
+      tags={mystery.data.tags}
+    />
+  </div>
+</BaseLayout>
+
+<style>
+  .prose h1,
+  .prose h2,
+  .prose h3,
+  .prose h4,
+  .prose h5,
+  .prose h6 {
+    @apply text-text-primary;
+  }
+
+  .prose p {
+    @apply text-secondary;
+  }
+
+  .prose strong {
+    @apply text-text-primary font-semibold;
+  }
+
+  .prose ul li {
+    @apply text-secondary;
+  }
+
+  .prose ul li::marker {
+    @apply text-accent-500;
+  }
+</style>

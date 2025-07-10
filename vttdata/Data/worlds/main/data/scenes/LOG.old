@@ -1,3 +1,49 @@
-2025/07/03-19:46:17.263032 7313a59f96c0 Recovering log #197
-2025/07/03-19:46:17.264671 7313a59f96c0 Delete type=0 #197
-2025/07/03-19:46:17.264681 7313a59f96c0 Delete type=3 #192
+2025/07/07-19:00:36.921561 72ec46ffd6c0 Recovering log #204
+2025/07/07-19:00:36.921688 72ec46ffd6c0 Level-0 table #206: started
+2025/07/07-19:00:36.922436 72ec46ffd6c0 Level-0 table #206: 17497 bytes OK
+2025/07/07-19:00:36.924106 72ec46ffd6c0 Delete type=3 #202
+2025/07/07-19:00:36.924119 72ec46ffd6c0 Delete type=0 #204
+2025/07/07-19:08:00.405644 72ec45bff6c0 Compacting 2@0 + 0@1 files
+2025/07/07-19:08:00.415581 72ec45bff6c0 Generated table #208@0: 6 keys, 18046 bytes
+2025/07/07-19:08:00.415595 72ec45bff6c0 Compacted 2@0 + 0@1 files => 18046 bytes
+2025/07/07-19:08:00.416477 72ec45bff6c0 compacted to: files[ 0 1 4 0 0 0 0 ]
+2025/07/07-19:08:00.416529 72ec45bff6c0 Delete type=2 #206
+2025/07/07-19:08:00.416589 72ec45bff6c0 Delete type=2 #203
+2025/07/07-20:52:46.996767 72ec45bff6c0 Compacting 1@1 + 1@2 files
+2025/07/07-20:52:47.022997 72ec45bff6c0 Generated table #209@1: 22586 keys, 2163187 bytes
+2025/07/07-20:52:47.023012 72ec45bff6c0 Compacted 1@1 + 1@2 files => 2163187 bytes
+2025/07/07-20:52:47.023754 72ec45bff6c0 compacted to: files[ 0 0 4 0 0 0 0 ]
+2025/07/07-20:52:47.023825 72ec45bff6c0 Delete type=2 #199
+2025/07/07-20:52:47.023941 72ec45bff6c0 Delete type=2 #208
+2025/07/07-23:23:20.984689 72ec45bff6c0 Level-0 table #211: started
+2025/07/07-23:23:21.007821 72ec45bff6c0 Level-0 table #211: 3501344 bytes OK
+2025/07/07-23:23:21.009296 72ec45bff6c0 Delete type=0 #207
+2025/07/07-23:38:11.029336 72ec45bff6c0 Compacting 1@1 + 1@2 files
+2025/07/07-23:38:11.056663 72ec45bff6c0 Generated table #212@1: 22371 keys, 2162122 bytes
+2025/07/07-23:38:11.057459 72ec45bff6c0 Generated table #213@1: 249 keys, 17633 bytes
+2025/07/07-23:38:11.057464 72ec45bff6c0 Compacted 1@1 + 1@2 files => 2179755 bytes
+2025/07/07-23:38:11.058208 72ec45bff6c0 compacted to: files[ 0 0 5 0 0 0 0 ]
+2025/07/07-23:38:11.058303 72ec45bff6c0 Delete type=2 #209
+2025/07/07-23:38:11.058574 72ec45bff6c0 Delete type=2 #211
+2025/07/08-01:04:28.907290 72ec45bff6c0 Level-0 table #215: started
+2025/07/08-01:04:28.924779 72ec45bff6c0 Level-0 table #215: 3337414 bytes OK
+2025/07/08-01:04:28.925905 72ec45bff6c0 Delete type=0 #210
+2025/07/08-01:21:31.329269 72ec45bff6c0 Level-0 table #217: started
+2025/07/08-01:21:31.330356 72ec45bff6c0 Level-0 table #217: 243632 bytes OK
+2025/07/08-01:21:31.331077 72ec45bff6c0 Delete type=0 #214
+2025/07/08-01:21:31.335942 72ec45bff6c0 Manual compaction at level-0 from '!scenes!2TTuGHMiHI5gl98a' @ 72057594037927935 : 1 .. '!scenes.walls!zACmyjlWTSPV0el0.zzk2KdHF6PCsfyMS' @ 0 : 0; will stop at '!scenes.tokens.delta!Cnp3CeBiC6FnTVc9.syLMe8udFz1sWfjd.5dPErDAMt6lumuEu' @ 89919 : 1
+2025/07/08-01:21:31.335945 72ec45bff6c0 Compacting 1@0 + 1@1 files
+2025/07/08-01:21:31.337712 72ec45bff6c0 Generated table #218@0: 62 keys, 27327 bytes
+2025/07/08-01:21:31.337718 72ec45bff6c0 Compacted 1@0 + 1@1 files => 27327 bytes
+2025/07/08-01:21:31.338566 72ec45bff6c0 compacted to: files[ 0 1 5 0 0 0 0 ]
+2025/07/08-01:21:31.338685 72ec45bff6c0 Delete type=2 #215
+2025/07/08-01:21:31.339174 72ec45bff6c0 Delete type=2 #217
+2025/07/08-01:21:31.343026 72ec45bff6c0 Manual compaction at level-0 from '!scenes.tokens.delta!Cnp3CeBiC6FnTVc9.syLMe8udFz1sWfjd.5dPErDAMt6lumuEu' @ 89919 : 1 .. '!scenes.walls!zACmyjlWTSPV0el0.zzk2KdHF6PCsfyMS' @ 0 : 0; will stop at (end)
+2025/07/08-01:21:31.343054 72ec45bff6c0 Manual compaction at level-1 from '!scenes!2TTuGHMiHI5gl98a' @ 72057594037927935 : 1 .. '!scenes.walls!zACmyjlWTSPV0el0.zzk2KdHF6PCsfyMS' @ 0 : 0; will stop at '!scenes.walls!Cnp3CeBiC6FnTVc9.xx71lWxkyh16zSzQ' @ 89708 : 1
+2025/07/08-01:21:31.343066 72ec45bff6c0 Compacting 1@1 + 1@2 files
+2025/07/08-01:21:31.365469 72ec45bff6c0 Generated table #219@1: 22382 keys, 2161578 bytes
+2025/07/08-01:21:31.365478 72ec45bff6c0 Compacted 1@1 + 1@2 files => 2161578 bytes
+2025/07/08-01:21:31.366237 72ec45bff6c0 compacted to: files[ 0 0 5 0 0 0 0 ]
+2025/07/08-01:21:31.366317 72ec45bff6c0 Delete type=2 #212
+2025/07/08-01:21:31.366514 72ec45bff6c0 Delete type=2 #218
+2025/07/08-01:21:31.379339 72ec45bff6c0 Manual compaction at level-1 from '!scenes.walls!Cnp3CeBiC6FnTVc9.xx71lWxkyh16zSzQ' @ 89708 : 1 .. '!scenes.walls!zACmyjlWTSPV0el0.zzk2KdHF6PCsfyMS' @ 0 : 0; will stop at (end)

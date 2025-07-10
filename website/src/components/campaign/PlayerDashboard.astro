@@ -1,0 +1,343 @@
+---
+import { getCollection } from 'astro:content';
+
+interface Props {
+  characterId?: string;
+}
+
+const { characterId } = Astro.props;
+
+// Get data collections
+const allCharacters = await getCollection('characters');
+const journalEntries = await getCollection('journal');
+const allQuests = await getCollection('quests');
+
+// If character ID is provided, focus on that character
+const focusCharacter = characterId ? 
+  allCharacters.find(char => char.id === characterId) : null;
+
+// Get all player characters
+const playerCharacters = allCharacters.filter(char => 
+  char.data.type === 'pc' && char.data.active
+);
+
+// Recent activity analysis
+const recentSessions = journalEntries
+  .sort((a, b) => (b.data.session_number || 0) - (a.data.session_number || 0))
+  .slice(0, 5);
+
+// Character-specific analytics
+const getCharacterAnalytics = (character: any) => {
+  const analytics = {
+    sessionsAppeared: 0,
+    totalExperienceGained: 0,
+    combatsParticipated: 0,
+    npcsEncountered: new Set(),
+    locationsVisited: new Set(),
+    lastSession: null as any,
+    recentRewards: [] as any[],
+  };
+
+  journalEntries.forEach(entry => {
+    const charInvolved = entry.data.characters_involved?.find((char: any) => 
+      char.name === character.data.name
+    );
+    
+    if (charInvolved) {
+      analytics.sessionsAppeared++;
+      analytics.lastSession = entry;
+      
+      // Experience tracking
+      if (charInvolved.rewards) {
+        charInvolved.rewards.forEach((reward: any) => {
+          if (reward.experience) {
+            analytics.totalExperienceGained += reward.experience;
+          }
+          analytics.recentRewards.push({
+            session: entry.data.session_number,
+            reward: reward
+          });
+        });
+      }
+      
+      // Combat participation
+      if (entry.data.combat_encounters?.length > 0) {
+        analytics.combatsParticipated += entry.data.combat_encounters.length;
+      }
+      
+      // NPCs and locations
+      entry.data.npcs_encountered?.forEach((npc: any) => {
+        analytics.npcsEncountered.add(typeof npc === 'string' ? npc : npc.name);
+      });
+      
+      entry.data.locations_visited?.forEach((location: any) => {
+        analytics.locationsVisited.add(typeof location === 'string' ? location : location.name);
+      });
+    }
+  });
+  
+  return analytics;
+};
+
+// Get active quests that relate to the character
+const getRelevantQuests = (character: any) => {
+  return allQuests.filter(quest => 
+    quest.data.status === 'active' && (
+      quest.data.related_characters?.includes(character.data.name) ||
+      quest.data.questGiver === character.data.name
+    )
+  );
+};
+
+// Campaign progress for the character
+const getCampaignProgress = (character: any) => {
+  const currentLevel = character.data.classes ? 
+    character.data.classes.reduce((sum: number, cls: any) => sum + cls.level, 0) : 1;
+  
+  const nextLevelXP = currentLevel < 20 ? 
+    [0, 300, 900, 2700, 6500, 14000, 23000, 34000, 48000, 64000, 85000, 100000, 120000, 140000, 165000, 195000, 225000, 265000, 305000, 355000][currentLevel] : 355000;
+  
+  return {
+    currentLevel,
+    nextLevelXP,
+    completedSessions: recentSessions.length,
+  };
+};
+
+// Helper functions
+const formatDate = (date: Date) => {
+  return date.toLocaleDateString('en-US', { 
+    month: 'short', 
+    day: 'numeric', 
+    year: 'numeric' 
+  });
+};
+
+const getCharacterPortrait = (character: any) => {
+  return character.data.portrait ? 
+    `/src/assets/portraits/${character.data.portrait}` : 
+    '/src/assets/portraits/placeholder-portrait.png';
+};
+
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case 'alive': return 'text-green-600 bg-green-100';
+    case 'injured': return 'text-yellow-600 bg-yellow-100';
+    case 'dead': return 'text-red-600 bg-red-100';
+    default: return 'text-gray-600 bg-gray-100';
+  }
+};
+---
+
+<div class="bg-surface-elevated rounded-xl p-6 shadow-card border border-primary mb-8">
+  <div class="flex items-center justify-between mb-6">
+    <h2 class="text-2xl font-bold text-text-primary flex items-center gap-2">
+      👤 Player Dashboard
+    </h2>
+    <div class="text-sm text-secondary">
+      {playerCharacters.length} Active Characters
+    </div>
+  </div>
+
+  {focusCharacter ? (
+    <!-- Individual Character Dashboard -->
+    <div class="space-y-6">
+      <!-- Character Header -->
+      <div class="hero-card bg-surface-secondary rounded-xl p-6 border border-primary/20">
+        <div class="flex items-start gap-6">
+          <div class="w-20 h-20 rounded-xl overflow-hidden bg-surface-tertiary border border-primary/20 flex-shrink-0">
+            <img
+              src={getCharacterPortrait(focusCharacter)}
+              alt={focusCharacter.data.name}
+              class="w-full h-full object-cover"
+              onerror="this.src='/src/assets/portraits/placeholder-portrait.png'"
+            />
+          </div>
+          
+          <div class="flex-1">
+            <div class="flex items-start justify-between mb-2">
+              <div>
+                <h3 class="text-2xl font-bold text-text-primary">{focusCharacter.data.name}</h3>
+                <p class="text-lg text-secondary">
+                  {focusCharacter.data.race} {focusCharacter.data.classes?.map(cls => cls.name).join('/') || 'Adventurer'}
+                </p>
+              </div>
+              <span class={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(focusCharacter.data.status)}`}>
+                {focusCharacter.data.status.charAt(0).toUpperCase() + focusCharacter.data.status.slice(1)}
+              </span>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+              {focusCharacter.data.ability_scores && Object.entries(focusCharacter.data.ability_scores).map(([ability, score]) => (
+                <div class="text-center bg-surface-tertiary rounded-lg p-2 border border-primary/10">
+                  <div class="text-xs text-secondary font-medium">{ability.toUpperCase()}</div>
+                  <div class="text-lg font-bold text-text-primary">{score}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {(() => {
+        const analytics = getCharacterAnalytics(focusCharacter);
+        const progress = getCampaignProgress(focusCharacter);
+        const relevantQuests = getRelevantQuests(focusCharacter);
+        
+        return (
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Activity Summary -->
+            <div class="hero-card bg-surface-secondary rounded-lg p-4 border border-primary/20">
+              <h4 class="text-lg font-semibold text-text-primary mb-4">📊 Activity Summary</h4>
+              <div class="space-y-3">
+                <div class="flex justify-between">
+                  <span class="text-secondary">Sessions Participated</span>
+                  <span class="font-medium text-text-primary">{analytics.sessionsAppeared}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-secondary">Total Experience</span>
+                  <span class="font-medium text-text-primary">{analytics.totalExperienceGained.toLocaleString()} XP</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-secondary">Combats Survived</span>
+                  <span class="font-medium text-text-primary">{analytics.combatsParticipated}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-secondary">NPCs Encountered</span>
+                  <span class="font-medium text-text-primary">{analytics.npcsEncountered.size}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-secondary">Locations Explored</span>
+                  <span class="font-medium text-text-primary">{analytics.locationsVisited.size}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Progress & Goals -->
+            <div class="hero-card bg-surface-secondary rounded-lg p-4 border border-primary/20">
+              <h4 class="text-lg font-semibold text-text-primary mb-4">🎯 Progress & Goals</h4>
+              <div class="space-y-4">
+                <div>
+                  <div class="flex justify-between text-sm mb-1">
+                    <span class="text-secondary">Character Level</span>
+                    <span class="font-medium text-text-primary">Level {progress.currentLevel}</span>
+                  </div>
+                  {progress.currentLevel < 20 && (
+                    <div class="w-full bg-surface-tertiary rounded-full h-2">
+                      <div 
+                        class="bg-accent-500 h-2 rounded-full transition-all duration-500"
+                        style={`width: ${Math.min((analytics.totalExperienceGained / progress.nextLevelXP) * 100, 100)}%`}
+                      ></div>
+                    </div>
+                  )}
+                </div>
+                
+                <div>
+                  <span class="text-sm text-secondary">Active Quests</span>
+                  <div class="text-lg font-bold text-text-primary">{relevantQuests.length}</div>
+                </div>
+                
+                {analytics.lastSession && (
+                  <div>
+                    <span class="text-sm text-secondary">Last Session</span>
+                    <div class="text-sm font-medium text-text-primary">
+                      Session {analytics.lastSession.data.session_number}
+                    </div>
+                    <div class="text-xs text-tertiary">
+                      {formatDate(new Date(analytics.lastSession.data.session_start))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+    </div>
+  ) : (
+    <!-- Party Overview Dashboard -->
+    <div class="space-y-6">
+      <!-- Party Summary -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {playerCharacters.map(character => {
+          const analytics = getCharacterAnalytics(character);
+          const currentLevel = character.data.classes ? 
+            character.data.classes.reduce((sum: number, cls: any) => sum + cls.level, 0) : 1;
+          
+          return (
+            <a 
+              href={`/campaign/dashboard?character=${character.id}`}
+              class="hero-card bg-surface-secondary rounded-lg p-4 border border-primary/20 hover:shadow-card-hover transition-all duration-300 group"
+            >
+              <div class="flex items-center gap-3 mb-3">
+                <div class="w-12 h-12 rounded-lg overflow-hidden bg-surface-tertiary border border-primary/20 flex-shrink-0">
+                  <img
+                    src={getCharacterPortrait(character)}
+                    alt={character.data.name}
+                    class="w-full h-full object-cover"
+                    onerror="this.src='/src/assets/portraits/placeholder-portrait.png'"
+                  />
+                </div>
+                <div class="flex-1 min-w-0">
+                  <h4 class="font-semibold text-text-primary group-hover:text-accent-400 transition-colors truncate">
+                    {character.data.name}
+                  </h4>
+                  <p class="text-sm text-secondary">Level {currentLevel}</p>
+                </div>
+              </div>
+              
+              <div class="grid grid-cols-2 gap-2 text-xs">
+                <div class="text-center bg-surface-tertiary rounded p-1">
+                  <div class="font-bold text-text-primary">{analytics.sessionsAppeared}</div>
+                  <div class="text-tertiary">Sessions</div>
+                </div>
+                <div class="text-center bg-surface-tertiary rounded p-1">
+                  <div class="font-bold text-text-primary">{analytics.totalExperienceGained}</div>
+                  <div class="text-tertiary">XP</div>
+                </div>
+              </div>
+            </a>
+          );
+        })}
+      </div>
+
+      <!-- Recent Campaign Activity -->
+      <div class="hero-card bg-surface-secondary rounded-lg p-6 border border-primary/20">
+        <h3 class="text-lg font-semibold text-text-primary mb-4 flex items-center gap-2">
+          📅 Recent Campaign Activity
+        </h3>
+        <div class="space-y-3">
+          {recentSessions.slice(0, 3).map(session => (
+            <div class="flex items-center justify-between py-2 px-3 bg-surface-tertiary rounded-lg border border-primary/10">
+              <div>
+                <h4 class="font-medium text-text-primary">
+                  {session.data.session_title || `Session ${session.data.session_number}`}
+                </h4>
+                <p class="text-sm text-secondary">
+                  {session.data.session_start ? formatDate(new Date(session.data.session_start)) : 'Date TBD'}
+                </p>
+              </div>
+              <div class="text-right">
+                <div class="text-sm font-medium text-text-primary">
+                  {session.data.characters_involved?.length || 0} players
+                </div>
+                <div class="text-xs text-tertiary">
+                  {session.data.combat_encounters?.length || 0} combats
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        
+        <div class="mt-4 pt-4 border-t border-primary/20">
+          <a 
+            href="/journal"
+            class="hero-button-secondary w-full text-center"
+          >
+            📖 View All Sessions
+          </a>
+        </div>
+      </div>
+    </div>
+  )}
+</div>

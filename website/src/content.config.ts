@@ -1148,7 +1148,7 @@ const events = defineCollection({
     type: z.literal("timeline-event"),
     title: z.string(),
     description: z.string(),
-    sessionNumber: z.number().optional(),
+    sessionNumber: z.number(),
     eventDate: z.coerce.date(),
     experienceGained: z.number().optional(),
     relatedCharacters: z.array(z.string()).optional(),
@@ -1157,22 +1157,112 @@ const events = defineCollection({
   }),
 });
 
-// Calendar systems collection for different calendar implementations
-const calendarSystems = defineCollection({
+// Quests collection for campaign quest tracking
+const quests = defineCollection({
   loader: glob({
-    base: "./src/content/timekeeping/calendar-systems",
+    base: "./src/content/campaign/quests",
     pattern: "**/*.{md,mdx}",
   }),
   schema: z.object({
     title: z.string(),
-    type: z.literal("calendar-system"),
-    yearLength: z.number(),
-    monthsPerYear: z.number(),
-    daysPerMonth: z.number(),
-    hoursPerDay: z.number(),
-    creator: z.string().optional(),
-    adoption: z.string().optional(),
-    regions: z.array(z.string()).optional(),
+    type: z.enum(["main", "side", "personal", "faction", "mystery"]),
+    status: z.enum(["active", "completed", "failed", "paused", "abandoned"]),
+    priority: z.enum(["low", "medium", "high", "urgent"]).default("medium"),
+    description: z.string(),
+    giver: z.string().optional(),
+    location: z.string().optional(),
+    reward: z.string().optional(),
+    experience_reward: z.number().optional(),
+    gold_reward: z.number().optional(),
+    item_rewards: z.array(z.string()).optional(),
+    requirements: z.array(z.string()).optional(),
+    sessions_involved: z.array(z.number()).optional(),
+    related_characters: z.array(z.string()).optional(),
+    related_locations: z.array(z.string()).optional(),
+    started_date: z.coerce.date().optional(),
+    completed_date: z.coerce.date().optional(),
+    deadline: z.coerce.date().optional(),
+    notes: z.string().optional(),
+    difficulty: z
+      .enum(["trivial", "easy", "medium", "hard", "deadly"])
+      .optional(),
+    tags: z.array(z.string()).optional(),
+  }),
+});
+
+// Rumors and hooks collection
+const rumors = defineCollection({
+  loader: glob({
+    base: "./src/content/campaign/rumors",
+    pattern: "**/*.{md,mdx}",
+  }),
+  schema: z.object({
+    title: z.string(),
+    status: z
+      .enum(["active", "investigated", "resolved", "false"])
+      .default("active"),
+    reliability: z
+      .enum(["unreliable", "questionable", "reliable", "confirmed"])
+      .default("questionable"),
+    urgency: z
+      .enum(["low", "medium", "high", "time-sensitive"])
+      .default("medium"),
+    source: z.string().optional(),
+    location: z.string().optional(),
+    description: z.string(),
+    investigation_notes: z.string().optional(),
+    related_quest: z.string().optional(),
+    related_characters: z.array(z.string()).optional(),
+    heard_in_session: z.number().optional(),
+    reward_potential: z
+      .enum(["none", "low", "medium", "high", "unknown"])
+      .default("unknown"),
+    danger_level: z
+      .enum(["unknown", "safe", "low", "medium", "high", "deadly"])
+      .default("unknown"),
+    tags: z.array(z.string()).optional(),
+  }),
+});
+
+// Mysteries collection for ongoing campaign mysteries
+const mysteries = defineCollection({
+  loader: glob({
+    base: "./src/content/campaign/mysteries",
+    pattern: "**/*.{md,mdx}",
+  }),
+  schema: z.object({
+    title: z.string(),
+    status: z.enum(["active", "solved", "abandoned"]).default("active"),
+    priority: z.enum(["low", "medium", "high", "critical"]).default("medium"),
+    description: z.string(),
+    clues_found: z
+      .array(
+        z.object({
+          clue: z.string(),
+          session: z.number().optional(),
+          location: z.string().optional(),
+          significance: z
+            .enum(["minor", "major", "breakthrough"])
+            .default("minor"),
+        })
+      )
+      .optional(),
+    theories: z
+      .array(
+        z.object({
+          theory: z.string(),
+          likelihood: z
+            .enum(["unlikely", "possible", "probable", "confirmed"])
+            .default("possible"),
+          evidence: z.array(z.string()).optional(),
+        })
+      )
+      .optional(),
+    related_characters: z.array(z.string()).optional(),
+    related_locations: z.array(z.string()).optional(),
+    first_encountered_session: z.number().optional(),
+    solved_session: z.number().optional(),
+    resolution_notes: z.string().optional(),
     tags: z.array(z.string()).optional(),
   }),
 });
@@ -1185,8 +1275,10 @@ export const collections = {
   seasons,
   celestial,
   events,
-  calendarSystems,
   continents,
   regions,
   settlements,
+  quests,
+  rumors,
+  mysteries,
 };

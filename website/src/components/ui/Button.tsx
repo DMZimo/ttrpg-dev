@@ -65,7 +65,7 @@ export const Button: React.FC<ButtonProps> = ({
     primary: "btn-primary shadow-card hover:shadow-card-hover",
     secondary: "btn-secondary shadow-card hover:shadow-card-hover",
     ghost:
-      "bg-transparent border-transparent text-primary hover:bg-surface-tertiary hover:text-accent-500 focus:ring-accent-500",
+      "bg-transparent border-transparent text-text-primary hover:bg-surface-tertiary hover:text-accent-500 focus:ring-accent-500",
     icon: "btn-icon shadow-card hover:shadow-card-hover",
     // Hero button variants
     "hero-primary":

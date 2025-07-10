@@ -18,7 +18,7 @@ export const CAMPAIGN_DATE = {
   year: 1491,
   month: 4, // 1-12 (Hammer to Nightal)
   day: 18, // 1-30
-  hour: 8, // 0-23 (24-hour format)
+  hour: 9, // 0-23 (24-hour format)
   minute: 0, // 0-59
 };
 

@@ -1,12 +1,11 @@
 ---
-import { Header } from "@/components/layout/header/Header.tsx";
+import Header from "@/components/layout/Header.astro";
 import { AnnouncementBanner } from "@/components/layout/AnnouncementBanner.tsx";
 import "@/styles/global.css";
 import "@/styles/ui.css";
 import { SITE_TITLE } from "@/consts";
 import { ANNOUNCEMENTS } from "@/config/announcements";
 import FallbackImage from "@/assets/covers/journal-placeholder.jpg";
-import { calculateCampaignStats } from "@/utils/campaignStats";
 import type { ImageMetadata } from "astro";
 
 interface Props {
@@ -17,7 +16,6 @@ interface Props {
 }
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
-const campaignStats = await calculateCampaignStats();
 const {
   title,
   description,
@@ -89,11 +87,7 @@ const {
     />
 
     <!-- Site Header -->
-    <Header
-      client:load
-      currentPath={Astro.url.pathname}
-      campaignStats={campaignStats}
-    />
+    <Header currentPath={Astro.url.pathname} />
 
     <!-- Main Content -->
     <main

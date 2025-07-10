@@ -1,29 +1,28 @@
 ---
 import { getCollection } from 'astro:content';
 
-// Get active rumors from content collection
-const allPartyContent = await getCollection('party');
-const rumors = allPartyContent.filter(entry => 
-  entry.data.type === 'rumor' && entry.data.status === 'active'
-);
+// Get active rumors from the new rumors collection
+const allRumors = await getCollection('rumors');
+const rumors = allRumors.filter(rumor => rumor.data.status === 'active');
 
-const getReliabilityIcon = (priority: string) => {
-  switch (priority) {
-    case "high":
-    case "urgent":
+const getReliabilityIcon = (reliability: string) => {
+  switch (reliability) {
+    case "confirmed":
       return "🟢";
-    case "medium":
-      return "🟡";
-    case "low":
+    case "reliable":
+      return "�";
+    case "questionable":
+      return "�";
+    case "unreliable":
       return "🔴";
     default:
       return "🟡";
   }
 };
 
-const getUrgencyColor = (priority: string) => {
-  switch (priority) {
-    case "urgent":
+const getUrgencyColor = (urgency: string) => {
+  switch (urgency) {
+    case "time-sensitive":
       return "text-red-600";
     case "high":
       return "text-orange-600";
@@ -46,9 +45,9 @@ const getStatusColor = (status: string) => {
   }
 };
 
-const getBorderColor = (priority: string) => {
-  switch (priority) {
-    case 'urgent': return 'border-red-500';
+const getBorderColor = (urgency: string) => {
+  switch (urgency) {
+    case 'time-sensitive': return 'border-red-600';
     case 'high': return 'border-orange-500';
     case 'medium': return 'border-yellow-500';
     case 'low': return 'border-green-500';
@@ -73,7 +72,7 @@ const getTagColor = (tag: string) => {
 
 <div class="mb-6">
   <div class="flex items-center justify-between mb-4">
-    <h2 class="text-xl md:text-2xl font-bold text-primary flex items-center">
+    <h2 class="text-xl md:text-2xl font-bold text-text-primary flex items-center">
       👂 Rumors & Leads
     </h2>
     <div class="text-sm text-secondary">
@@ -82,10 +81,15 @@ const getTagColor = (tag: string) => {
   </div>
 
   <div class="space-y-5">
-    {
+    {rumors.length === 0 ? (
+      <div class="text-center py-8 text-secondary">
+        <p>No active rumors found. Create rumor files in <code>src/content/campaign/rumors/</code> to see them here.</p>
+      </div>
+    ) : (
       rumors.map((rumor) => (
-        <div
-          class={`hero-card bg-surface-elevated rounded-xl shadow-card border-l-4 ${getBorderColor(rumor.data.priority || 'medium')} p-6 hover:shadow-card-hover transition-all duration-300 group relative overflow-hidden`}
+        <a 
+          href={`/campaign/rumors/${rumor.id}`}
+          class={`hero-card bg-surface-elevated rounded-xl shadow-card border-l-4 ${getBorderColor(rumor.data.urgency || 'medium')} p-6 hover:shadow-card-hover transition-all duration-300 group relative overflow-hidden block cursor-pointer`}
         >
           <!-- Rumor background effect -->
           <div class="absolute top-0 right-0 w-24 h-24 opacity-10 group-hover:opacity-20 transition-opacity duration-300">
@@ -96,9 +100,9 @@ const getTagColor = (tag: string) => {
             <div class="flex items-start justify-between mb-4">
               <div class="flex items-center gap-3">
                 <span class="text-xl">
-                  {getReliabilityIcon(rumor.data.priority || 'medium')}
+                  {getReliabilityIcon(rumor.data.reliability || 'questionable')}
                 </span>
-                <h3 class="text-lg font-bold text-primary group-hover:text-accent-400 transition-colors duration-200">
+                <h3 class="text-lg font-bold text-text-primary group-hover:text-accent-400 transition-colors duration-200">
                   {rumor.data.title}
                 </h3>
               </div>
@@ -124,40 +128,46 @@ const getTagColor = (tag: string) => {
                 ))}
               </div>
               <div class="flex items-center gap-2">
-                <span class="text-xs text-muted">Priority:</span>
+                <span class="text-xs text-muted">Urgency:</span>
                 <div
-                  class={`text-sm font-bold ${getUrgencyColor(rumor.data.priority || 'medium')} bg-surface-secondary px-2 py-1 rounded-md border`}
+                  class={`text-sm font-bold ${getUrgencyColor(rumor.data.urgency || 'medium')} bg-surface-secondary px-2 py-1 rounded-md border`}
                 >
-                  {(rumor.data.priority || 'medium').charAt(0).toUpperCase() + (rumor.data.priority || 'medium').slice(1)}
+                  {(rumor.data.urgency || 'medium').charAt(0).toUpperCase() + (rumor.data.urgency || 'medium').slice(1)}
                 </div>
               </div>
             </div>
 
             <div class="text-sm text-tertiary pt-3 border-t border-primary/20">
               <div class="flex flex-wrap gap-4">
-                {rumor.data.reward && (
+                {rumor.data.reward_potential && rumor.data.reward_potential !== 'unknown' && (
                   <div class="flex items-center gap-2">
                     <span class="text-gold-500">💰</span>
-                    <span>Reward: <span class="font-medium text-gold-500">{rumor.data.reward}</span></span>
+                    <span>Reward Potential: <span class="font-medium text-gold-500">{rumor.data.reward_potential}</span></span>
                   </div>
                 )}
-                {rumor.data.questGiver && (
+                {rumor.data.source && (
                   <div class="flex items-center gap-2">
                     <span>👤</span>
-                    <span>Contact: <span class="font-medium">{rumor.data.questGiver}</span></span>
+                    <span>Source: <span class="font-medium">{rumor.data.source}</span></span>
                   </div>
                 )}
-                {rumor.data.startDate && (
+                {rumor.data.heard_in_session && (
                   <div class="flex items-center gap-2">
                     <span>📅</span>
-                    <span>First heard: <span class="font-medium">{rumor.data.startDate.toLocaleDateString()}</span></span>
+                    <span>Session: <span class="font-medium">{rumor.data.heard_in_session}</span></span>
+                  </div>
+                )}
+                {rumor.data.location && (
+                  <div class="flex items-center gap-2">
+                    <span>📍</span>
+                    <span>Location: <span class="font-medium">{rumor.data.location}</span></span>
                   </div>
                 )}
               </div>
             </div>
           </div>
-        </div>
+        </a>
       ))
-    }
+    )}
   </div>
 </div>

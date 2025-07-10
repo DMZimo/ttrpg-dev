@@ -1,3 +1,11 @@
+## 0.11.4
+
+- Fix issue with control icons in Foundry v12
+
+## 0.11.3
+
+- Fix an issue with control icons not being optimized in certain cases
+
 ## 0.11.2
 
 - Update Polish translations (thanks @Lioheart)

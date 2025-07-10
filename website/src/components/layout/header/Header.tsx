@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Brand } from "./Brand.tsx";
-import { CampaignStats } from "./CampaignStats.tsx";
+// Removed CampaignStats import as it's now handled externally
 import { Navigation } from "./Navigation.tsx";
 import { Search } from "./Search.tsx";
-import type { CampaignStatsData } from "../../../utils/campaignStats.ts";
+import type { CampaignStatsData } from "../../../utils/campaignUtils.ts";
 import { DISCORD_INVITE, FOUNDRY_VTT_URL } from "../../../consts.ts";
 import { useAnnouncementHeight } from "../AnnouncementBanner.tsx";
 import { ANNOUNCEMENTS } from "../../../config/announcements.ts";
@@ -107,9 +107,11 @@ export const Header: React.FC<HeaderProps> = ({
             <Navigation currentPath={currentPath} />
           </div>
 
-          {/* Campaign Stats (Desktop) */}
+          {/* Campaign Stats (Desktop) - Placeholder for external component */}
           <div className="hidden lg:block">
-            {campaignStats && <CampaignStats {...campaignStats} />}
+            <div id="campaign-stats-slot" className="min-w-[200px]">
+              {/* CampaignStats component will be inserted here externally */}
+            </div>
           </div>
 
           {/* Actions */}
