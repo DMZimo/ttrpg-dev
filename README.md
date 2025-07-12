@@ -114,9 +114,9 @@ The application expects the standard TTRPG workspace structure:
 - **Port**: 30000
 - **URL**: <http://localhost:30000>
 - **Session**: dndm-vtt
-- **Command**: `node main.js --dataPath=/home/zimo/zimolabs/ttrpg/vttdata`
+- **Command**: `node main.js --dataPath=/home/zimo/ttrpg/vttdata`
 
-### Website (Optional)
+### Website
 
 - **Port**: 31000
 - **URL**: <http://localhost:31000>
