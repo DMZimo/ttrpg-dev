@@ -29,11 +29,9 @@ pnpm-debug.log*
 .idea/
 
 # FoundryVTT configuration files
+vtt/
 target/
 backups/
 vttdata/Logs/
 vttdata/Config/admin.txt
 vttdata/Config/license.json
-
-!vtt/dist/
-!vtt/node_modules/
